@@ -10,24 +10,31 @@ class PygameGame(object):
         self.height = height
         self.fps = fps
         self.title = title
+        self.allSprites = pygame.sprite.Group()
+        self.screen = pygame.display.set_mode((self.width, self.height))
         # pygame.init()
     def init(self):
         pygame.init()
-    def mousePressed(event):
-        self.posX, self.posY = event.pos
-        self.posX, self.posY = (self.posX - charWidth // 2, 
-            self.posY - charHeight // 2)
-        # return posX, posY
 
-    def keyPressed(event, posX, posY):
-        if (event.key == pygame.K_UP):
-            self.posY -= changeInPos
-        elif (event.key == pygame.K_DOWN):
-            self.posY += changeInPos
+    # def mousePressed(event, posX, posY):
+    #     self.posX, self.posY = event.pos
+    #     self.posX, self.posY = (self.posX - charWidth // 2, 
+    #         self.posY - charHeight // 2)
+    #     # return posX, posY
+
+    # def keyPressed(event, posX, posY):
+    #     if (event.key == pygame.K_UP):
+    #         self.posY -= changeInPos
+    #     elif (event.key == pygame.K_DOWN):
+    #         self.posY += changeInPos
+    
+    # def updateSprite(self):
+    #     # pygame.draw.rect(self.screen, (0, 255, 0),(posX, posY, charWidth, charHeight))
+    #     self.allSprites.add(self)
 
     def runGame(self):
         self.init()
-        screen = pygame.display.set_mode((self.width, self.height))
+        
         clock = pygame.time.Clock()
         playing = True
         while playing:
@@ -56,21 +63,24 @@ class PygameGame(object):
                 # print("event", posX, posY)
             screen.fill((0, 0, 0))
             # print(posX, posY)
+            self.allSprites.update()
             pygame.display.flip()
         pygame.quit()
 
 class Character(pygame.sprite.Sprite):
     def __init__(self, posX, posY, charWidth, charHeight, changeInPos):
-        super(PygameGame, self)__init__()
+        super(PygameGame).__init__()
         self.posX = posX #width // 2
         self.posY = posY #height // 2
         self.changeInPos = changeInPos #5
         self.charWidth = charWidth #50
         self.charHeight = charHeight #60
-        self.updateCharacter()
-    
-    def updateCharacter(self):
-        pygame.draw.rect(self.screen, (0, 255, 0),(posX, posY, charWidth, charHeight))
+        # self.updateCharacter()
+        self.image = pygame.image.load("testPerson.png").convert_alpha()
+        self.rect = self.image.get_rect()
+
+
+character = Character(200, 200, 50, 60, 5)
 
 game = PygameGame()
 game.runGame()

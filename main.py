@@ -20,6 +20,8 @@ changeInPos = 5
 charWidth = 50
 charHeight = 60
 
+image = pygame.image.load("testPerson.png")
+
 def mousePressed(event):
     posX, posY = event.pos
     posX, posY = posX - charWidth // 2, posY - charHeight // 2
@@ -50,7 +52,7 @@ while playing:
                 print("down")
             elif (event.key == pygame.K_UP):
                 # posY -= changeInPos
-                keyPressed(event, posX, posY)
+                posX, posY = keyPressed(event, posX, posY)
             elif (event.key == pygame.K_LEFT):
                 posX -= changeInPos
                 print("left")
@@ -59,6 +61,7 @@ while playing:
                 print("right")
         print("event", posX, posY)
     screen.fill((0, 0, 0))
+    screen.blit(image, (100, 100))
     pygame.draw.rect(screen, (0, 255, 0),(posX, posY, charWidth, charHeight))
     # print(posX, posY)
     pygame.display.flip()
