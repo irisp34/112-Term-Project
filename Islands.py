@@ -10,31 +10,45 @@ pygame.display.set_caption("112 Project")
 
 # Block class creates each of the blocks for the ground
 class Block(pygame.sprite.Sprite):
-    def __init__(self, cellWidth, cellHeight, color, posX, posY):
+    def __init__(self, cellWidth, cellHeight, color, posX, posY, startX, startY):
         super().__init__()
         self.cellWidth = cellWidth
         self.cellHeight = cellHeight
         self.color = color
-        self.image = pygame.Surface([self.cellWidth, self.cellHeight])
+        self.startX = startX
+        self.startY = startY
+        # self.image = pygame.Surface([self.cellWidth, self.cellHeight])
         # self.image.fill(self.color)
-        self.image = pygame.image.load("grass.png").convert()
+
+        # grass image from https://clipart.info/natural-grass-png-top-view-12874
+        self.originalImage = pygame.image.load("grass.png").convert_alpha()
+        self.image = self.originalImage
         self.image = self.scaleImage()
         
         self.rect = self.image.get_rect()
-        #start position
+        # position of top left corner
         self.rect.x = posX
         self.rect.y = posY
     
-    def makeBlockIsometric(self):
+    def makeBlockIsometric(self, row, col):
         # self.rotatedImage = self.image
         self.angle = 45
-        curr
         self.image = pygame.transform.rotate(self.image, self.angle)
         self.cellWidth = self.cellWidth * 2
-        self.rect = self.image.get_rect()
+        self.image = self.scaleImage()
+        self.convertCartesianToIsometric(row, col)
+    
+    def convertCartesianToIsometric(self, row, col):
+        halfWidth = self.cellWidth / 2
+        halfHeight = self.cellHeight / 2
+        offsetX = (width // 2) - self.startX
+        offsetY = (height // 2) - self.startY
+        self.rect.x = ((col - row) * halfWidth) + offsetX
+        self.rect.y = ((row + col) * halfHeight) + offsetY
     
     def scaleImage(self):
         self.image = pygame.transform.scale(self.image, (self.cellWidth, self.cellHeight))
+        self.cellWidth, self.cellHeight = self.image.get_size()
         return self.image
 
 # adds Block instances to the array
@@ -42,46 +56,49 @@ def addBlockToArray(blockArray, block, row, col):
     blockArray[row, col] = block 
 
 # generates a new Block with the correct properties
-def createBlock(blockSprites, blockArray, cellWidth, cellHeight, color, posX, posY, row, col):
-    block = Block(cellWidth, cellHeight, color, posX, posY)
+def createBlock(blockSprites, blockArray, cellWidth, cellHeight, color, posX,
+                posY, startX, startY, row, col):
+    block = Block(cellWidth, cellHeight, color, posX, posY, startX, startY)
     addBlockToArray(blockArray, block, row, col)
     blockSprites.add(block)
 
 # loops through the desired rows and columns for the board to make the entire
 # board
 def make2DBoard(blockSprites, blockArray, blockRows, blockCols):
-    # createGrid(blockSprites, blockRows, blockCols)
     cellWidth = 50
     cellHeight = 50
     startX = 100
     startY = 100
-    newStartX, newStartY = startX, startY
+    newStartX, newStartY = startX - cellWidth, startY - cellHeight
     color = (255, 0, 255)
     for row in range(blockRows):
         newStartX += cellWidth
         for col in range(blockCols):
-            # print("startX", startX)
             newStartY += cellHeight
-            createBlock(blockSprites, blockArray, cellWidth, cellHeight, color, newStartX, newStartY, row, col)
-        newStartY = startY
+            createBlock(blockSprites, blockArray, cellWidth, cellHeight, color,
+                        newStartX, newStartY, startX, startY, row, col)
+        newStartY = startY - cellHeight
 
-def makeBoardIsometric(blockSprites):
-    for block in blockSprites:
-        block.makeBlockIsometric()
-        
+def makeBoardIsometric(blockArray):
+    for row in range(blockArray.shape[0]):
+        for col in range(blockArray.shape[1]):
+            print("before x",blockArray[row, col].rect.x, "y", blockArray[row, col].rect.y)
+            blockArray[row, col].makeBlockIsometric(row, col)
+            print("after x", blockArray[row, col].rect.x, "y", blockArray[row, col].rect.y)
 
 def playGame():
     pygame.init()
     
     blockSprites = pygame.sprite.Group()
-    blockRows = 1
-    blockCols = 1
+    blockRows = 2
+    blockCols = 2
     blockArray = np.empty(shape=(blockRows, blockCols), dtype = object)
-    # print(blockArray)
     make2DBoard(blockSprites, blockArray, blockRows, blockCols)
+    makeBoardIsometric(blockArray)
+
     # print(blockSprites)
-    # print(blockArray)
-    makeBoardIsometric(blockSprites)
+    # for block in blockSprites:
+    #     print(block.rect.x, block.rect.y)
 
     clock = pygame.time.Clock()
     playing = True
