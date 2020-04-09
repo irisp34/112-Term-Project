@@ -12,8 +12,8 @@ class Character(pygame.sprite.Sprite):
         self.boardCellHeight = cellHeight
         # self.image = pygame.Surface([charWidth, charHeight])
         self.image = pygame.image.load(image).convert_alpha()
-        self.findImageDimensions()
         self.scaleImage()
+        self.findImageDimensions()
         # self.image.set_colorkey((255,255,255))
         self.rect = self.image.get_rect()
         self.findIsometricBounds()
@@ -53,8 +53,8 @@ class Character(pygame.sprite.Sprite):
         return (cartesianX, cartesianY)
     
     def convertCartesianToIsometric(self, cartX, cartY):
-        isoX = cartX - cartY
-        isoY = (cartX + cartY) / 2
+        isoX = (cartX - cartY)
+        isoY = ((cartX + cartY) / 2)
         return (isoX, isoY)
     
     def findImageDimensions(self):
@@ -63,13 +63,25 @@ class Character(pygame.sprite.Sprite):
     def scaleImage(self):
         location = (self.boardCellWidth, self.boardCellHeight)
         self.image = pygame.transform.scale(self.image, location)
+    
+    def getCartesianRow(self, isoX, isoY):
+        cartesianX, cartesianY = convertIsometricToCartesian(self, isoX, isoY)
+        row = (self.cartMaxY - (self.cartMaxY - cartesialY)) / self.boardCellWidth
+        return row
+
+    def getCartesianCol(self, isoX, isoY):
+        cartesianX, cartesianY = convertIsometricToCartesian(self, isoX, isoY)
+        col = (self.cartMaxX - (self.cartMaxX - cartesianX)) / self.boardCellWidth  
+        return col
 
     def moveRight(self):
         # still debugging bounded movement
+        print(self.rect.x, self.rect.y)
         cartesianX, cartesianY = self.convertIsometricToCartesian(self.rect.x, self.rect.y)
         # find current col
         # col = (self.cartMaxX - (self.cartMaxX - cartesianX)) / self.boardCellWidth  
         print("x, y", cartesianX, cartesianY)
+        print("back", self.convertCartesianToIsometric(cartesianX, cartesianY))
         print("plus cell width", cartesianX + self.boardCellWidth)
         print("cartmax", self.cartMaxX)
         # print("print offsets", offsetX, offsetY)
@@ -78,16 +90,6 @@ class Character(pygame.sprite.Sprite):
         if (cartesianX + self.boardCellWidth < self.cartMaxX):
             self.rect.x += self.boardCellWidth
             self.rect.y += 0.5 * self.boardCellHeight
-        
-        # print("rect x, y", self.rect.x, self.rect.y)
-        # shiftX = self.rect.x + self.boardCellWidth
-        # shiftY = self.rect.y + (0.5 * self.boardCellHeight)
-        # print("shifts,", shiftX, shiftY)
-        # print(shiftX < self.maxX, shiftY < self.maxY)
-        # if (shiftX < self.maxX or shiftY < self.maxY):
-        #     self.rect.x += self.boardCellWidth
-        #     self.rect.y += 0.5 * self.boardCellHeight
-        #     print("changed", self.rect.x, self.rect.y)
 
         # self.rect.x += self.boardCellWidth
         # self.rect.y += 0.5 * self.boardCellHeight
@@ -105,24 +107,24 @@ class Character(pygame.sprite.Sprite):
         self.rect.x -= self.boardCellWidth
 
     def jump(self, posX, posY):
+        print("jump after", posX, posX)
         self.rect.x = posX
         self.rect.y = posY
 
+    # fix to check within isometric board
     def mousePressed(self, event):
         posX, posY = event.pos
         print("cartesian", posX, posY)
-        posX, posY = self.convertCartesianToIsometric(posX, posY)
-        print("iso", posX, posY)
         posX = posX - self.charWidth // 2
-        # if (posX < 0):
-        #     posX = 0
-        # elif (posX + self.charWidth > width):
-        #     posX = width - self.charWidth
+        if (posX < 0):
+            posX = 0
+        elif (posX + self.charWidth > width):
+            posX = width - self.charWidth
         posY = posY - self.charHeight // 2
-        # if (posY < 0):
-        #     posY = 0
-        # elif (posY + self.charHeight > height):
-        #     posY = height - self.charHeight
+        if (posY < 0):
+            posY = 0
+        elif (posY + self.charHeight > height):
+            posY = height - self.charHeight
         self.jump(posX, posY)
 
 def createCharacter(image, charSprites, cellWidth, cellHeight):

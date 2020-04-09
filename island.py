@@ -10,6 +10,8 @@ blockSprites = pygame.sprite.Group()
 # place board in center of screen
 offsetX = (width // 2) - startX
 offsetY = (height // 2) - startY
+# offsetX = 0
+# offsetY = 0
 
 # Block class creates each of the blocks for the ground
 class Block(pygame.sprite.Sprite):
