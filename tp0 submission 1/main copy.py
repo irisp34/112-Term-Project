@@ -25,7 +25,7 @@ def playGame():
             if (event.type == pygame.QUIT):
                 playing = False
             elif (event.type == pygame.MOUSEBUTTONDOWN):
-                character.mousePressed(event)
+                character.mousePressed(event, posX, posY)
                 # character.jump(posX, posY)
             # elif (event.type == pygame.KEYDOWN):
             #     if (event.key == pygame.K_DOWN):

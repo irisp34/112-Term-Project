@@ -7,9 +7,6 @@ from variables import *
 
 blockArray = np.empty(shape=(blockRows, blockCols), dtype = object)
 blockSprites = pygame.sprite.Group()
-# place board in center of screen
-offsetX = (width // 2) - startX
-offsetY = (height // 2) - startY
 
 # Block class creates each of the blocks for the ground
 class Block(pygame.sprite.Sprite):
@@ -44,8 +41,8 @@ class Block(pygame.sprite.Sprite):
     def convertCartesianToIsometric(self, row, col):
         halfWidth = self.cellWidth / 2
         halfHeight = self.cellHeight / 2
-        # offsetX = (width // 2) - self.startX
-        # offsetY = (height // 2) - self.startY
+        offsetX = (width // 2) - self.startX
+        offsetY = (height // 2) - self.startY
         self.rect.x = ((col - row) * halfWidth) + offsetX
         self.rect.y = ((row + col) * halfHeight) + offsetY
     
@@ -98,21 +95,13 @@ def getIsometricBoardBounds(blockArray):
     return [topLeft, topRight, bottomLeft, bottomRight]
 
 
-# returns list with top left, top right, bottom left, bottom right coordinates
-# each in a tuple
-# take out width height when this works
-def getCartesianBoardBounds(startX, startY, width, height):
-    boardCoordinates = []
-    maxX = startX + (blockCols * cellWidth) + offsetX
-    maxY = startY + (blockRows * cellHeight) + offsetY
-    # top left
-    boardCoordinates.append((startX + offsetX, startY + offsetY))
-    # top right
-    boardCoordinates.append((maxX, startY + offsetY))
-    # bottom left
-    boardCoordinates.append((startX + offsetX, maxY))
-    # bottom right
-    boardCoordinates.append((maxX, maxY))
-    return boardCoordinates
+## returns list with top left, top right, bottom left, bottom right coordinates
+## each in a tuple
+# def getCartesianBoardBounds(startX, startY, width, height):
+#     boardCoordinates = []
+#     boardCoordinates.append((startX, startY))
+#     # boardCoordinates.append((startX + width, startY))
+#     # boardCoordinates.append((startX, startY + height))
+#     boardCoordinates.append((startX + width, startY + height))
 
 
