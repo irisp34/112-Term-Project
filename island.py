@@ -3,7 +3,6 @@
 import pygame
 import numpy as np
 import os
-# from main import *
 from variables import *
 
 blockArray = np.empty(shape=(blockRows, blockCols), dtype = object)
@@ -84,14 +83,14 @@ def makeBoardIsometric(blockArray):
             blockArray[row, col].makeBlockIsometric(row, col)
             print("after x", blockArray[row, col].rect.x, "y", blockArray[row, col].rect.y)
 
-# def getIsometricBoardBounds(blockArray):
-#     # boardCoordinates = getCartesianBoardBounds()
-#     firstElem = blockArray[0, 0]
-#     lastElem = blockArray[blockRows, blockCols]
-#     topLeft = (firstElem.rect.x, firstElem.rect.y)
-#     # check this
-#     bottomRight = (lastElem.rect.x + cellWidth, lastElem.rect.y + cellHeight)
-#     return [topLeft, bottomRight]
+def getIsometricBoardBounds(blockArray):
+    # boardCoordinates = getCartesianBoardBounds()
+    firstElem = blockArray[0, 0]
+    lastElem = blockArray[blockRows - 1, blockCols - 1]
+    topLeft = (firstElem.rect.x, firstElem.rect.y)
+    # check this
+    bottomRight = (lastElem.rect.x, lastElem.rect.y)
+    return [topLeft, bottomRight]
 
 
 ## returns list with top left, top right, bottom left, bottom right coordinates

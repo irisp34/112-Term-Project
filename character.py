@@ -1,7 +1,6 @@
 import numpy as np
 import pygame
 from island import *
-# from main import *
 from variables import *
 
 class Character(pygame.sprite.Sprite):
@@ -17,16 +16,23 @@ class Character(pygame.sprite.Sprite):
         self.scaleImage()
         # self.image.set_colorkey((255,255,255))
         self.rect = self.image.get_rect()
-        # self.initialCharacterPosition()
-        # self.rect.x = self.minX
-        # self.rect.y = self.minY
+        self.initialCharacterPosition()
+        print("min", self.minX, self.minY)
+        print("max", self.maxX, self.maxY)
+        self.rect.x = self.maxX
+        self.rect.y = self.maxY
+        self.placeInCenterOfBlock()
     
-    # def initialCharacterPosition(self):
-    #     boardCoordinates = getIsometricBoardBounds(blockArray)
-    #     self.minX = boardCoordinates[0][0]
-    #     self.minY = boardCoordinates[0][1]
-    #     self.maxX = boardCoordinates[1][0]
-    #     self.maxY = boardCoordinates[1][1]
+    def placeInCenterOfBlock(self):
+        self.rect.x += 0.5 * self.boardCellHeight
+        self.rect.y -= 0.25 * self.boardCellWidth
+    
+    def initialCharacterPosition(self):
+        boardCoordinates = getIsometricBoardBounds(blockArray)
+        self.minX = boardCoordinates[0][0]
+        self.minY = boardCoordinates[0][1]
+        self.maxX = boardCoordinates[1][0]
+        self.maxY = boardCoordinates[1][1]
     
     def findImageDimensions(self):
         self.charWidth, self.charHeight = self.image.get_size()
