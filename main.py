@@ -1,3 +1,4 @@
+# main while loop which starts the game 
 import pygame
 import os
 import numpy as np
@@ -14,16 +15,11 @@ def playGame():
     charSprites = pygame.sprite.Group()
     character = createCharacter("character.png", charSprites, cellWidth, cellHeight)
 
-    # print(blockSprites)
-    # for block in blockSprites:
-    #     print(block.rect.x, block.rect.y)
-
     clock = pygame.time.Clock()
     playing = True
     while playing:
         time = clock.tick(fps) # waits for next frame
         for event in pygame.event.get():
-            # print(event)
             if (event.type == pygame.QUIT):
                 playing = False
             elif (event.type == pygame.MOUSEBUTTONDOWN):

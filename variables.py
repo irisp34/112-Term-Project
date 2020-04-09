@@ -1,3 +1,4 @@
+# stores all the global variables which influences the look of the grid
 import pygame
 
 width = 800

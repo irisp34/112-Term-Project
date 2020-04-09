@@ -85,12 +85,15 @@ def makeBoardIsometric(blockArray):
 
 def getIsometricBoardBounds(blockArray):
     # boardCoordinates = getCartesianBoardBounds()
-    firstElem = blockArray[0, 0]
-    lastElem = blockArray[blockRows - 1, blockCols - 1]
-    topLeft = (firstElem.rect.x, firstElem.rect.y)
-    # check this
-    bottomRight = (lastElem.rect.x, lastElem.rect.y)
-    return [topLeft, bottomRight]
+    topLeftCorner = blockArray[0, 0]
+    topRightCorner = blockArray[0, blockCols - 1]
+    bottomLeftCorner = blockArray[blockRows - 1, 0]
+    bottomRightCorner = blockArray[blockRows - 1, blockCols - 1]
+    topLeft = (topLeftCorner.rect.x, topLeftCorner.rect.y)
+    topRight = (topRightCorner.rect.x, topRightCorner.rect.y)
+    bottomLeft = (bottomLeftCorner.rect.x, bottomLeftCorner.rect.y)
+    bottomRight = (bottomRightCorner.rect.x, bottomRightCorner.rect.y)
+    return [topLeft, topRight, bottomLeft, bottomRight]
 
 
 ## returns list with top left, top right, bottom left, bottom right coordinates

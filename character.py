@@ -1,3 +1,5 @@
+# creates the Character object and allows him to move
+
 import numpy as np
 import pygame
 from island import *
@@ -6,12 +8,10 @@ from variables import *
 class Character(pygame.sprite.Sprite):
     def __init__(self, image, cellWidth, cellHeight):
         super().__init__()
-        # self.changeInPos = changeInPos
         self.boardCellWidth = cellWidth
         self.boardCellHeight = cellHeight
         # self.image = pygame.Surface([charWidth, charHeight])
         self.image = pygame.image.load(image).convert_alpha()
-        # self.newImage = self.image.copy()
         self.findImageDimensions()
         self.scaleImage()
         # self.image.set_colorkey((255,255,255))
@@ -24,15 +24,17 @@ class Character(pygame.sprite.Sprite):
         self.placeInCenterOfBlock()
     
     def placeInCenterOfBlock(self):
-        self.rect.x += 0.5 * self.boardCellHeight
+        self.rect.x -= 0.5 * self.boardCellHeight
         self.rect.y -= 0.25 * self.boardCellWidth
     
     def initialCharacterPosition(self):
+        # organized top left, top right, bottom left, bottom right
         boardCoordinates = getIsometricBoardBounds(blockArray)
-        self.minX = boardCoordinates[0][0]
-        self.minY = boardCoordinates[0][1]
-        self.maxX = boardCoordinates[1][0]
-        self.maxY = boardCoordinates[1][1]
+        # print("board coor", boardCoordinates)
+        self.minX = boardCoordinates[2][0] #+ self.boardCellWidth / 4
+        self.minY = boardCoordinates[0][1] #+ self.boardCellHeight / 4
+        self.maxX = boardCoordinates[1][0] #+ self.boardCellWidth / 4
+        self.maxY = boardCoordinates[3][1] #+ self.boardCellHeight / 4
     
     def findImageDimensions(self):
         self.charWidth, self.charHeight = self.image.get_size()
@@ -42,9 +44,19 @@ class Character(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, location)
 
     def moveRight(self):
-        self.rect.x += self.boardCellWidth
-        self.rect.y += 0.5 * self.boardCellHeight
- 
+        print("rect x, y", self.rect.x, self.rect.y)
+        shiftX = self.rect.x + self.boardCellWidth
+        shiftY = self.rect.y + (0.5 * self.boardCellHeight)
+        print("shifts,", shiftX, shiftY)
+        print(shiftX < self.maxX, shiftY < self.maxY)
+        if (shiftX < self.maxX and shiftY < self.maxY):
+            self.rect.x += self.boardCellWidth
+            self.rect.y += 0.5 * self.boardCellHeight
+            print("changed", self.rect.x, self.rect.y)
+
+        # self.rect.x += self.boardCellWidth
+        # self.rect.y += 0.5 * self.boardCellHeight
+        
     def moveLeft(self):
         self.rect.x -= self.boardCellWidth
         self.rect.y -= 0.5 * self.boardCellHeight
