@@ -1,12 +1,13 @@
+# generates Block objects to encompass a map and makes that map 2.5D
+
 import pygame
 import numpy as np
 import os
+# from main import *
+from variables import *
 
-width = 800
-height = 800
-fps = 50
-screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("112 Project")
+blockArray = np.empty(shape=(blockRows, blockCols), dtype = object)
+blockSprites = pygame.sprite.Group()
 
 # Block class creates each of the blocks for the ground
 class Block(pygame.sprite.Sprite):
@@ -18,14 +19,15 @@ class Block(pygame.sprite.Sprite):
         self.startX = startX
         self.startY = startY
         # self.image = pygame.Surface([self.cellWidth, self.cellHeight])
-        # self.image.fill(self.color)
 
         # grass image from https://clipart.info/natural-grass-png-top-view-12874
         self.originalImage = pygame.image.load("grass.png").convert_alpha()
         self.image = self.originalImage
+        self.rect = self.image.get_rect()
+        self.margin = 5
         self.image = self.scaleImage()
         
-        self.rect = self.image.get_rect()
+        
         # position of top left corner
         self.rect.x = posX
         self.rect.y = posY
@@ -64,11 +66,7 @@ def createBlock(blockSprites, blockArray, cellWidth, cellHeight, color, posX,
 
 # loops through the desired rows and columns for the board to make the entire
 # board
-def make2DBoard(blockSprites, blockArray, blockRows, blockCols):
-    cellWidth = 50
-    cellHeight = 50
-    startX = 100
-    startY = 100
+def make2DBoard(blockSprites, blockArray, blockRows, blockCols, cellWidth, cellHeight, startX, startY):
     newStartX, newStartY = startX - cellWidth, startY - cellHeight
     color = (255, 0, 255)
     for row in range(blockRows):
@@ -86,57 +84,23 @@ def makeBoardIsometric(blockArray):
             blockArray[row, col].makeBlockIsometric(row, col)
             print("after x", blockArray[row, col].rect.x, "y", blockArray[row, col].rect.y)
 
-def playGame():
-    pygame.init()
-    
-    blockSprites = pygame.sprite.Group()
-    blockRows = 2
-    blockCols = 2
-    blockArray = np.empty(shape=(blockRows, blockCols), dtype = object)
-    make2DBoard(blockSprites, blockArray, blockRows, blockCols)
-    makeBoardIsometric(blockArray)
-
-    # print(blockSprites)
-    # for block in blockSprites:
-    #     print(block.rect.x, block.rect.y)
-
-    clock = pygame.time.Clock()
-    playing = True
-    while playing:
-        time = clock.tick(fps) # waits for next frame
-        for event in pygame.event.get():
-            # print(event)
-            if (event.type == pygame.QUIT):
-                playing = False
-            # elif (event.type == pygame.MOUSEBUTTONDOWN):
-            #     character.mousePressed(event, posX, posY)
-                # character.jump(posX, posY)
-            # elif (event.type == pygame.KEYDOWN):
-            #     if (event.key == pygame.K_DOWN):
-            #         character.moveDown()
-            #     elif (event.key == pygame.K_UP):
-            #         character.moveUp()
-            #     elif (event.key == pygame.K_LEFT):
-            #         character.moveLeft()
-            #     elif (event.key == pygame.K_RIGHT):
-            #         character.moveRight()
-        # keys = pygame.key.get_pressed()
-        # if (keys[pygame.K_DOWN]):
-        #     character.moveDown()
-        # elif (keys[pygame.K_UP]):
-        #     character.moveUp()
-        # elif (keys[pygame.K_RIGHT]):
-        #     character.moveRight()
-        # elif (keys[pygame.K_LEFT]):
-        #     character.moveLeft()
-
-        screen.fill((255, 255, 255))
-        pygame.draw.rect(screen, (0, 255, 0),(200, 200, 50, 30))
-        blockSprites.update()
-        blockSprites.draw(screen)
-        pygame.display.flip()
-    pygame.quit()
-    os._exit(0)
+# def getIsometricBoardBounds(blockArray):
+#     # boardCoordinates = getCartesianBoardBounds()
+#     firstElem = blockArray[0, 0]
+#     lastElem = blockArray[blockRows, blockCols]
+#     topLeft = (firstElem.rect.x, firstElem.rect.y)
+#     # check this
+#     bottomRight = (lastElem.rect.x + cellWidth, lastElem.rect.y + cellHeight)
+#     return [topLeft, bottomRight]
 
 
-playGame()
+## returns list with top left, top right, bottom left, bottom right coordinates
+## each in a tuple
+# def getCartesianBoardBounds(startX, startY, width, height):
+#     boardCoordinates = []
+#     boardCoordinates.append((startX, startY))
+#     # boardCoordinates.append((startX + width, startY))
+#     # boardCoordinates.append((startX, startY + height))
+#     boardCoordinates.append((startX + width, startY + height))
+
+

@@ -1,68 +1,74 @@
-import module_manager
-module_manager.review()
-
 import pygame
+import os
+import numpy as np
+from island import *
+from character import *
+from variables import *
 
-# must always call constructor
-# pygame.init()
+# width = 800
+# height = 800
+# fps = 50
+# screen = pygame.display.set_mode((width, height))
+# pygame.display.set_caption("112 Project")
+# cellWidth = 50
+# cellHeight = 50
+# startX = 100
+# startY = 100
+# blockRows = 2
+# blockCols = 2
+
+def playGame():
+    pygame.init()
+    
+    make2DBoard(blockSprites, blockArray, blockRows, blockCols, cellWidth, cellHeight, startX, startY)
+    makeBoardIsometric(blockArray)
+
+    charSprites = pygame.sprite.Group()
+    character = createCharacter("character.png", charSprites, cellWidth, cellHeight)
+
+    # print(blockSprites)
+    # for block in blockSprites:
+    #     print(block.rect.x, block.rect.y)
+
+    clock = pygame.time.Clock()
+    playing = True
+    while playing:
+        time = clock.tick(fps) # waits for next frame
+        for event in pygame.event.get():
+            # print(event)
+            if (event.type == pygame.QUIT):
+                playing = False
+            elif (event.type == pygame.MOUSEBUTTONDOWN):
+                character.mousePressed(event, posX, posY)
+                # character.jump(posX, posY)
+            # elif (event.type == pygame.KEYDOWN):
+            #     if (event.key == pygame.K_DOWN):
+            #         character.moveDown()
+            #     elif (event.key == pygame.K_UP):
+            #         character.moveUp()
+            #     elif (event.key == pygame.K_LEFT):
+            #         character.moveLeft()
+            #     elif (event.key == pygame.K_RIGHT):
+            #         character.moveRight()
+        keys = pygame.key.get_pressed()
+        if (keys[pygame.K_DOWN]):
+            character.moveDown()
+        elif (keys[pygame.K_UP]):
+            character.moveUp()
+        elif (keys[pygame.K_RIGHT]):
+            character.moveRight()
+        elif (keys[pygame.K_LEFT]):
+            character.moveLeft()
+
+        screen.fill((255, 255, 255))
+        pygame.draw.rect(screen, (0, 255, 0),(200, 200, 50, 30))
+        blockSprites.update()
+        blockSprites.draw(screen)
+        charSprites.update()
+        charSprites.draw(screen)
+        pygame.display.flip()
+    pygame.quit()
+    os._exit(0)
 
 
-
-# dimensions of game
-width = 400
-height = 400
-screen = pygame.display.set_mode((width, height))
-clock = pygame.time.Clock()
-
-posX = width // 2
-posY = height // 2
-changeInPos = 5
-charWidth = 50
-charHeight = 60
-
-image = pygame.image.load("testPerson.png")
-
-def mousePressed(event):
-    posX, posY = event.pos
-    posX, posY = posX - charWidth // 2, posY - charHeight // 2
-    return posX, posY
-
-#???
-def keyPressed(event, posX, posY):
-    if (event.key == pygame.K_UP):
-        posY -= changeInPos
-    elif (event.key == pygame.K_DOWN):
-        posY += changeInPos
-    return posX, posY
-
-playing = True
-while playing:
-    time = clock.tick(100) # waits for next frame
-    for event in pygame.event.get():
-        # print(event)
-        if (event.type == pygame.QUIT):
-            playing = False
-        elif (event.type == pygame.MOUSEBUTTONDOWN):
-            posX, posY = mousePressed(event)
-        elif (event.type == pygame.KEYDOWN):
-            # posX, posY = keyPressed(event)
-            if (event.key == pygame.K_DOWN):
-                # posY += changeInPos
-                posX, posY = keyPressed(event, posX, posY)
-                print("down")
-            elif (event.key == pygame.K_UP):
-                # posY -= changeInPos
-                posX, posY = keyPressed(event, posX, posY)
-            elif (event.key == pygame.K_LEFT):
-                posX -= changeInPos
-                print("left")
-            elif (event.key == pygame.K_RIGHT):
-                posX += changeInPos
-                print("right")
-        print("event", posX, posY)
-    screen.fill((0, 0, 0))
-    screen.blit(image, (100, 100))
-    pygame.draw.rect(screen, (0, 255, 0),(posX, posY, charWidth, charHeight))
-    # print(posX, posY)
-    pygame.display.flip()
-pygame.quit()
+playGame()
