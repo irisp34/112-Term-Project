@@ -5,6 +5,13 @@ import numpy as np
 import os
 from variables import *
 
+blockArray = np.empty(shape=(blockRows, blockCols), dtype = object)
+blockSprites = pygame.sprite.Group()
+# place board in center of screen
+offsetX = (width // 2) - startX
+offsetY = (height // 2) - startY
+# offsetX = 0
+# offsetY = 0
 
 # Block class creates each of the blocks for the ground
 class Block(pygame.sprite.Sprite):
@@ -21,23 +28,15 @@ class Block(pygame.sprite.Sprite):
         self.originalImage = pygame.image.load("grass.png").convert_alpha()
         self.image = self.originalImage
         self.rect = self.image.get_rect()
-        self.rect.centerx = (self.rect[0] + self.rect[2]) // 2
-        self.rect.centery = (self.rect[1] + self.rect[3]) // 2
         self.margin = 5
         self.image = self.scaleImage()
         
         # position of top left corner
         self.rect.x = posX
         self.rect.y = posY
-        # halfWidth = self.cellWidth // 2
-        # halfHeight = self.cellHeight // 2
-        # self.rect.centerx = self.rect.x + halfWidth
-        # self.rect.centery = self.rect.y + halfHeight
     
     def makeBlockIsometric(self, row, col):
         # self.rotatedImage = self.image
-        # row = row + 1
-        # col = col + 1
         self.angle = 45
         self.image = pygame.transform.rotate(self.image, self.angle)
         self.cellWidth = self.cellWidth * 2
@@ -51,13 +50,10 @@ class Block(pygame.sprite.Sprite):
         # offsetY = (height // 2) - self.startY
         self.rect.x = ((col - row) * halfWidth) + offsetX
         self.rect.y = ((row + col) * halfHeight) + offsetY
-        # self.rect.centerx = self.rect.x + halfWidth
-        # self.rect.centery = self.rect.y + halfHeight
     
     def scaleImage(self):
         self.image = pygame.transform.scale(self.image, (self.cellWidth, self.cellHeight))
         self.cellWidth, self.cellHeight = self.image.get_size()
-        self.rect = self.image.get_rect()
         return self.image
 
 # adds Block instances to the array
@@ -91,29 +87,18 @@ def makeBoardIsometric(blockArray):
             blockArray[row, col].makeBlockIsometric(row, col)
             print("after x", blockArray[row, col].rect.x, "y", blockArray[row, col].rect.y)
 
-def getBoardCorners(blockArray):
+def getIsometricBoardBounds(blockArray):
+    # boardCoordinates = getCartesianBoardBounds()
     topLeftCorner = blockArray[0, 0]
     topRightCorner = blockArray[0, blockCols - 1]
     bottomLeftCorner = blockArray[blockRows - 1, 0]
     bottomRightCorner = blockArray[blockRows - 1, blockCols - 1]
-    return (topLeftCorner, topRightCorner, bottomLeftCorner, bottomRightCorner)
-
-def getIsometricBoardBounds(blockArray):
-    # boardCoordinates = getCartesianBoardBounds()
-    topLeftCorner, topRightCorner, bottomLeftCorner, bottomRightCorner = getBoardCorners(blockArray)
     topLeft = (topLeftCorner.rect.x, topLeftCorner.rect.y)
     topRight = (topRightCorner.rect.x, topRightCorner.rect.y)
     bottomLeft = (bottomLeftCorner.rect.x, bottomLeftCorner.rect.y)
     bottomRight = (bottomRightCorner.rect.x, bottomRightCorner.rect.y)
     return [topLeft, topRight, bottomLeft, bottomRight]
 
-def getIsometricBoardCenters(blockArray):
-    topLeftCorner, topRightCorner, bottomLeftCorner, bottomRightCorner = getBoardCorners(blockArray)
-    topLeft = (topLeftCorner.rect.centerx, topLeftCorner.rect.centery)
-    topRight = (topRightCorner.rect.centerx, topRightCorner.rect.centery)
-    bottomLeft = (bottomLeftCorner.rect.centerx, bottomLeftCorner.rect.centery)
-    bottomRight = (bottomRightCorner.rect.centerx, bottomRightCorner.rect.centery)
-    return [topLeft, topRight, bottomLeft, bottomRight]
 
 # returns list with top left, top right, bottom left, bottom right coordinates
 # each in a tuple

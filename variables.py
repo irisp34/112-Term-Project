@@ -1,5 +1,6 @@
 # stores all the global variables which influences the look of the grid
 import pygame
+import numpy as np
 
 width = 800
 height = 800
@@ -10,5 +11,16 @@ cellWidth = 50
 cellHeight = 50
 startX = 100
 startY = 100
-blockRows = 2
-blockCols = 2
+startX = 0
+startY = 0
+blockRows = 4
+blockCols = 4
+
+blockArray = np.empty(shape=(blockRows, blockCols), dtype = object)
+blockSprites = pygame.sprite.Group()
+waterSprites = pygame.sprite.Group()
+# place board in center of screen
+offsetX = (width // 2) - startX
+offsetY = (height // 2) - startY
+# offsetX = 0
+# offsetY = 0

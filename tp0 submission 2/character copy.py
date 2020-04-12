@@ -5,7 +5,6 @@ import pygame
 from island import *
 from variables import *
 
-# character class that controls the main person
 class Character(pygame.sprite.Sprite):
     def __init__(self, image, cellWidth, cellHeight):
         super().__init__()
@@ -21,20 +20,14 @@ class Character(pygame.sprite.Sprite):
         self.findCartesianBounds()
         print("min", self.minX, self.minY)
         print("max", self.maxX, self.maxY)
-        self.rect.centerx = blockArray[blockRows - 1, blockCols - 1].rect.centerx
-        self.rect.centery = blockArray[blockRows - 1, blockCols - 1].rect.centery
-        print("centers", self.rect.centerx, self.rect.centery)
-        # self.rect.x = 400
-        # self.rect.y = 550
-        # self.placeInCenterOfBlock()
+        self.rect.x = self.maxX
+        self.rect.y = self.maxY
+        self.placeInCenterOfBlock()
         print("corrected", self.rect.x, self.rect.x)
     
     def placeInCenterOfBlock(self):
-        # self.rect.x -= 0.5 * self.boardCellHeight
-        # self.rect.y -= 0.25 * self.boardCellWidth
-        self.rect.x -= 0.25 * self.boardCellHeight
-        self.rect.y += 0.5 * self.boardCellWidth
-
+        self.rect.x -= 0.5 * self.boardCellHeight
+        self.rect.y -= 0.25 * self.boardCellWidth
     
     def findIsometricBounds(self):
         # organized top left, top right, bottom left, bottom right
@@ -53,19 +46,12 @@ class Character(pygame.sprite.Sprite):
         self.cartMinY = cartBoard[0][1]
         self.cartMaxX = cartBoard[3][0]
         self.cartMaxY = cartBoard[3][1]
-    
-    def findIsometricCenters(self):
-        boardCenters = getIsometricCenters(blockArray)
-        self.minCenterX = boardCenters[2][0] 
-        self.minCenterY = boardCenters[0][1]
-        self.maxCenterX = boardCenters[1][0]
-        self.maxCenterY = boardCenters[3][1]
 
     def convertIsometricToCartesian(self, isoX, isoY):
         cartesianX = (isoX + isoY * 2) / 2
         cartesianY = -isoX + cartesianX
         return (cartesianX, cartesianY)
-
+    
     def convertCartesianToIsometric(self, cartX, cartY):
         isoX = (cartX - cartY)
         isoY = ((cartX + cartY) / 2)
@@ -79,12 +65,12 @@ class Character(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, location)
     
     def getCartesianRow(self, isoX, isoY):
-        cartesianX, cartesianY = self.convertIsometricToCartesian(self, isoX, isoY)
+        cartesianX, cartesianY = convertIsometricToCartesian(self, isoX, isoY)
         row = (self.cartMaxY - (self.cartMaxY - cartesialY)) / self.boardCellWidth
         return row
 
     def getCartesianCol(self, isoX, isoY):
-        cartesianX, cartesianY = self.convertIsometricToCartesian(self, isoX, isoY)
+        cartesianX, cartesianY = convertIsometricToCartesian(self, isoX, isoY)
         col = (self.cartMaxX - (self.cartMaxX - cartesianX)) / self.boardCellWidth  
         return col
 
@@ -96,13 +82,12 @@ class Character(pygame.sprite.Sprite):
         # col = (self.cartMaxX - (self.cartMaxX - cartesianX)) / self.boardCellWidth  
         print("x, y", cartesianX, cartesianY)
         print("back", self.convertCartesianToIsometric(cartesianX, cartesianY))
-        temp = cartesianX + self.boardCellWidth
-        print("plus cell width", temp)
+        print("plus cell width", cartesianX + self.boardCellWidth)
         print("cartmax", self.cartMaxX)
         # print("print offsets", offsetX, offsetY)
         # print("with offset", self.cartMaxX + offsetX)
         # print("x edge", startX + (blockCols * self.boardCellWidth))
-        if (temp < self.cartMaxX):
+        if (cartesianX + self.boardCellWidth < self.cartMaxX):
             self.rect.x += self.boardCellWidth
             self.rect.y += 0.5 * self.boardCellHeight
 
