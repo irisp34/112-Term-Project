@@ -87,22 +87,25 @@ def addBlockToArray(blockArray, block, row, col):
     blockArray[row, col] = block 
 
 # generates a new Block with the correct properties
-def createBlock(blockSprites, blockArray, cellWidth, cellHeight, color, posX,
+def createBlock(blockSprites, blockArray, cartesianBlockArray, cellWidth, cellHeight, color, posX,
                 posY, startX, startY, row, col):
-    block = Block(cellWidth, cellHeight, color, posX, posY, startX, startY)
-    addBlockToArray(blockArray, block, row, col)
-    blockSprites.add(block)
+    block1 = Block(cellWidth, cellHeight, color, posX, posY, startX, startY)
+    block2 = Block(cellWidth, cellHeight, color, posX, posY, startX, startY)
+    addBlockToArray(blockArray, block1, row, col)
+    addBlockToArray(cartesianBlockArray, block2, row, col)
+    blockSprites.add(block1)
 
 # loops through the desired rows and columns for the board to make the entire
 # board
-def make2DBoard(blockSprites, blockArray, blockRows, blockCols, cellWidth, cellHeight, startX, startY):
+def make2DBoard(blockSprites, blockArray, cartesianBlockArray, blockRows, 
+                blockCols, cellWidth, cellHeight, startX, startY):
     newStartX, newStartY = startX - cellWidth, startY - cellHeight
     color = (255, 0, 255)
     for row in range(blockRows):
         newStartX += cellWidth
         for col in range(blockCols):
             newStartY += cellHeight
-            createBlock(blockSprites, blockArray, cellWidth, cellHeight, color,
+            createBlock(blockSprites, blockArray, cartesianBlockArray, cellWidth, cellHeight, color,
                         newStartX, newStartY, startX, startY, row, col)
         newStartY = startY - cellHeight
 
@@ -153,13 +156,13 @@ def getCartesianBoardBounds(cartesianBlockArray):
     # # bottom right
     # boardCoordinates.append((maxX, maxY))
     # return boardCoordinates
-    print("cartesianBlockArray", cartesianBlockArray)
+    # print("cartesianBlockArray", cartesianBlockArray)
     boardCorners = getBoardCorners(cartesianBlockArray)
     topLeftCorner, topRightCorner, bottomLeftCorner, bottomRightCorner = boardCorners
     topLeft = (topLeftCorner.rect.x, topLeftCorner.rect.y)
-    topRight = (topRightCorner.rect.right, topRightCorner.rect.y)
-    bottomLeft = (bottomLeftCorner.rect.x, bottomLeftCorner.rect.bottom)
-    bottomRight = (bottomRightCorner.rect.right, bottomRightCorner.rect.bottom)
+    topRight = (topRightCorner.rect.x, topRightCorner.rect.y)
+    bottomLeft = (bottomLeftCorner.rect.x, bottomLeftCorner.rect.y)
+    bottomRight = (bottomRightCorner.rect.x, bottomRightCorner.rect.y)
     return [topLeft, topRight, bottomLeft, bottomRight]
 
 

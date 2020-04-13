@@ -43,20 +43,25 @@ def redrawAll():
 
 def playGame():
     pygame.init()
-    make2DBoard(blockSprites, blockArray, blockRows, blockCols, cellWidth, 
+    make2DBoard(blockSprites, blockArray, cartesianBlockArray, blockRows, blockCols, cellWidth, 
                 cellHeight, startX, startY)
-    cartesianBlockArray = np.copy(blockArray)
+    # global cartesianBlockArray
+    # cartesianBlockArray = np.copy(blockArray)
+ 
     change(cartesianBlockArray)
+    for row in range(cartesianBlockArray.shape[0]):
+        for col in range(cartesianBlockArray.shape[1]):
+            print("x,y", cartesianBlockArray[row, col].rect.x, cartesianBlockArray[row, col].rect.y)
     # print("in main", cartesianBlockArray)
-    # makeBoardIsometric(blockArray)
-    # print("in main2", cartesianBlockArray)
-
+    makeBoardIsometric(blockArray)
+    # for row in range(cartesianBlockArray.shape[0]):
+    #     for col in range(cartesianBlockArray.shape[1]):
+    #         print("x,y", cartesianBlockArray[row, col].rect.x, cartesianBlockArray[row, col].rect.y)
     # character picture from: https://ya-webdesign.com/imgdownload.html
-    character = createCharacter("character.png", charSprites, cellWidth, cellHeight)
+    character = createCharacter("character.png", charSprites, cellWidth, cellHeight, cartesianBlockArray)
 
     waterImage = pygame.image.load("water.png").convert_alpha()
     rect = waterImage.get_rect()
-    print("rect", rect)
     createWater(waterSprites, waterImage, rect)
 
     clock = pygame.time.Clock()

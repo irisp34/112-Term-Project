@@ -30,8 +30,9 @@ offsetY = (height // 2) - startY
 # offsetY = 0
 
 def change(blockArray):
+    global cartesianBlockArray
     cartesianBlockArray = blockArray
-    print("invariable, correct", blockArray)
-    print("in varaible, result", cartesianBlockArray)
+    # print("invariable, correct", blockArray)
+    # print("in varaible, result", cartesianBlockArray)
 
     

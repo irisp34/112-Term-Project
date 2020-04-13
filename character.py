@@ -8,8 +8,9 @@ from variables import *
 
 # character class that controls the main person
 class Character(pygame.sprite.Sprite):
-    def __init__(self, image, cellWidth, cellHeight):
+    def __init__(self, image, cellWidth, cellHeight, cartesianBlockArray):
         super().__init__()
+        self.cartBlockArray = cartesianBlockArray
         self.boardCellWidth = cellWidth
         self.boardCellHeight = cellHeight
         # self.image = pygame.Surface([charWidth, charHeight])
@@ -24,7 +25,7 @@ class Character(pygame.sprite.Sprite):
         # self.rect.centery = blockArray[blockRows - 1, blockCols - 1].rect.centery
         # print("centers", self.rect.centerx, self.rect.centery)
         self.rect.centerx, self.rect.centery = self.getRandomBoardCenter()
-        self.cartX, self.cartY = self.convertIsometricToCartesian(self.rect.centerx, self.rect.centery)
+        self.cartX, self.cartY = self.convertIsometricToCartesian(self.rect.centerx - offsetX, self.rect.centery - offsetY)
         print("cartX, cartY", self.cartX, self.cartY)
         print("mins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
         # self.placeInCenterOfBlock()
@@ -58,8 +59,8 @@ class Character(pygame.sprite.Sprite):
     def findCartesianBounds(self):
         # cartesianX, cartesianY = self.convertIsometricToCartesian(self.rect.x, self.rect.y)
         # top left, top right, bottom left, bottom right
-        print("in character", cartesianBlockArray)
-        cartBoard = getCartesianBoardBounds(cartesianBlockArray)
+        # print("in character", self.cartBlockArray)
+        cartBoard = getCartesianBoardBounds(self.cartBlockArray)
         self.cartMinX = cartBoard[0][0]
         self.cartMinY = cartBoard[0][1]
         self.cartMaxX = cartBoard[3][0]
@@ -102,40 +103,44 @@ class Character(pygame.sprite.Sprite):
 
     def moveRight(self):
         # still debugging bounded movement
-        print(self.rect.x, self.rect.y)
+        # print("rectx, recty", self.rect.x, self.rect.y)
+        print("right")
         if (not self.walkable(1, 0)):
             return
-        cartesianX, cartesianY = self.convertIsometricToCartesian(self.rect.x, self.rect.y)
-        # find current col
-        # col = (self.cartMaxX - (self.cartMaxX - cartesianX)) / self.boardCellWidth  
-        print("x, y", cartesianX, cartesianY)
-        print("back", self.convertCartesianToIsometric(cartesianX, cartesianY))
-        temp = cartesianX + self.boardCellWidth
-        print("plus cell width", temp)
-        print("cartmax", self.cartMaxX)
-        # print("print offsets", offsetX, offsetY)
-        # print("with offset", self.cartMaxX + offsetX)
-        # print("x edge", startX + (blockCols * self.boardCellWidth))
-        if (temp < self.cartMaxX):
-            self.rect.x += self.boardCellWidth
-            self.rect.y += 0.5 * self.boardCellHeight
+        # cartesianX, cartesianY = self.convertIsometricToCartesian(self.rect.x, self.rect.y)
+        # # find current col
+        # # col = (self.cartMaxX - (self.cartMaxX - cartesianX)) / self.boardCellWidth  
+        # print("x, y", cartesianX, cartesianY)
+        # print("back", self.convertCartesianToIsometric(cartesianX, cartesianY))
+        # temp = cartesianX + self.boardCellWidth
+        # print("plus cell width", temp)
+        # print("cartmax", self.cartMaxX)
+        # # print("print offsets", offsetX, offsetY)
+        # # print("with offset", self.cartMaxX + offsetX)
+        # # print("x edge", startX + (blockCols * self.boardCellWidth))
+        # if (temp < self.cartMaxX):
+        #     self.rect.x += self.boardCellWidth
+        #     self.rect.y += 0.5 * self.boardCellHeight
 
-        # self.rect.x += self.boardCellWidth
-        # self.rect.y += 0.5 * self.boardCellHeight
+        self.rect.x += self.boardCellWidth
+        self.rect.y += 0.5 * self.boardCellHeight
         
     def moveLeft(self):
+        print("left")
         if (not self.walkable(-1, 0)):
             return
         self.rect.x -= self.boardCellWidth
         self.rect.y -= 0.5 * self.boardCellHeight
 
     def moveUp(self):
+        print("up")
         if (not self.walkable(0, -1)):
             return
         self.rect.y -= 0.5 * self.boardCellHeight
         self.rect.x += self.boardCellWidth
  
     def moveDown(self):
+        print("down")
         if (not self.walkable(0, 1)):
             return
         self.rect.y += 0.5 * self.boardCellHeight
@@ -147,8 +152,13 @@ class Character(pygame.sprite.Sprite):
         self.rect.y = posY
 
     def walkable(self, dX, dY):
+        print("curr self.cartx, self.carty", self.cartX, self.cartY)
         newX = self.cartX + dX * self.boardCellWidth
         newY = self.cartX + dY * self.boardCellHeight
+        print("newx, newy", newX, newY)
+        print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
+        print("less x", newX < self.cartMinX, "more x", newX > self.cartMaxX, 
+            "less y", newY < self.cartMinY, "more y", newY > self.cartMaxY)
         if (newX < self.cartMinX or newX > self.cartMaxX or newY < self.cartMinY or newY > self.cartMaxY):
             return False
         self.cartX = newX
@@ -171,7 +181,7 @@ class Character(pygame.sprite.Sprite):
             posY = height - self.charHeight
         self.jump(posX, posY)
 
-def createCharacter(image, charSprites, cellWidth, cellHeight):
-    character = Character(image, cellWidth, cellHeight)
+def createCharacter(image, charSprites, cellWidth, cellHeight, cartesianBlockArray):
+    character = Character(image, cellWidth, cellHeight, cartesianBlockArray)
     charSprites.add(character)
     return character
