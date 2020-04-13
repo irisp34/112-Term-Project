@@ -60,6 +60,28 @@ class Block(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         return self.image
 
+def findIslandBasePoints(blockArray):
+    boardCorners = getBoardCorners(blockArray)
+    topLeft, topRight, bottomLeft, bottomRight = boardCorners
+    leftTopVertexX = bottomLeft.rect.left
+    leftTopVertexY = (bottomLeft.rect.top + bottomLeft.rect.bottom) // 2
+    midTopVertexX = (bottomRight.rect.left + bottomRight.rect.right) // 2
+    midTopVertexY = bottomRight.rect.bottom
+    rightTopVertexX = topRight.rect.right
+    rightTopVertexY = (topRight.rect.top + topRight.rect.bottom) // 2
+    leftBottomVertexX = leftTopVertexX
+    leftBottomVertexY = leftTopVertexY + height//4
+    midBottomVertexY = midTopVertexY + height//4
+    midBottomVertexX = midTopVertexX
+    rightBottomVertexY = rightTopVertexY + height//4
+    rightBottomVertexX = rightTopVertexX
+    pointsLeft = ((leftTopVertexX, leftTopVertexY), (midTopVertexX, midTopVertexY), 
+        (midBottomVertexX, midBottomVertexY), (leftBottomVertexX, leftBottomVertexY))
+    pointsRight = ((midTopVertexX, midTopVertexY), (midBottomVertexX, midBottomVertexY),
+        (rightBottomVertexX, rightBottomVertexY), (rightTopVertexX, rightTopVertexY))
+    return pointsLeft, pointsRight 
+
+
 # adds Block instances to the array
 def addBlockToArray(blockArray, block, row, col):
     blockArray[row, col] = block 
@@ -118,18 +140,27 @@ def getIsometricBoardCenters(blockArray):
 # returns list with top left, top right, bottom left, bottom right coordinates
 # each in a tuple
 # take out width height when this works
-def getCartesianBoardBounds(startX, startY, width, height):
-    boardCoordinates = []
-    maxX = startX + (blockCols * cellWidth) + offsetX
-    maxY = startY + (blockRows * cellHeight) + offsetY
-    # top left
-    boardCoordinates.append((startX + offsetX, startY + offsetY))
-    # top right
-    boardCoordinates.append((maxX, startY + offsetY))
-    # bottom left
-    boardCoordinates.append((startX + offsetX, maxY))
-    # bottom right
-    boardCoordinates.append((maxX, maxY))
-    return boardCoordinates
+def getCartesianBoardBounds(cartesianBlockArray):
+    # boardCoordinates = []
+    # maxX = startX + (blockCols * cellWidth) + offsetX
+    # maxY = startY + (blockRows * cellHeight) + offsetY
+    # # top left
+    # boardCoordinates.append((startX + offsetX, startY + offsetY))
+    # # top right
+    # boardCoordinates.append((maxX, startY + offsetY))
+    # # bottom left
+    # boardCoordinates.append((startX + offsetX, maxY))
+    # # bottom right
+    # boardCoordinates.append((maxX, maxY))
+    # return boardCoordinates
+    print("cartesianBlockArray", cartesianBlockArray)
+    boardCorners = getBoardCorners(cartesianBlockArray)
+    topLeftCorner, topRightCorner, bottomLeftCorner, bottomRightCorner = boardCorners
+    topLeft = (topLeftCorner.rect.x, topLeftCorner.rect.y)
+    topRight = (topRightCorner.rect.right, topRightCorner.rect.y)
+    bottomLeft = (bottomLeftCorner.rect.x, bottomLeftCorner.rect.bottom)
+    bottomRight = (bottomRightCorner.rect.right, bottomRightCorner.rect.bottom)
+    return [topLeft, topRight, bottomLeft, bottomRight]
+
 
 

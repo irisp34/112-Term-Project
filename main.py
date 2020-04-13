@@ -21,14 +21,36 @@ def createWater(waterSprites, image, rect):
             water = Water(image, (xPixel, yPixel))
             waterSprites.add(water)
 
+def redrawAll():
+    screen.fill((255, 255, 255))
+    # screen.blit(background.image, background.rect)
+    pygame.draw.rect(screen, (0, 255, 0),(200, 200, 50, 30))
+
+
+    waterSprites.update()
+    waterSprites.draw(screen)
+    pointsLeft, pointsRight = findIslandBasePoints(blockArray)
+    # print("left", pointsLeft)
+    # print("right", pointsRight)
+    # color picked from here: https://htmlcolorcodes.com/color-picker/
+    pygame.draw.polygon(screen, (204, 179, 90), pointsLeft, 5)
+    pygame.draw.polygon(screen, (255, 0, 255), pointsRight, 5)
+    blockSprites.update()
+    blockSprites.draw(screen)
+    charSprites.update()
+    charSprites.draw(screen)
+    pygame.display.flip()
 
 def playGame():
     pygame.init()
     make2DBoard(blockSprites, blockArray, blockRows, blockCols, cellWidth, 
                 cellHeight, startX, startY)
-    makeBoardIsometric(blockArray)
+    cartesianBlockArray = np.copy(blockArray)
+    change(cartesianBlockArray)
+    # print("in main", cartesianBlockArray)
+    # makeBoardIsometric(blockArray)
+    # print("in main2", cartesianBlockArray)
 
-    charSprites = pygame.sprite.Group()
     # character picture from: https://ya-webdesign.com/imgdownload.html
     character = createCharacter("character.png", charSprites, cellWidth, cellHeight)
 
@@ -65,26 +87,9 @@ def playGame():
             character.moveRight()
         elif (keys[pygame.K_LEFT]):
             character.moveLeft()
-
-        screen.fill((255, 255, 255))
-        # screen.blit(background.image, background.rect)
-        pygame.draw.rect(screen, (0, 255, 0),(200, 200, 50, 30))
-
-        waterSprites.update()
-        waterSprites.draw(screen)
-        blockSprites.update()
-        blockSprites.draw(screen)
-        charSprites.update()
-        charSprites.draw(screen)
-        # pygame.draw.rect(screen, (0, 0, 255),(450, 450, 10, 10))
-        # pygame.draw.rect(screen, (255, 0, 255),(300, 450, 10, 10))
-        # pygame.draw.rect(screen, (255, 0, 255),(300, 300, 10, 10))
-        # pygame.draw.rect(screen, (0, 0, 255),(250, 525, 10, 10))
-        # pygame.draw.rect(screen, (255, 0, 255),(400, 550, 10, 10))
-        pygame.draw.rect(screen, (255, 0, 255),(400, 400, 10, 10))
-        # pygame.draw.rect(screen, (255, 0, 255),(450, 400, 10, 10))
-        pygame.draw.rect(screen, (255, 0, 0),(400, 550, 10, 10))
-        pygame.display.flip()
+    
+        redrawAll()
+        
     pygame.quit()
     os._exit(0)
 

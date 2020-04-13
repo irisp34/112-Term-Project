@@ -1,6 +1,7 @@
 # creates the Character object and allows him to move
 
 import numpy as np
+import random
 import pygame
 from island import *
 from variables import *
@@ -19,15 +20,24 @@ class Character(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.findIsometricBounds()
         self.findCartesianBounds()
-        print("min", self.minX, self.minY)
-        print("max", self.maxX, self.maxY)
-        self.rect.centerx = blockArray[blockRows - 1, blockCols - 1].rect.centerx
-        self.rect.centery = blockArray[blockRows - 1, blockCols - 1].rect.centery
-        print("centers", self.rect.centerx, self.rect.centery)
-        # self.rect.x = 400
-        # self.rect.y = 550
+        # self.rect.centerx = blockArray[blockRows - 1, blockCols - 1].rect.centerx
+        # self.rect.centery = blockArray[blockRows - 1, blockCols - 1].rect.centery
+        # print("centers", self.rect.centerx, self.rect.centery)
+        self.rect.centerx, self.rect.centery = self.getRandomBoardCenter()
+        self.cartX, self.cartY = self.convertIsometricToCartesian(self.rect.centerx, self.rect.centery)
+        print("cartX, cartY", self.cartX, self.cartY)
+        print("mins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
         # self.placeInCenterOfBlock()
-        print("corrected", self.rect.x, self.rect.x)
+        # print("corrected", self.rect.x, self.rect.x)
+
+    # retrieves a random isometric board center
+    def getRandomBoardCenter(self):
+        randRow = random.randint(0, blockRows - 1)
+        randCol = random.randint(0, blockCols - 1)
+        block = blockArray[randRow, randCol]
+        centerX = block.rect.centerx
+        centerY = block.rect.centery
+        return centerX, centerY
     
     def placeInCenterOfBlock(self):
         # self.rect.x -= 0.5 * self.boardCellHeight
@@ -46,16 +56,17 @@ class Character(pygame.sprite.Sprite):
         self.maxY = boardCoordinates[3][1] #+ self.boardCellHeight / 4
     
     def findCartesianBounds(self):
-        cartesianX, cartesianY = self.convertIsometricToCartesian(self.rect.x, self.rect.y)
+        # cartesianX, cartesianY = self.convertIsometricToCartesian(self.rect.x, self.rect.y)
         # top left, top right, bottom left, bottom right
-        cartBoard = getCartesianBoardBounds(startX, startY, width, height)
+        print("in character", cartesianBlockArray)
+        cartBoard = getCartesianBoardBounds(cartesianBlockArray)
         self.cartMinX = cartBoard[0][0]
         self.cartMinY = cartBoard[0][1]
         self.cartMaxX = cartBoard[3][0]
         self.cartMaxY = cartBoard[3][1]
     
     def findIsometricCenters(self):
-        boardCenters = getIsometricCenters(blockArray)
+        boardCenters = getIsometricBoardCenters(blockArray)
         self.minCenterX = boardCenters[2][0] 
         self.minCenterY = boardCenters[0][1]
         self.maxCenterX = boardCenters[1][0]
@@ -63,7 +74,8 @@ class Character(pygame.sprite.Sprite):
 
     def convertIsometricToCartesian(self, isoX, isoY):
         cartesianX = (isoX + isoY * 2) / 2
-        cartesianY = -isoX + cartesianX
+        # cartesianY = -isoX + cartesianX
+        cartesianY = (2*isoY - isoX) / 2
         return (cartesianX, cartesianY)
 
     def convertCartesianToIsometric(self, cartX, cartY):
@@ -80,7 +92,7 @@ class Character(pygame.sprite.Sprite):
     
     def getCartesianRow(self, isoX, isoY):
         cartesianX, cartesianY = self.convertIsometricToCartesian(self, isoX, isoY)
-        row = (self.cartMaxY - (self.cartMaxY - cartesialY)) / self.boardCellWidth
+        row = (self.cartMaxY - (self.cartMaxY - cartesianY)) / self.boardCellWidth
         return row
 
     def getCartesianCol(self, isoX, isoY):
@@ -91,6 +103,8 @@ class Character(pygame.sprite.Sprite):
     def moveRight(self):
         # still debugging bounded movement
         print(self.rect.x, self.rect.y)
+        if (not self.walkable(1, 0)):
+            return
         cartesianX, cartesianY = self.convertIsometricToCartesian(self.rect.x, self.rect.y)
         # find current col
         # col = (self.cartMaxX - (self.cartMaxX - cartesianX)) / self.boardCellWidth  
@@ -110,14 +124,20 @@ class Character(pygame.sprite.Sprite):
         # self.rect.y += 0.5 * self.boardCellHeight
         
     def moveLeft(self):
+        if (not self.walkable(-1, 0)):
+            return
         self.rect.x -= self.boardCellWidth
         self.rect.y -= 0.5 * self.boardCellHeight
 
     def moveUp(self):
+        if (not self.walkable(0, -1)):
+            return
         self.rect.y -= 0.5 * self.boardCellHeight
         self.rect.x += self.boardCellWidth
  
     def moveDown(self):
+        if (not self.walkable(0, 1)):
+            return
         self.rect.y += 0.5 * self.boardCellHeight
         self.rect.x -= self.boardCellWidth
 
@@ -125,6 +145,15 @@ class Character(pygame.sprite.Sprite):
         print("jump after", posX, posX)
         self.rect.x = posX
         self.rect.y = posY
+
+    def walkable(self, dX, dY):
+        newX = self.cartX + dX * self.boardCellWidth
+        newY = self.cartX + dY * self.boardCellHeight
+        if (newX < self.cartMinX or newX > self.cartMaxX or newY < self.cartMinY or newY > self.cartMaxY):
+            return False
+        self.cartX = newX
+        self.cartY = newY
+        return True
 
     # fix to check within isometric board
     def mousePressed(self, event):

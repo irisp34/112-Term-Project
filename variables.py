@@ -11,16 +11,27 @@ cellWidth = 50
 cellHeight = 50
 startX = 100
 startY = 100
-startX = 0
-startY = 0
+# startX = 0
+# startY = 0
 blockRows = 4
 blockCols = 4
 
 blockArray = np.empty(shape=(blockRows, blockCols), dtype = object)
+cartesianBlockArray = np.empty(shape=(blockRows, blockCols), dtype = object)
+print("variable", cartesianBlockArray)
 blockSprites = pygame.sprite.Group()
 waterSprites = pygame.sprite.Group()
+charSprites = pygame.sprite.Group()
+treeSprites = pygame.sprite.Group()
 # place board in center of screen
 offsetX = (width // 2) - startX
 offsetY = (height // 2) - startY
 # offsetX = 0
 # offsetY = 0
+
+def change(blockArray):
+    cartesianBlockArray = blockArray
+    print("invariable, correct", blockArray)
+    print("in varaible, result", cartesianBlockArray)
+
+    
