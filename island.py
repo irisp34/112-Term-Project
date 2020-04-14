@@ -8,13 +8,15 @@ from variables import *
 
 # Block class creates each of the blocks for the ground
 class Block(pygame.sprite.Sprite):
-    def __init__(self, cellWidth, cellHeight, color, posX, posY, startX, startY):
+    def __init__(self, cellWidth, cellHeight, color, posX, posY, startX, startY, offsetX, offsetY):
         super().__init__()
         self.cellWidth = cellWidth
         self.cellHeight = cellHeight
         self.color = color
         self.startX = startX
         self.startY = startY
+        self.offsetX = offsetX
+        self.offsetY = offsetY
         # self.image = pygame.Surface([self.cellWidth, self.cellHeight])
 
         # grass image from https://clipart.info/natural-grass-png-top-view-12874
@@ -47,10 +49,8 @@ class Block(pygame.sprite.Sprite):
     def convertCartesianToIsometric(self, row, col):
         halfWidth = self.cellWidth / 2
         halfHeight = self.cellHeight / 2
-        # offsetX = (width // 2) - self.startX
-        # offsetY = (height // 2) - self.startY
-        self.rect.x = ((col - row) * halfWidth) + offsetX
-        self.rect.y = ((row + col) * halfHeight) + offsetY
+        self.rect.x = ((col - row) * halfWidth) + self.offsetX
+        self.rect.y = ((row + col) * halfHeight) + self.offsetY
         # self.rect.centerx = self.rect.x + halfWidth
         # self.rect.centery = self.rect.y + halfHeight
     
@@ -88,9 +88,9 @@ def addBlockToArray(blockArray, block, row, col):
 
 # generates a new Block with the correct properties
 def createBlock(blockSprites, blockArray, cartesianBlockArray, cellWidth, cellHeight, color, posX,
-                posY, startX, startY, row, col):
-    block1 = Block(cellWidth, cellHeight, color, posX, posY, startX, startY)
-    block2 = Block(cellWidth, cellHeight, color, posX, posY, startX, startY)
+                posY, startX, startY, row, col, offsetX, offsetY):
+    block1 = Block(cellWidth, cellHeight, color, posX, posY, startX, startY, offsetX, offsetY)
+    block2 = Block(cellWidth, cellHeight, color, posX, posY, startX, startY, offsetX, offsetY)
     addBlockToArray(blockArray, block1, row, col)
     addBlockToArray(cartesianBlockArray, block2, row, col)
     blockSprites.add(block1)
@@ -98,7 +98,7 @@ def createBlock(blockSprites, blockArray, cartesianBlockArray, cellWidth, cellHe
 # loops through the desired rows and columns for the board to make the entire
 # board
 def make2DBoard(blockSprites, blockArray, cartesianBlockArray, blockRows, 
-                blockCols, cellWidth, cellHeight, startX, startY):
+                blockCols, cellWidth, cellHeight, startX, startY, offsetX, offsetY):
     newStartX, newStartY = startX - cellWidth, startY - cellHeight
     color = (255, 0, 255)
     for row in range(blockRows):
@@ -106,7 +106,7 @@ def make2DBoard(blockSprites, blockArray, cartesianBlockArray, blockRows,
         for col in range(blockCols):
             newStartY += cellHeight
             createBlock(blockSprites, blockArray, cartesianBlockArray, cellWidth, cellHeight, color,
-                        newStartX, newStartY, startX, startY, row, col)
+                        newStartX, newStartY, startX, startY, row, col, offsetX, offsetY)
         newStartY = startY - cellHeight
 
 def makeBoardIsometric(blockArray):

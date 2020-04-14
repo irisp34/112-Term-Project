@@ -8,11 +8,14 @@ from variables import *
 
 # character class that controls the main person
 class Character(pygame.sprite.Sprite):
-    def __init__(self, image, cellWidth, cellHeight, cartesianBlockArray):
+    def __init__(self, image, cellWidth, cellHeight, blockArray, cartesianBlockArray):
         super().__init__()
         self.cartBlockArray = cartesianBlockArray
+        self.blockArray = blockArray
         self.boardCellWidth = cellWidth
         self.boardCellHeight = cellHeight
+        # scrolling loosely adapted (adjusted to fit isometric) from CMU Animations
+        # Notes: http://www.cs.cmu.edu/~112/notes/notes-animations-part2.html#sidescrollerExamples
         self.scrollX = 0
         self.scrollY = 0
         # self.image = pygame.Surface([charWidth, charHeight])
@@ -21,18 +24,12 @@ class Character(pygame.sprite.Sprite):
         self.findImageDimensions()
         # self.image.set_colorkey((255,255,255))
         self.rect = self.image.get_rect()
-        self.findIsometricBounds()
-        self.findCartesianBounds()
-        # self.rect.centerx = blockArray[blockRows - 1, blockCols - 1].rect.centerx
-        # self.rect.centery = blockArray[blockRows - 1, blockCols - 1].rect.centery
-        self.rect.centerx, self.rect.centery = self.getRandomBoardCenter()
+        self.findIsometricBounds(self.blockArray)
+        self.findCartesianBounds(self.cartBlockArray)
+        self.rect.centerx, self.rect.centery = self.getRandomBoardCenter(self.blockArray)
         print("centerx, centery", self.rect.centerx, self.rect.centery)
-        # print("mid bottom", self.rect.midbottom)
-        # self.cartX, self.cartY = self.convertIsometricToCartesian(self.rect.centerx - offsetX, self.rect.centery - offsetY)
-        # print("cartX, cartY", self.cartX, self.cartY)
         print("mins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
-        # self.placeInCenterOfBlock()
-        # print("corrected", self.rect.centerx, self.rect.centerx)
+        self.justMoved = False
 
     def addScroll(self, cartScrollX, cartScrollY):
         # scrollX, scrollY = self.convertCartesianToIsometric(cartScrollX, cartScrollY)
@@ -46,7 +43,7 @@ class Character(pygame.sprite.Sprite):
     #     self.scrollY += scrollY
 
     # retrieves a random isometric board center
-    def getRandomBoardCenter(self):
+    def getRandomBoardCenter(self, blockArray):
         randRow = random.randint(0, blockRows - 1)
         randCol = random.randint(0, blockCols - 1)
         block = blockArray[randRow, randCol]
@@ -68,7 +65,7 @@ class Character(pygame.sprite.Sprite):
         self.rect.centery += 0.5 * self.boardCellWidth
 
     
-    def findIsometricBounds(self):
+    def findIsometricBounds(self, blockArray):
         # organized top left, top right, bottom left, bottom right
         boardCoordinates = getIsometricBoardBounds(blockArray)
         # print("board coor", boardCoordinates)
@@ -77,17 +74,17 @@ class Character(pygame.sprite.Sprite):
         self.maxX = boardCoordinates[1][0] #+ self.boardCellWidth / 4
         self.maxY = boardCoordinates[3][1] #+ self.boardCellHeight / 4
     
-    def findCartesianBounds(self):
+    def findCartesianBounds(self, cartBlockArray):
         # cartesianX, cartesianY = self.convertIsometricToCartesian(self.rect.centerx, self.rect.centery)
         # top left, top right, bottom left, bottom right
         # print("in character", self.cartBlockArray)
-        cartBoard = getCartesianBoardBounds(self.cartBlockArray)
+        cartBoard = getCartesianBoardBounds(cartBlockArray)
         self.cartMinX = cartBoard[0][0]
         self.cartMinY = cartBoard[0][1]
         self.cartMaxX = cartBoard[3][0]
         self.cartMaxY = cartBoard[3][1]
     
-    def findIsometricCenters(self):
+    def findIsometricCenters(self, blockArray):
         boardCenters = getIsometricBoardCenters(blockArray)
         self.minCenterX = boardCenters[2][0] 
         self.minCenterY = boardCenters[0][1]
@@ -130,7 +127,8 @@ class Character(pygame.sprite.Sprite):
             return
         self.rect.centerx += self.boardCellWidth
         self.rect.centery += 0.5 * self.boardCellHeight
-        addScroll(self.boardCellWidth, 0.5 * self.boardCellHeight)
+        self.addScroll(self.boardCellWidth, 0.5 * self.boardCellHeight)
+        self.justMoved = True
         
     def moveLeft(self):
         print("left")
@@ -138,7 +136,8 @@ class Character(pygame.sprite.Sprite):
             return
         self.rect.centerx -= self.boardCellWidth
         self.rect.centery -= 0.5 * self.boardCellHeight
-        addScroll(-self.boardCellWidth, -0.5 * self.boardCellHeight)
+        self.addScroll(-self.boardCellWidth, -0.5 * self.boardCellHeight)
+        self.justMoved = True
 
     def moveUp(self):
         print("up")
@@ -146,7 +145,8 @@ class Character(pygame.sprite.Sprite):
             return
         self.rect.centerx += self.boardCellWidth
         self.rect.centery -= 0.5 * self.boardCellHeight
-        addScroll(self.boardCellWidth, -0.5 * self.boardCellHeight)
+        self.addScroll(self.boardCellWidth, -0.5 * self.boardCellHeight)
+        self.justMoved = True
  
     def moveDown(self):
         print("down")
@@ -154,7 +154,8 @@ class Character(pygame.sprite.Sprite):
             return
         self.rect.centerx -= self.boardCellWidth
         self.rect.centery += 0.5 * self.boardCellHeight
-        addScroll(-self.boardCellWidth, 0.5 * self.boardCellHeight)
+        self.addScroll(-self.boardCellWidth, 0.5 * self.boardCellHeight)
+        self.justMoved = True
 
     def jump(self, posX, posY):
         print("jump after", posX, posX)
@@ -196,7 +197,7 @@ class Character(pygame.sprite.Sprite):
             posY = height - self.charHeight
         self.jump(posX, posY)
 
-def createCharacter(image, charSprites, cellWidth, cellHeight, cartesianBlockArray):
-    character = Character(image, cellWidth, cellHeight, cartesianBlockArray)
+def createCharacter(image, charSprites, cellWidth, cellHeight, blockArray, cartesianBlockArray):
+    character = Character(image, cellWidth, cellHeight, blockArray, cartesianBlockArray)
     charSprites.add(character)
     return character

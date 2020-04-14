@@ -2,7 +2,7 @@
 import pygame
 import numpy as np
 
-width = 800
+width = 1200
 height = 800
 fps = 50
 screen = pygame.display.set_mode((width, height))
@@ -16,10 +16,12 @@ startY = 100
 blockRows = 4
 blockCols = 4
 
-blockArray = np.empty(shape=(blockRows, blockCols), dtype = object)
-cartesianBlockArray = np.empty(shape=(blockRows, blockCols), dtype = object)
-print("variable", cartesianBlockArray)
-blockSprites = pygame.sprite.Group()
+blockArray1 = np.empty(shape=(blockRows, blockCols), dtype = object)
+cartesianBlockArray1 = np.empty(shape=(blockRows, blockCols), dtype = object)
+blockArray2 = np.empty(shape=(blockRows, blockCols), dtype = object)
+cartesianBlockArray2 = np.empty(shape=(blockRows, blockCols), dtype = object)
+blockSprites1 = pygame.sprite.Group()
+blockSprites2 = pygame.sprite.Group()
 waterSprites = pygame.sprite.Group()
 charSprites = pygame.sprite.Group()
 treeSprites = pygame.sprite.Group()
