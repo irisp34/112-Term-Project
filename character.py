@@ -34,13 +34,16 @@ class Character(pygame.sprite.Sprite):
         # self.placeInCenterOfBlock()
         # print("corrected", self.rect.centerx, self.rect.centerx)
 
-    def addScrollX(self, cartScrollX, cartScrollY):
-        scrollX, scrollY = self.convertCartesianToIsometric(cartScrollX, cartScrollY)
-        self.scrollX += scrollX
+    def addScroll(self, cartScrollX, cartScrollY):
+        # scrollX, scrollY = self.convertCartesianToIsometric(cartScrollX, cartScrollY)
+        # self.scrollX += scrollX
+        # self.scrollY += scrollY
+        self.scrollX += cartScrollX
+        self.scrollY += cartScrollY
     
-    def addScrollY(self, cartScrollX, cartScrollY):
-        scrollX, scrollY = self.convertCartesianToIsometric(cartScrollX, cartScrollY)
-        self.scrollY += scrollY
+    # def addScrollY(self, cartScrollX, cartScrollY):
+    #     scrollX, scrollY = self.convertCartesianToIsometric(cartScrollX, cartScrollY)
+    #     self.scrollY += scrollY
 
     # retrieves a random isometric board center
     def getRandomBoardCenter(self):
@@ -125,24 +128,9 @@ class Character(pygame.sprite.Sprite):
         print("right")
         if (not self.walkable(1, 0)):
             return
-        # cartesianX, cartesianY = self.convertIsometricToCartesian(self.rect.centerx, self.rect.centery)
-        # # find current col
-        # # col = (self.cartMaxX - (self.cartMaxX - cartesianX)) / self.boardCellWidth  
-        # print("x, y", cartesianX, cartesianY)
-        # print("back", self.convertCartesianToIsometric(cartesianX, cartesianY))
-        # temp = cartesianX + self.boardCellWidth
-        # print("plus cell width", temp)
-        # print("cartmax", self.cartMaxX)
-        # # print("print offsets", offsetX, offsetY)
-        # # print("with offset", self.cartMaxX + offsetX)
-        # # print("x edge", startX + (blockCols * self.boardCellWidth))
-        # if (temp < self.cartMaxX):
-        #     self.rect.centerx += self.boardCellWidth
-        #     self.rect.centery += 0.5 * self.boardCellHeight
-
         self.rect.centerx += self.boardCellWidth
         self.rect.centery += 0.5 * self.boardCellHeight
-
+        addScroll(self.boardCellWidth, 0.5 * self.boardCellHeight)
         
     def moveLeft(self):
         print("left")
@@ -150,39 +138,42 @@ class Character(pygame.sprite.Sprite):
             return
         self.rect.centerx -= self.boardCellWidth
         self.rect.centery -= 0.5 * self.boardCellHeight
+        addScroll(-self.boardCellWidth, -0.5 * self.boardCellHeight)
 
     def moveUp(self):
         print("up")
         if (not self.walkable(0, -1)):
             return
-        self.rect.centery -= 0.5 * self.boardCellHeight
         self.rect.centerx += self.boardCellWidth
+        self.rect.centery -= 0.5 * self.boardCellHeight
+        addScroll(self.boardCellWidth, -0.5 * self.boardCellHeight)
  
     def moveDown(self):
         print("down")
         if (not self.walkable(0, 1)):
             return
-        self.rect.centery += 0.5 * self.boardCellHeight
         self.rect.centerx -= self.boardCellWidth
+        self.rect.centery += 0.5 * self.boardCellHeight
+        addScroll(-self.boardCellWidth, 0.5 * self.boardCellHeight)
 
     def jump(self, posX, posY):
         print("jump after", posX, posX)
         self.rect.centerx = posX
         self.rect.centery = posY
 
-    def walkable(self, dX, dY):
+    def walkable(self, dx, dy):
         self.cartX, self.cartY = self.convertIsometricToCartesian(self.rect.centerx - offsetX, 
             self.rect.centery - offsetY)
-        self.cartX += startX
-        self.cartY += startY
-        print("curr self.cartx, self.carty", self.cartX, self.cartY)
-        print("dx", dX, dX * self.boardCellWidth, "dy", dY, dY * self.boardCellHeight)
-        newX = self.cartX + dX * self.boardCellWidth
-        newY = self.cartY + dY * self.boardCellHeight
-        print("newx, newy", newX, newY)
-        print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
-        print("less x", newX < self.cartMinX, "more x", newX > self.cartMaxX, 
-            "less y", newY < self.cartMinY, "more y", newY > self.cartMaxY)
+        self.cartX += startX #+ (self.boardCellWidth // 2)
+        self.cartY += startY + (self.boardCellHeight // 2)
+        # print("curr self.cartx, self.carty", self.cartX, self.cartY)
+        # print("dx", dx, dx * self.boardCellWidth, "dy", dy, dy * self.boardCellHeight)
+        newX = self.cartX + dx * self.boardCellWidth
+        newY = self.cartY + dy * self.boardCellHeight
+        # print("newx, newy", newX, newY)
+        # print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
+        # print("less x", newX < self.cartMinX, "more x", newX > self.cartMaxX, 
+        #     "less y", newY < self.cartMinY, "more y", newY > self.cartMaxY)
         if (newX < self.cartMinX or newX > self.cartMaxX or newY < self.cartMinY or newY > self.cartMaxY):
             return False
         self.cartX = newX
