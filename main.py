@@ -48,7 +48,7 @@ def playGame():
     # global cartesianBlockArray
     # cartesianBlockArray = np.copy(blockArray)
  
-    change(cartesianBlockArray)
+    # change(cartesianBlockArray)
     for row in range(cartesianBlockArray.shape[0]):
         for col in range(cartesianBlockArray.shape[1]):
             print("x,y", cartesianBlockArray[row, col].rect.x, cartesianBlockArray[row, col].rect.y)

@@ -159,10 +159,11 @@ def getCartesianBoardBounds(cartesianBlockArray):
     # print("cartesianBlockArray", cartesianBlockArray)
     boardCorners = getBoardCorners(cartesianBlockArray)
     topLeftCorner, topRightCorner, bottomLeftCorner, bottomRightCorner = boardCorners
+    print(topLeftCorner.rect.topright)
     topLeft = (topLeftCorner.rect.x, topLeftCorner.rect.y)
-    topRight = (topRightCorner.rect.x, topRightCorner.rect.y)
-    bottomLeft = (bottomLeftCorner.rect.x, bottomLeftCorner.rect.y)
-    bottomRight = (bottomRightCorner.rect.x, bottomRightCorner.rect.y)
+    topRight = (topRightCorner.rect.topright[0], topRightCorner.rect.topright[1])
+    bottomLeft = (bottomLeftCorner.rect.bottomleft[0], bottomLeftCorner.rect.bottomleft[1])
+    bottomRight = (bottomRightCorner.rect.bottomright[0], bottomRightCorner.rect.bottomright[1])
     return [topLeft, topRight, bottomLeft, bottomRight]
 
 
