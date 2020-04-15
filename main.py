@@ -35,7 +35,7 @@ def scrollIslands(blockArray, scrollX, scrollY, character):
                 currBlock.rect.x -= scrollX
                 currBlock.rect.y -= scrollY
 
-def scrollAll(blockArray1, blockArray2, scrollX, scrollY, character):
+def scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrollY, character):
     # for sprite in waterSprites:
     #     if (character.justMoved):
     #         sprite.rect.x -= scrollX
@@ -48,10 +48,10 @@ def scrollAll(blockArray1, blockArray2, scrollX, scrollY, character):
 
     scrollIslands(blockArray1, scrollX, scrollY, character)
     # print("board bounds", getCartesianBoardBounds(cartesianBlockArray1))
-    scrollIslands(cartesianBlockArray1, scrollX, scrollY, character)
+    scrollIslands(cartesianBlockArray1, cartScrollX, cartScrollY, character)
     # print("board bounds after", getCartesianBoardBounds(cartesianBlockArray1))
     scrollIslands(blockArray2, scrollX, scrollY, character)
-    scrollIslands(cartesianBlockArray2, scrollX, scrollY, character)
+    scrollIslands(cartesianBlockArray2, cartScrollX, cartScrollY, character)
     character.justMoved = False
 
 
@@ -61,8 +61,11 @@ def redrawAll(character):
     pygame.draw.rect(screen, (0, 255, 0),(200, 200, 50, 30))
     scrollX = character.scrollX
     scrollY = character.scrollY
+    cartScrollX = character.cartScrollX
+    cartScrollY = character.cartScrollY
+    # print("scrollX scrollY", scrollX, scrollY)
 
-    scrollAll(blockArray1, blockArray2, scrollX, scrollY, character)
+    scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrollY, character)
     # for sprite in blockSprites1:
     #     if (character.justMoved):
     #         sprite.rect.x -= scrollX

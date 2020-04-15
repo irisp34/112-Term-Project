@@ -18,6 +18,8 @@ class Character(pygame.sprite.Sprite):
         # Notes: http://www.cs.cmu.edu/~112/notes/notes-animations-part2.html#sidescrollerExamples
         self.scrollX = 0
         self.scrollY = 0
+        self.cartScrollX = 0
+        self.cartScrollY = 0
         self.scrollMargin = 300
         # self.image = pygame.Surface([charWidth, charHeight])
         self.image = pygame.image.load(image).convert_alpha()
@@ -32,12 +34,15 @@ class Character(pygame.sprite.Sprite):
         print("mins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
         self.justMoved = False
 
-    def addScroll(self, cartScrollX, cartScrollY):
+    def addScroll(self, scrollX, scrollY):
         # scrollX, scrollY = self.convertCartesianToIsometric(cartScrollX, cartScrollY)
         # self.scrollX += scrollX
         # self.scrollY += scrollY
-        self.scrollX += cartScrollX
-        self.scrollY += cartScrollY
+        self.scrollX += scrollX
+        self.scrollY += scrollY
+        cartScrollX, cartScrollY = self.convertIsometricToCartesian(scrollX, scrollY)
+        self.cartScrollX += cartScrollX
+        self.cartScrollY += cartScrollY
     
     # def addScrollY(self, cartScrollX, cartScrollY):
     #     scrollX, scrollY = self.convertCartesianToIsometric(cartScrollX, cartScrollY)
@@ -129,8 +134,8 @@ class Character(pygame.sprite.Sprite):
         if (self.makePlayerVisible()):
             # scrollX = self.boardCellWidth
             # scrollY = 0.5 * self.boardCellHeight
-            scrollX = self.boardCellWidth // 2
-            scrollY = (0.5 * self.boardCellHeight) // 2
+            scrollX = self.boardCellWidth / 2
+            scrollY = (0.5 * self.boardCellHeight) / 2
             self.addScroll(scrollX, scrollY)
             self.justMoved = True
         
@@ -143,8 +148,8 @@ class Character(pygame.sprite.Sprite):
         if (self.makePlayerVisible()):
             # scrollX = -self.boardCellWidth
             # scrollY = -0.5 * self.boardCellHeight
-            scrollX = -self.boardCellWidth // 2
-            scrollY = (-0.5 * self.boardCellHeight) // 2
+            scrollX = -self.boardCellWidth / 2
+            scrollY = (-0.5 * self.boardCellHeight) / 2
             self.addScroll(scrollX, scrollY)
             self.justMoved = True
 
@@ -157,8 +162,8 @@ class Character(pygame.sprite.Sprite):
         if (self.makePlayerVisible()):
             # scrollX = self.boardCellWidth
             # scrollY = -0.5 * self.boardCellHeight
-            scrollX = self.boardCellWidth // 2
-            scrollY = (-0.5 * self.boardCellHeight) // 2
+            scrollX = self.boardCellWidth / 2
+            scrollY = (-0.5 * self.boardCellHeight) / 2
             self.addScroll(scrollX, scrollY)
             self.justMoved = True
  
@@ -171,8 +176,8 @@ class Character(pygame.sprite.Sprite):
         if (self.makePlayerVisible()):
             # scrollX = -self.boardCellWidth
             # scrollY = 0.5 * self.boardCellHeight
-            scrollX = -self.boardCellWidth // 2
-            scrollY = (0.5 * self.boardCellHeight) // 2
+            scrollX = -self.boardCellWidth / 2
+            scrollY = (0.5 * self.boardCellHeight) / 2
             self.addScroll(scrollX, scrollY)
             self.justMoved = True
 
@@ -186,7 +191,7 @@ class Character(pygame.sprite.Sprite):
         self.cartX, self.cartY = self.convertIsometricToCartesian(self.rect.centerx - offsetX, 
             self.rect.centery - offsetY)
         self.cartX += startX #+ (self.boardCellWidth // 2)
-        self.cartY += startY + (self.boardCellHeight // 2)
+        self.cartY += startY + (self.boardCellHeight / 2)
         print("curr self.cartx, self.carty", self.cartX, self.cartY)
         print("dx", dx, dx * self.boardCellWidth, "dy", dy, dy * self.boardCellHeight)
         newX = self.cartX + dx * self.boardCellWidth
