@@ -5,6 +5,7 @@ import numpy as np
 from island import *
 from character import *
 from variables import *
+from inventory import *
 
 class Water(pygame.sprite.Sprite):
     def __init__(self, image, location):
@@ -14,18 +15,23 @@ class Water(pygame.sprite.Sprite):
         self.rect.x, self.rect.y = location
         # self.rect.x, self.rect.y = location
 
+# repeatedly generates water picture sprites to fill the width and height of
+# the screen
 def createWater(waterSprites, image, rect):
     rect.width, rect.height = rect[2], rect[3]
     for xPixel in range(0, width, rect.width):
         for yPixel in range(0, height, rect.height):
             water = Water(image, (xPixel, yPixel))
             waterSprites.add(water)
-            
+
+# draws the tan portion of the island with a border      
 def drawIslandBase(blockArray):
     pointsLeft, pointsRight = findIslandBasePoints(blockArray)
     # color picked from here: https://htmlcolorcodes.com/color-picker/
-    pygame.draw.polygon(screen, (204, 179, 90), pointsLeft, 5)
-    pygame.draw.polygon(screen, (255, 0, 255), pointsRight, 5)
+    pygame.draw.polygon(screen, (204, 179, 90), pointsLeft)
+    pygame.draw.polygon(screen, (204, 179, 90), pointsRight)
+    pygame.draw.polygon(screen, (0, 0, 0), pointsRight, 2)
+    pygame.draw.polygon(screen, (0, 0, 0), pointsLeft, 2)
     
 def scrollIslands(blockArray, scrollX, scrollY, character):
     for row in range(blockArray.shape[0]):
@@ -58,7 +64,7 @@ def scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrol
 def redrawAll(character):
     screen.fill((255, 255, 255))
     # screen.blit(background.image, background.rect)
-    pygame.draw.rect(screen, (0, 255, 0),(200, 200, 50, 30))
+    
     scrollX = character.scrollX
     scrollY = character.scrollY
     cartScrollX = character.cartScrollX
@@ -78,6 +84,7 @@ def redrawAll(character):
 
     waterSprites.update()
     waterSprites.draw(screen)
+    pygame.draw.rect(screen, (0, 255, 0),(200, 200, 50, 30))
     drawIslandBase(blockArray1)
     drawIslandBase(blockArray2)
     blockSprites1.update()
@@ -86,6 +93,9 @@ def redrawAll(character):
     blockSprites2.draw(screen)
     charSprites.update()
     charSprites.draw(screen)
+    inventoryBarSprite.update(screen)
+    inventoryBarSprite.draw(screen)
+    # pygame.draw.rect(screen, (0, 255, 255),(185, 0, 50, 30))
     pygame.display.flip()
 
 def createIslands():
@@ -109,11 +119,6 @@ def createIslands():
 def playGame():
     pygame.init()
     createIslands()
- 
-    # for row in range(cartesianBlockArray1.shape[0]):
-    #     for col in range(cartesianBlockArray1.shape[1]):
-    #         print("x,y", cartesianBlockArray1[row, col].rect.x, cartesianBlockArray1[row, col].rect.y)
-    # print("in main", cartesianBlockArray1)
 
     # character picture from: https://ya-webdesign.com/imgdownload.html
     character = createCharacter("character.png", charSprites, cellWidth, cellHeight, blockArray1, cartesianBlockArray1)
@@ -122,6 +127,10 @@ def playGame():
     waterImage = pygame.image.load("water.png").convert_alpha()
     rect = waterImage.get_rect()
     createWater(waterSprites, waterImage, rect)
+    inventoryBar = Inventory()
+    inventoryBarSprite.add(inventoryBar)
+    print("inventory bar main", inventoryBar.rect.x, inventoryBar.rect.y)
+
 
     clock = pygame.time.Clock()
     playing = True
