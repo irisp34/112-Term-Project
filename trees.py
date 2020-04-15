@@ -8,6 +8,7 @@ from island import *
 class Trees(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
+        # tree image: https://www.reddit.com/r/PixelArt/comments/6ktv32/newbiecc_looking_for_tips_how_to_improve_this_tree/
         self.image = pygame.image.load("tree.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.centerx, self.rect.centery = self.getRandomBoardCenter()

@@ -18,6 +18,7 @@ class Character(pygame.sprite.Sprite):
         # Notes: http://www.cs.cmu.edu/~112/notes/notes-animations-part2.html#sidescrollerExamples
         self.scrollX = 0
         self.scrollY = 0
+        self.scrollMargin = 300
         # self.image = pygame.Surface([charWidth, charHeight])
         self.image = pygame.image.load(image).convert_alpha()
         self.scaleImage()
@@ -123,46 +124,51 @@ class Character(pygame.sprite.Sprite):
         # still debugging bounded movement
         # print("rectx, recty", self.rect.centerx, self.rect.centery)
         print("right")
-        if (not self.walkable(1, 0)):
+        if (not self.isWalkable(1, 0)):
             return
         self.rect.centerx += self.boardCellWidth
         self.rect.centery += 0.5 * self.boardCellHeight
-        self.addScroll(self.boardCellWidth, 0.5 * self.boardCellHeight)
-        self.justMoved = True
+        if (self.makePlayerVisible()):
+            self.addScroll(self.boardCellWidth, 0.5 * self.boardCellHeight)
+            self.justMoved = True
         
     def moveLeft(self):
         print("left")
-        if (not self.walkable(-1, 0)):
+        if (not self.isWalkable(-1, 0)):
             return
         self.rect.centerx -= self.boardCellWidth
         self.rect.centery -= 0.5 * self.boardCellHeight
-        self.addScroll(-self.boardCellWidth, -0.5 * self.boardCellHeight)
-        self.justMoved = True
+        if (self.makePlayerVisible()):
+            self.addScroll(-self.boardCellWidth, -0.5 * self.boardCellHeight)
+            self.justMoved = True
 
     def moveUp(self):
         print("up")
-        if (not self.walkable(0, -1)):
+        if (not self.isWalkable(0, -1)):
             return
         self.rect.centerx += self.boardCellWidth
         self.rect.centery -= 0.5 * self.boardCellHeight
-        self.addScroll(self.boardCellWidth, -0.5 * self.boardCellHeight)
-        self.justMoved = True
+        if (self.makePlayerVisible()):
+            self.addScroll(self.boardCellWidth, -0.5 * self.boardCellHeight)
+            self.justMoved = True
  
     def moveDown(self):
         print("down")
-        if (not self.walkable(0, 1)):
+        if (not self.isWalkable(0, 1)):
             return
         self.rect.centerx -= self.boardCellWidth
         self.rect.centery += 0.5 * self.boardCellHeight
-        self.addScroll(-self.boardCellWidth, 0.5 * self.boardCellHeight)
-        self.justMoved = True
+        if (self.makePlayerVisible()):
+            self.addScroll(-self.boardCellWidth, 0.5 * self.boardCellHeight)
+            self.justMoved = True
 
     def jump(self, posX, posY):
         print("jump after", posX, posX)
         self.rect.centerx = posX
         self.rect.centery = posY
 
-    def walkable(self, dx, dy):
+    def isWalkable(self, dx, dy):
+        # self.findCartesianBounds(self.cartBlockArray)
         self.cartX, self.cartY = self.convertIsometricToCartesian(self.rect.centerx - offsetX, 
             self.rect.centery - offsetY)
         self.cartX += startX #+ (self.boardCellWidth // 2)
@@ -180,6 +186,26 @@ class Character(pygame.sprite.Sprite):
         self.cartX = newX
         self.cartY = newY
         return True
+
+    # adapted from SideScroller2 example in 112 Notes to fit isometric coordinates: 
+    # http://www.cs.cmu.edu/~112/notes/notes-animations-part2.html#sidescrollerExamples
+    def makePlayerVisible(self):
+        isScrollable = False
+        # cartScrollX = self.boardCellWidth * dx
+        # cartScrollY = self.boardCellHeight * dy
+        if (self.cartX < self.scrollMargin + self.scrollX):
+            # self.scrollX = self.cartX - self.scrollMargin
+            isScrollable = True
+        elif (self.cartX + self.scrollMargin > self.scrollX + width):
+            # self.scrollX = self.cartX + self.scrollMargin - width
+            isScrollable = True
+        if (self.cartY < self.scrollMargin + self.scrollY):
+            # self.scrollY = self.cartY - self.scrollMargin
+            isScrollable = True
+        elif (self.cartY + self.scrollMargin > self.scrollX + height):
+            # self.scrollX = self.cartX + self.scrollMargin - height
+            isScrollable = True
+        return isScrollable
 
     # fix to check within isometric board
     def mousePressed(self, event):
