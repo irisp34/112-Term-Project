@@ -142,7 +142,6 @@ def getIsometricBoardCenters(blockArray):
 
 # returns list with top left, top right, bottom left, bottom right coordinates
 # each in a tuple
-# take out width height when this works
 def getCartesianBoardBounds(cartesianBlockArray):
     # boardCoordinates = []
     # maxX = startX + (blockCols * cellWidth) + offsetX
@@ -159,7 +158,6 @@ def getCartesianBoardBounds(cartesianBlockArray):
     # print("cartesianBlockArray", cartesianBlockArray)
     boardCorners = getBoardCorners(cartesianBlockArray)
     topLeftCorner, topRightCorner, bottomLeftCorner, bottomRightCorner = boardCorners
-    print(topLeftCorner.rect.topright)
     topLeft = (topLeftCorner.rect.x, topLeftCorner.rect.y)
     topRight = (topRightCorner.rect.topright[0], topRightCorner.rect.topright[1])
     bottomLeft = (bottomLeftCorner.rect.bottomleft[0], bottomLeftCorner.rect.bottomleft[1])

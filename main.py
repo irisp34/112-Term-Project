@@ -47,7 +47,9 @@ def scrollAll(blockArray1, blockArray2, scrollX, scrollY, character):
             sprite.rect.centery -= scrollY
 
     scrollIslands(blockArray1, scrollX, scrollY, character)
+    # print("board bounds", getCartesianBoardBounds(cartesianBlockArray1))
     scrollIslands(cartesianBlockArray1, scrollX, scrollY, character)
+    # print("board bounds after", getCartesianBoardBounds(cartesianBlockArray1))
     scrollIslands(blockArray2, scrollX, scrollY, character)
     scrollIslands(cartesianBlockArray2, scrollX, scrollY, character)
     character.justMoved = False
@@ -75,7 +77,6 @@ def redrawAll(character):
     waterSprites.draw(screen)
     drawIslandBase(blockArray1)
     drawIslandBase(blockArray2)
-    # screen.create_polygon(pointsLeft)
     blockSprites1.update()
     blockSprites1.draw(screen)
     blockSprites2.update()
