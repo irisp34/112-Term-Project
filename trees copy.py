@@ -39,7 +39,7 @@ class Trees(pygame.sprite.Sprite):
     def getRandomBoardCenter(self, blockArray):
         seenCenters = []
         for sprite in treeSprites:
-            seenCenters.append((sprite.rect.centerx, sprite.rect.centery))
+            seenCenters.append(sprite.rect.centerx, sprite.rect.centery)
         boardRows = blockArray.shape[0]
         boardCols = blockArray.shape[1]
         randRow, randCol = self.pickRandomRowAndCol(boardRows, boardCols)
@@ -51,7 +51,7 @@ class Trees(pygame.sprite.Sprite):
         while ((centerX, centerY) in seenCenters):
             randRow, randCol = self.pickRandomRowAndCol(boardRows, boardCols)
             block = blockArray[randRow, randCol]
-            centerX, centerY = self.findBlockCenter(block)
+            centerX, centerY = self.findBlockCenter(self, block)
         return centerX, centerY
     
 def sumCarbon(self):

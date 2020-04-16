@@ -117,12 +117,6 @@ def createIslands():
                 cellHeight, startX, startY, offsetX, offsetY)
     makeBoardIsometric(blockArray2)
 
-# makes Tree objects to place on the board
-def makeTrees(character):
-    for i in range(5):
-        tree = Trees(character)
-        treeSprites.add(tree)
-
 def playGame():
     pygame.init()
     createIslands()
@@ -136,7 +130,10 @@ def playGame():
     createWater(waterSprites, waterImage, rect)
     inventoryBar = Inventory()
     inventoryBarSprite.add(inventoryBar)
-    makeTrees(character)
+
+    tree = Trees(character)
+    treeSprites.add(tree)
+
 
     clock = pygame.time.Clock()
     playing = True

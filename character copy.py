@@ -117,6 +117,7 @@ class Character(pygame.sprite.Sprite):
         return col
 
     def moveRight(self):
+        # still debugging bounded movement
         print("right")
         if (not self.isWalkable(1, 0)):
             return
@@ -197,8 +198,7 @@ class Character(pygame.sprite.Sprite):
         self.cartY = newY
         return True
 
-    # loosely adapted from SideScroller2 example in 112 Notes to fit isometric 
-    # coordinates and desired scrolling effect: 
+    # adapted from SideScroller2 example in 112 Notes to fit isometric coordinates: 
     # http://www.cs.cmu.edu/~112/notes/notes-animations-part2.html#sidescrollerExamples
     def makePlayerVisible(self):
         isScrollable = False
