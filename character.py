@@ -192,14 +192,14 @@ class Character(pygame.sprite.Sprite):
             self.rect.centery - offsetY)
         self.cartX += startX #+ (self.boardCellWidth // 2)
         self.cartY += startY + (self.boardCellHeight / 2)
-        print("curr self.cartx, self.carty", self.cartX, self.cartY)
-        print("dx", dx, dx * self.boardCellWidth, "dy", dy, dy * self.boardCellHeight)
+        # print("curr self.cartx, self.carty", self.cartX, self.cartY)
+        # print("dx", dx, dx * self.boardCellWidth, "dy", dy, dy * self.boardCellHeight)
         newX = self.cartX + dx * self.boardCellWidth
         newY = self.cartY + dy * self.boardCellHeight
-        print("newx, newy", newX, newY)
-        print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
-        print("less x", newX < self.cartMinX, "more x", newX > self.cartMaxX, 
-            "less y", newY < self.cartMinY, "more y", newY > self.cartMaxY)
+        # print("newx, newy", newX, newY)
+        # print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
+        # print("less x", newX < self.cartMinX, "more x", newX > self.cartMaxX, 
+        #     "less y", newY < self.cartMinY, "more y", newY > self.cartMaxY)
         if (newX < self.cartMinX or newX > self.cartMaxX or newY < self.cartMinY or newY > self.cartMaxY):
             return False
         self.cartX = newX

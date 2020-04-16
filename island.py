@@ -60,6 +60,20 @@ class Block(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         return self.image
 
+# finds the corner points around the grass and returns them in tuples
+def findGrassPoints(block):
+    topMidX = (block.rect.x + block.rect.topright[0]) / 2
+    topMidY = (block.rect.y + block.rect.topright[1]) / 2
+    leftMidX = (block.rect.x + block.rect.bottomleft[0]) / 2
+    leftMidY = (block.rect.y + block.rect.bottomleft[1]) / 2
+    rightMidX = (block.rect.topright[0] + block.rect.bottomright[0]) / 2
+    rightMidY = (block.rect.topright[1] + block.rect.bottomright[1]) / 2
+    bottomMidX = (block.rect.bottomleft[0] + block.rect.bottomright[0]) / 2
+    bottomMidY = (block.rect.bottomleft[1] + block.rect.bottomright[1]) / 2
+    points = ((topMidX, topMidY), (leftMidX, leftMidY), (bottomMidX, bottomMidY),
+        (rightMidX, rightMidY))
+    return points
+
 def findIslandBasePoints(blockArray):
     boardCorners = getBoardCorners(blockArray)
     topLeft, topRight, bottomLeft, bottomRight = boardCorners

@@ -6,23 +6,14 @@ from island import *
 from character import *
 from variables import *
 from inventory import *
+from water import *
 
-class Water(pygame.sprite.Sprite):
-    def __init__(self, image, location):
-        super().__init__()
-        self.image = image
-        self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = location
-        # self.rect.x, self.rect.y = location
+def resetScroll(character):
+    character.scrollX = 0
+    character.scrollY = 0
+    character.cartScrollX = 0
+    character.cartScrollY = 0
 
-# repeatedly generates water picture sprites to fill the width and height of
-# the screen
-def createWater(waterSprites, image, rect):
-    rect.width, rect.height = rect[2], rect[3]
-    for xPixel in range(0, width, rect.width):
-        for yPixel in range(0, height, rect.height):
-            water = Water(image, (xPixel, yPixel))
-            waterSprites.add(water)
 
 # draws the tan portion of the island with a border      
 def drawIslandBase(blockArray):
@@ -38,8 +29,10 @@ def scrollIslands(blockArray, scrollX, scrollY, character):
         for col in range(blockArray.shape[1]):
             currBlock = blockArray[row, col]
             if (character.justMoved):
+                print("original rect", currBlock.rect.x, currBlock.rect.y)
                 currBlock.rect.x -= scrollX
                 currBlock.rect.y -= scrollY
+                print("new rect", currBlock.rect.x, currBlock.rect.y)
 
 def scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrollY, character):
     # for sprite in waterSprites:
@@ -49,38 +42,38 @@ def scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrol
     
     for sprite in charSprites:
         if (character.justMoved):
+            # print("before scroll", sprite.rect.centerx, sprite.rect.centery)
             sprite.rect.centerx -= scrollX
             sprite.rect.centery -= scrollY
-
+    print("blockArray1")
+    
     scrollIslands(blockArray1, scrollX, scrollY, character)
     # print("board bounds", getCartesianBoardBounds(cartesianBlockArray1))
     scrollIslands(cartesianBlockArray1, cartScrollX, cartScrollY, character)
     # print("board bounds after", getCartesianBoardBounds(cartesianBlockArray1))
+    # print("blockArray2")
     scrollIslands(blockArray2, scrollX, scrollY, character)
     scrollIslands(cartesianBlockArray2, cartScrollX, cartScrollY, character)
     character.justMoved = False
 
+# draws a border around each block
+def drawBlockBorders(blockArray):
+    for row in range(blockArray.shape[0]):
+        for col in range(blockArray.shape[1]):
+            block = blockArray[row, col]
+            points = findGrassPoints(block)
+            pygame.draw.polygon(screen, (0, 0, 0), points, 2)
 
 def redrawAll(character):
     screen.fill((255, 255, 255))
-    # screen.blit(background.image, background.rect)
     
     scrollX = character.scrollX
     scrollY = character.scrollY
     cartScrollX = character.cartScrollX
     cartScrollY = character.cartScrollY
-    # print("scrollX scrollY", scrollX, scrollY)
+    print("scrollX scrollY", scrollX, scrollY)
 
     scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrollY, character)
-    # for sprite in blockSprites1:
-    #     if (character.justMoved):
-    #         sprite.rect.x -= scrollX
-    #         sprite.rect.y -= scrollY
-    
-    # for sprite in blockSprites2:
-    #     if (character.justMoved):
-    #         sprite.rect.x -= scrollX
-    #         sprite.rect.y -= scrollY
 
     waterSprites.update()
     waterSprites.draw(screen)
@@ -91,12 +84,15 @@ def redrawAll(character):
     blockSprites1.draw(screen)
     blockSprites2.update()
     blockSprites2.draw(screen)
+    drawBlockBorders(blockArray1)
+    drawBlockBorders(blockArray2)
     charSprites.update()
     charSprites.draw(screen)
     inventoryBarSprite.update(screen)
     inventoryBarSprite.draw(screen)
     # pygame.draw.rect(screen, (0, 255, 255),(185, 0, 50, 30))
     pygame.display.flip()
+    resetScroll(character)
 
 def createIslands():
     # global startX
