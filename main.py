@@ -7,6 +7,7 @@ from character import *
 from variables import *
 from inventory import *
 from water import *
+from trees import *
 
 def resetScroll(character):
     character.scrollX = 0
@@ -29,10 +30,8 @@ def scrollIslands(blockArray, scrollX, scrollY, character):
         for col in range(blockArray.shape[1]):
             currBlock = blockArray[row, col]
             if (character.justMoved):
-                print("original rect", currBlock.rect.x, currBlock.rect.y)
                 currBlock.rect.x -= scrollX
                 currBlock.rect.y -= scrollY
-                print("new rect", currBlock.rect.x, currBlock.rect.y)
 
 def scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrollY, character):
     # for sprite in waterSprites:
@@ -45,7 +44,11 @@ def scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrol
             # print("before scroll", sprite.rect.centerx, sprite.rect.centery)
             sprite.rect.centerx -= scrollX
             sprite.rect.centery -= scrollY
-    print("blockArray1")
+
+    for sprite in treeSprites:
+        if (character.justMoved):
+            sprite.rect.centerx -= scrollX
+            sprite.rect.centery -= scrollY
     
     scrollIslands(blockArray1, scrollX, scrollY, character)
     # print("board bounds", getCartesianBoardBounds(cartesianBlockArray1))
@@ -71,7 +74,7 @@ def redrawAll(character):
     scrollY = character.scrollY
     cartScrollX = character.cartScrollX
     cartScrollY = character.cartScrollY
-    print("scrollX scrollY", scrollX, scrollY)
+    # print("scrollX scrollY", scrollX, scrollY)
 
     scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrollY, character)
 
@@ -86,6 +89,8 @@ def redrawAll(character):
     blockSprites2.draw(screen)
     drawBlockBorders(blockArray1)
     drawBlockBorders(blockArray2)
+    treeSprites.update()
+    treeSprites.draw(screen)
     charSprites.update()
     charSprites.draw(screen)
     inventoryBarSprite.update(screen)
@@ -125,7 +130,9 @@ def playGame():
     createWater(waterSprites, waterImage, rect)
     inventoryBar = Inventory()
     inventoryBarSprite.add(inventoryBar)
-    print("inventory bar main", inventoryBar.rect.x, inventoryBar.rect.y)
+
+    tree = Trees(character)
+    treeSprites.add(tree)
 
 
     clock = pygame.time.Clock()

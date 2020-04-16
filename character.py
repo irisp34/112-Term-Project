@@ -35,18 +35,11 @@ class Character(pygame.sprite.Sprite):
         self.justMoved = False
 
     def addScroll(self, scrollX, scrollY):
-        # scrollX, scrollY = self.convertCartesianToIsometric(cartScrollX, cartScrollY)
-        # self.scrollX += scrollX
-        # self.scrollY += scrollY
         self.scrollX += scrollX
         self.scrollY += scrollY
         cartScrollX, cartScrollY = self.convertIsometricToCartesian(scrollX, scrollY)
         self.cartScrollX += cartScrollX
         self.cartScrollY += cartScrollY
-    
-    # def addScrollY(self, cartScrollX, cartScrollY):
-    #     scrollX, scrollY = self.convertCartesianToIsometric(cartScrollX, cartScrollY)
-    #     self.scrollY += scrollY
 
     # retrieves a random isometric board center
     def getRandomBoardCenter(self, blockArray):
@@ -55,12 +48,11 @@ class Character(pygame.sprite.Sprite):
         block = blockArray[randRow, randCol]
         centerX = (block.rect.centerx + block.rect.midtop[0]) // 2
         centerY = (block.rect.centery + block.rect.midtop[1]) // 2
-        # centerX, centerY = block.rect.midbottom
         # print("block centers", block.rect.centerx, block.rect.centery)
         # print("midtop", block.rect.midtop)
         # print("average", (block.rect.centerx + block.rect.midtop[0]) // 2,
         #     (block.rect.centery + block.rect.midtop[1]) // 2)
-        centerX = block.rect.centerx
+        # centerX = block.rect.centerx
         # centerY = block.rect.centery
         return centerX, centerY
     
@@ -69,7 +61,6 @@ class Character(pygame.sprite.Sprite):
         # self.rect.centery -= 0.25 * self.boardCellWidth
         self.rect.centerx -= 0.25 * self.boardCellHeight
         self.rect.centery += 0.5 * self.boardCellWidth
-
     
     def findIsometricBounds(self, blockArray):
         # organized top left, top right, bottom left, bottom right
@@ -113,6 +104,7 @@ class Character(pygame.sprite.Sprite):
     def scaleImage(self):
         location = (self.boardCellWidth, self.boardCellHeight)
         self.image = pygame.transform.scale(self.image, location)
+        self.rect = self.image.get_rect()
     
     def getCartesianRow(self, isoX, isoY):
         cartesianX, cartesianY = self.convertIsometricToCartesian(self, isoX, isoY)

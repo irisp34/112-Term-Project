@@ -37,9 +37,6 @@ class Block(pygame.sprite.Sprite):
         # self.rect.centery = self.rect.y + halfHeight
     
     def makeBlockIsometric(self, row, col):
-        # self.rotatedImage = self.image
-        # row = row + 1
-        # col = col + 1
         self.angle = 45
         self.image = pygame.transform.rotate(self.image, self.angle)
         self.cellWidth = self.cellWidth * 2
@@ -157,19 +154,6 @@ def getIsometricBoardCenters(blockArray):
 # returns list with top left, top right, bottom left, bottom right coordinates
 # each in a tuple
 def getCartesianBoardBounds(cartesianBlockArray):
-    # boardCoordinates = []
-    # maxX = startX + (blockCols * cellWidth) + offsetX
-    # maxY = startY + (blockRows * cellHeight) + offsetY
-    # # top left
-    # boardCoordinates.append((startX + offsetX, startY + offsetY))
-    # # top right
-    # boardCoordinates.append((maxX, startY + offsetY))
-    # # bottom left
-    # boardCoordinates.append((startX + offsetX, maxY))
-    # # bottom right
-    # boardCoordinates.append((maxX, maxY))
-    # return boardCoordinates
-    # print("cartesianBlockArray", cartesianBlockArray)
     boardCorners = getBoardCorners(cartesianBlockArray)
     topLeftCorner, topRightCorner, bottomLeftCorner, bottomRightCorner = boardCorners
     topLeft = (topLeftCorner.rect.x, topLeftCorner.rect.y)
