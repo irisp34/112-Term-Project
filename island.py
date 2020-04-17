@@ -134,14 +134,14 @@ def getBoardCorners(blockArray):
     bottomRightCorner = blockArray[blockRows - 1, blockCols - 1]
     return (topLeftCorner, topRightCorner, bottomLeftCorner, bottomRightCorner)
 
-def getIsometricBoardBounds(blockArray):
-    # boardCoordinates = getCartesianBoardBounds()
-    topLeftCorner, topRightCorner, bottomLeftCorner, bottomRightCorner = getBoardCorners(blockArray)
-    topLeft = (topLeftCorner.rect.x, topLeftCorner.rect.y)
-    topRight = (topRightCorner.rect.x, topRightCorner.rect.y)
-    bottomLeft = (bottomLeftCorner.rect.x, bottomLeftCorner.rect.y)
-    bottomRight = (bottomRightCorner.rect.x, bottomRightCorner.rect.y)
-    return [topLeft, topRight, bottomLeft, bottomRight]
+# def getIsometricBoardBounds(blockArray):
+#     # boardCoordinates = getCartesianBoardBounds()
+#     topLeftCorner, topRightCorner, bottomLeftCorner, bottomRightCorner = getBoardCorners(blockArray)
+#     topLeft = (topLeftCorner.rect.x, topLeftCorner.rect.y)
+#     topRight = (topRightCorner.rect.x, topRightCorner.rect.y)
+#     bottomLeft = (bottomLeftCorner.rect.x, bottomLeftCorner.rect.y)
+#     bottomRight = (bottomRightCorner.rect.x, bottomRightCorner.rect.y)
+#     return [topLeft, topRight, bottomLeft, bottomRight]
 
 def getIsometricBoardCenters(blockArray):
     topLeftCorner, topRightCorner, bottomLeftCorner, bottomRightCorner = getBoardCorners(blockArray)
@@ -153,8 +153,8 @@ def getIsometricBoardCenters(blockArray):
 
 # returns list with top left, top right, bottom left, bottom right coordinates
 # each in a tuple
-def getCartesianBoardBounds(cartesianBlockArray):
-    boardCorners = getBoardCorners(cartesianBlockArray)
+def getBoardBounds(blockArray):
+    boardCorners = getBoardCorners(blockArray)
     topLeftCorner, topRightCorner, bottomLeftCorner, bottomRightCorner = boardCorners
     topLeft = (topLeftCorner.rect.x, topLeftCorner.rect.y)
     topRight = (topRightCorner.rect.topright[0], topRightCorner.rect.topright[1])

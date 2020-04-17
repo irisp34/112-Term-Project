@@ -110,17 +110,18 @@ def createIslands():
                 cellHeight, startX, startY, offsetX, offsetY)
     makeBoardIsometric(blockArray1)
     print("drawing island 2")
-    
-    offsetX += width // 2
-    offsetY -= height // 3
+    newOffsetX = offsetX + width // 2
+    newOffsetY = offsetY - height // 3
+    # offsetX += width // 2
+    # offsetY -= height // 3
     make2DBoard(blockSprites2, blockArray2, cartesianBlockArray2, blockRows, blockCols, cellWidth, 
-                cellHeight, startX, startY, offsetX, offsetY)
+                cellHeight, startX, startY, newOffsetX, newOffsetY)
     makeBoardIsometric(blockArray2)
 
 # makes Tree objects to place on the board
-def makeTrees(character):
-    for i in range(5):
-        tree = Trees(character)
+def makeTrees(character, blockArray, cartBlockArray):
+    for i in range(1):
+        tree = Trees(character, blockArray, cartBlockArray)
         treeSprites.add(tree)
 
 def playGame():
@@ -136,7 +137,8 @@ def playGame():
     createWater(waterSprites, waterImage, rect)
     inventoryBar = Inventory()
     inventoryBarSprite.add(inventoryBar)
-    makeTrees(character)
+    makeTrees(character, blockArray1, cartesianBlockArray1)
+    # makeTrees(character, blockArray2, cartesianBlockArray2)
 
     clock = pygame.time.Clock()
     playing = True
@@ -146,7 +148,13 @@ def playGame():
             if (event.type == pygame.QUIT):
                 playing = False
             elif (event.type == pygame.MOUSEBUTTONDOWN):
-                character.mousePressed(event)
+                # character.mousePressed(event)
+                count = 1
+                for sprite in treeSprites:
+                    print("SPRITE #", count)
+                    if (sprite.removeTrees(event, offsetX, offsetY)):
+                        break
+                    count += 1
                 # character.jump(posX, posY)
             # elif (event.type == pygame.KEYDOWN):
             #     if (event.key == pygame.K_DOWN):

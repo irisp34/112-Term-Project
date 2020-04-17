@@ -64,7 +64,7 @@ class Character(pygame.sprite.Sprite):
     
     def findIsometricBounds(self, blockArray):
         # organized top left, top right, bottom left, bottom right
-        boardCoordinates = getIsometricBoardBounds(blockArray)
+        boardCoordinates = getBoardBounds(blockArray)
         self.minX = boardCoordinates[2][0] #+ self.boardCellWidth / 4
         self.minY = boardCoordinates[0][1] #+ self.boardCellHeight / 4
         self.maxX = boardCoordinates[1][0] #+ self.boardCellWidth / 4
@@ -74,7 +74,7 @@ class Character(pygame.sprite.Sprite):
         # cartesianX, cartesianY = self.convertIsometricToCartesian(self.rect.centerx, self.rect.centery)
         # top left, top right, bottom left, bottom right
         # print("in character", self.cartBlockArray)
-        cartBoard = getCartesianBoardBounds(cartBlockArray)
+        cartBoard = getBoardBounds(cartBlockArray)
         # print("IN CHARACTER", cartBoard)
         self.cartMinX = cartBoard[0][0]
         self.cartMinY = cartBoard[0][1]
