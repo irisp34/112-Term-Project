@@ -73,7 +73,7 @@ class Trees(pygame.sprite.Sprite):
         if (posX >= cellMinX and posX <= cellMaxX and posY >= cellMinY and
             posY <= cellMaxY):
             self.kill()
-            self.wood += 1
+            # self.wood += 1
             self.addWoodToInventory()
             return True
         return False
@@ -81,8 +81,9 @@ class Trees(pygame.sprite.Sprite):
     # log image from: https://www.deviantart.com/chunsmunkey/art/Pixel-Log-750792001
     def addWoodToInventory(self):
         logImage = "log.png"
-        logResource = Resource(logImage, "Wood", 1, self.wood, self.inventoryBar)
+        logResource = Resource(logImage, "Wood", 1, self.inventoryBar)
         logResource.placeInInventory()
+        # logResource.amount += 1
         resourceSprites.add(logResource)
         # print("resourceSprites", resourceSprites)
 

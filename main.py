@@ -97,8 +97,14 @@ def redrawAll(character):
     inventoryBarSprite.draw(screen)
     resourceSprites.update(screen)
     resourceSprites.draw(screen)
-    for sprite in resourceSprites:
-        text, textRect = sprite.addCaption()
+    
+    # adds resource caption only if there are resource sprites
+    if (resourceSprites):
+        for sprite in resourceSprites:
+            currCount = 0
+            if (sprite.amount >= currCount):
+                currCount = sprite.amount
+                text, textRect = sprite.addCaption()
         screen.blit(text, textRect)
     # coordinates for first inventory box
     pygame.draw.rect(screen, (0, 255, 255),(265, 10, 90, 70), 3)

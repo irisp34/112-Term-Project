@@ -6,13 +6,13 @@ from inventory import *
 from character import *
 
 class Resource(pygame.sprite.Sprite):
-    def __init__(self, image, resourceType, resourceValue, resourceAmount, inventoryBar):
+    def __init__(self, image, resourceType, resourceValue, inventoryBar):
         super().__init__()
         self.image = pygame.image.load(image).convert_alpha()
         self.rect = self.image.get_rect()
         self.resourceType = resourceType
         self.resourceValue = resourceValue
-        self.amount = resourceAmount
+        self.amount = len(resourceSprites) + 1
         self.inventoryBar = inventoryBar
         self.image, self.rect = self.scaleImage(self.image, self.rect)
     
