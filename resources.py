@@ -32,5 +32,16 @@ class Resource(pygame.sprite.Sprite):
         print("log location", self.rect.x, self.rect.y)
 
     def getInventorySpaces(self):
-        space1 = (self.inventoryBar.rect.x + 80, 10)
+        topEdgeOfInventorySpace = 10
+        space1 = (self.inventoryBar.rect.x + 80, topEdgeOfInventorySpace)
         return [space1]
+    
+    # fix caption to update for more resources
+    def addCaption(self):
+        font = pygame.font.Font('freesansbold.ttf', 12)
+        caption = f"{self.amount} {self.resourceType.lower()}"
+        text = font.render(caption, True, (0, 0, 0))
+        textRect = text.get_rect()
+        textRect.centerx = self.rect.centerx
+        textRect.centery = self.rect.y + self.barSpaceHeight - 15
+        return text, textRect

@@ -84,7 +84,7 @@ class Trees(pygame.sprite.Sprite):
         logResource = Resource(logImage, "Wood", 1, self.wood, self.inventoryBar)
         logResource.placeInInventory()
         resourceSprites.add(logResource)
-        print("resourceSprites", resourceSprites)
+        # print("resourceSprites", resourceSprites)
 
     def findCartesianBounds(self, cartBlockArray):
         cartBoard = getBoardBounds(cartBlockArray)
