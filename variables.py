@@ -28,8 +28,10 @@ treeSprites = pygame.sprite.Group()
 resourceSprites = pygame.sprite.Group()
 inventoryBarSprite = pygame.sprite.Group()
 # place board in center of screen
-offsetX = (width // 2) - startX
-offsetY = (height // 2) - startY
+offsetX1 = (width // 2) - startX
+offsetY1 = (height // 2) - startY
+offsetX2 = 0
+offsetY2 = 0
 # offsetX = 0
 # offsetY = 0
 

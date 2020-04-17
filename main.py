@@ -98,7 +98,8 @@ def redrawAll(character):
     resourceSprites.update(screen)
     resourceSprites.draw(screen)
     
-    # adds resource caption only if there are resource sprites
+    # adds resource caption only if there are resource sprites in the sprite
+    # group
     if (resourceSprites):
         for sprite in resourceSprites:
             currCount = 0
@@ -114,26 +115,28 @@ def redrawAll(character):
 def createIslands():
     # global startX
     # global startY
-    global offsetX
-    global offsetY
+    global offsetX1
+    global offsetY1
+    global offsetX2
+    global offsetY2
     # making 1st island
     print("drawing island 1")
     make2DBoard(blockSprites1, blockArray1, cartesianBlockArray1, blockRows, blockCols, cellWidth, 
-                cellHeight, startX, startY, offsetX, offsetY)
+                cellHeight, startX, startY, offsetX1, offsetY1)
     makeBoardIsometric(blockArray1)
     print("drawing island 2")
-    newOffsetX = offsetX + width // 2
-    newOffsetY = offsetY - height // 3
+    offsetX2 = offsetX1 + width // 2
+    offsetY2 = offsetY1 - height // 3
     # offsetX += width // 2
     # offsetY -= height // 3
     make2DBoard(blockSprites2, blockArray2, cartesianBlockArray2, blockRows, blockCols, cellWidth, 
-                cellHeight, startX, startY, newOffsetX, newOffsetY)
+                cellHeight, startX, startY, offsetX2, offsetY2)
     makeBoardIsometric(blockArray2)
 
 # makes Tree objects to place on the board
-def makeTrees(character, blockArray, cartBlockArray, inventoryBar):
+def makeTrees(character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY):
     for i in range(5):
-        tree = Trees(character, blockArray, cartBlockArray, inventoryBar)
+        tree = Trees(character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY)
         treeSprites.add(tree)
 
 def playGame():
@@ -141,7 +144,8 @@ def playGame():
     createIslands()
 
     # character picture from: https://ya-webdesign.com/imgdownload.html
-    character = createCharacter("character.png", charSprites, cellWidth, cellHeight, blockArray1, cartesianBlockArray1)
+    character = createCharacter("character.png", charSprites, cellWidth, 
+        cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
 
     # water picture from: http://igm-tuto.blogspot.com/2014/06/pixel-art-draw-water-background.html
     waterImage = pygame.image.load("water.png").convert_alpha()
@@ -149,8 +153,8 @@ def playGame():
     createWater(waterSprites, waterImage, rect)
     inventoryBar = Inventory()
     inventoryBarSprite.add(inventoryBar)
-    makeTrees(character, blockArray1, cartesianBlockArray1, inventoryBar)
-    # makeTrees(character, blockArray2, cartesianBlockArray2)
+    makeTrees(character, blockArray1, cartesianBlockArray1, inventoryBar, offsetX1, offsetY1)
+    makeTrees(character, blockArray2, cartesianBlockArray2, inventoryBar, offsetX2, offsetY2)
 
     clock = pygame.time.Clock()
     playing = True
@@ -163,8 +167,8 @@ def playGame():
                 # character.mousePressed(event)
                 count = 1
                 for sprite in treeSprites:
-                    print("SPRITE #", count)
-                    if (sprite.removeTrees(event, offsetX, offsetY)):
+                    # print("SPRITE #", count)
+                    if (sprite.removeTrees(event)):
                         break
                     count += 1
                 # character.jump(posX, posY)
@@ -188,9 +192,6 @@ def playGame():
             character.moveLeft()
     
         redrawAll(character)
-        
     pygame.quit()
     os._exit(0)
-
-
 playGame()

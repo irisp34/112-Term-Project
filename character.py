@@ -8,12 +8,14 @@ from variables import *
 
 # character class that controls the main person
 class Character(pygame.sprite.Sprite):
-    def __init__(self, image, cellWidth, cellHeight, blockArray, cartesianBlockArray):
+    def __init__(self, image, cellWidth, cellHeight, blockArray, cartesianBlockArray, offsetX, offsetY):
         super().__init__()
         self.cartBlockArray = cartesianBlockArray
         self.blockArray = blockArray
         self.boardCellWidth = cellWidth
         self.boardCellHeight = cellHeight
+        self.offsetX = offsetX
+        self.offsetY = offsetY
         # scrolling loosely adapted (adjusted to fit isometric) from CMU Animations
         # Notes: http://www.cs.cmu.edu/~112/notes/notes-animations-part2.html#sidescrollerExamples
         self.scrollX = 0
@@ -234,7 +236,9 @@ class Character(pygame.sprite.Sprite):
             posY = height - self.charHeight
         self.jump(posX, posY)
 
-def createCharacter(image, charSprites, cellWidth, cellHeight, blockArray, cartesianBlockArray):
-    character = Character(image, cellWidth, cellHeight, blockArray, cartesianBlockArray)
+def createCharacter(image, charSprites, cellWidth, cellHeight, blockArray, 
+    cartesianBlockArray, offsetX, offsetY):
+    character = Character(image, cellWidth, cellHeight, blockArray, 
+        cartesianBlockArray, offsetX, offsetY)
     charSprites.add(character)
     return character

@@ -7,7 +7,7 @@ from island import *
 from resources import *
 
 class Trees(pygame.sprite.Sprite):
-    def __init__(self, character, blockArray, cartesianBlockArray, inventoryBar):
+    def __init__(self, character, blockArray, cartesianBlockArray, inventoryBar, offsetX, offsetY):
         super().__init__()
         self.character = character
         self.boardCellWidth = cellWidth
@@ -15,11 +15,13 @@ class Trees(pygame.sprite.Sprite):
         self.blockArray = blockArray
         self.cartBlockArray = cartesianBlockArray
         self.inventoryBar = inventoryBar
+        self.offsetX = offsetX
+        self.offsetY = offsetY
         # tree image: https://www.reddit.com/r/PixelArt/comments/6ktv32/newbiecc_looking_for_tips_how_to_improve_this_tree/
         self.image = pygame.image.load("tree.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.image, self.rect = self.scaleImage(self.image, self.rect)
-        self.rect.centerx, self.rect.centery = self.getRandomBoardCenter(blockArray1)
+        self.rect.centerx, self.rect.centery = self.getRandomBoardCenter(self.blockArray)
         self.findCartesianBounds(self.cartBlockArray)
         self.wood = 0
         self.carbonDioxide = 10
@@ -41,10 +43,10 @@ class Trees(pygame.sprite.Sprite):
         randCol = random.randint(0, boardCols - 1)
         return randRow, randCol
     
-    def removeTrees(self, event, offsetX, offsetY):
+    def removeTrees(self, event):
         posX, posY = event.pos
         # print("before offset", posX, posY)
-        posX, posY = self.convertIsometricToCartesian(posX - offsetX, posY - offsetY)
+        posX, posY = self.convertIsometricToCartesian(posX - self.offsetX, posY - self.offsetY)
         # posX += startX + self.boardCellWidth
         posX += startX - (self.boardCellWidth / 2)
         posY += startY + (self.boardCellHeight / 2)
@@ -59,8 +61,8 @@ class Trees(pygame.sprite.Sprite):
         if (posX < self.cartMinX or posX > self.cartMaxX or posY < self.cartMinY or posY > self.cartMaxY):
             # print("here")
             return
-        treeX, treeY = self.convertIsometricToCartesian(self.rect.centerx - offsetX,
-            self.rect.centery - offsetY)
+        treeX, treeY = self.convertIsometricToCartesian(self.rect.centerx - self.offsetX,
+            self.rect.centery - self.offsetY)
         treeX += startX
         treeY += startY + (self.boardCellHeight / 2)
         cellMinX = treeX - self.boardCellWidth / 2
