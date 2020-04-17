@@ -25,6 +25,7 @@ blockSprites2 = pygame.sprite.Group()
 waterSprites = pygame.sprite.Group()
 charSprites = pygame.sprite.Group()
 treeSprites = pygame.sprite.Group()
+resourceSprites = pygame.sprite.Group()
 inventoryBarSprite = pygame.sprite.Group()
 # place board in center of screen
 offsetX = (width // 2) - startX

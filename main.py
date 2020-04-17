@@ -95,7 +95,10 @@ def redrawAll(character):
     charSprites.draw(screen)
     inventoryBarSprite.update(screen)
     inventoryBarSprite.draw(screen)
-    # pygame.draw.rect(screen, (0, 255, 255),(185, 0, 50, 30))
+    resourceSprites.update(screen)
+    resourceSprites.draw(screen)
+    # coordinates for first inventory box
+    pygame.draw.rect(screen, (0, 255, 255),(265, 10, 90, 70), 3)
     pygame.display.flip()
     resetScroll(character)
 
@@ -119,9 +122,9 @@ def createIslands():
     makeBoardIsometric(blockArray2)
 
 # makes Tree objects to place on the board
-def makeTrees(character, blockArray, cartBlockArray):
-    for i in range(1):
-        tree = Trees(character, blockArray, cartBlockArray)
+def makeTrees(character, blockArray, cartBlockArray, inventoryBar):
+    for i in range(5):
+        tree = Trees(character, blockArray, cartBlockArray, inventoryBar)
         treeSprites.add(tree)
 
 def playGame():
@@ -137,7 +140,7 @@ def playGame():
     createWater(waterSprites, waterImage, rect)
     inventoryBar = Inventory()
     inventoryBarSprite.add(inventoryBar)
-    makeTrees(character, blockArray1, cartesianBlockArray1)
+    makeTrees(character, blockArray1, cartesianBlockArray1, inventoryBar)
     # makeTrees(character, blockArray2, cartesianBlockArray2)
 
     clock = pygame.time.Clock()

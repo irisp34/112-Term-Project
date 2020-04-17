@@ -4,28 +4,32 @@ import random
 from variables import *
 from character import *
 from island import *
+from resources import *
 
 class Trees(pygame.sprite.Sprite):
-    def __init__(self, character, blockArray, cartesianBlockArray):
+    def __init__(self, character, blockArray, cartesianBlockArray, inventoryBar):
         super().__init__()
         self.character = character
         self.boardCellWidth = cellWidth
         self.boardCellHeight = cellHeight
         self.blockArray = blockArray
         self.cartBlockArray = cartesianBlockArray
+        self.inventoryBar = inventoryBar
         # tree image: https://www.reddit.com/r/PixelArt/comments/6ktv32/newbiecc_looking_for_tips_how_to_improve_this_tree/
         self.image = pygame.image.load("tree.png").convert_alpha()
         self.rect = self.image.get_rect()
-        self.scaleImage()
+        self.image, self.rect = self.scaleImage(self.image, self.rect)
         self.rect.centerx, self.rect.centery = self.getRandomBoardCenter(blockArray1)
         self.findCartesianBounds(self.cartBlockArray)
+        self.wood = 0
         self.carbonDioxide = 10
         self.cutDown = False
     
-    def scaleImage(self):
+    def scaleImage(self, image, rect):
         location = (int(self.boardCellWidth * 1.5), int(self.boardCellHeight * 1.5))
-        self.image = pygame.transform.scale(self.image, location)
-        self.rect = self.image.get_rect()
+        image = pygame.transform.scale(image, location)
+        rect = image.get_rect()
+        return image, rect
 
     def findBlockCenter(self, block):
         centerX = (block.rect.centerx + block.rect.midtop[0]) // 2
@@ -39,28 +43,21 @@ class Trees(pygame.sprite.Sprite):
     
     def removeTrees(self, event, offsetX, offsetY):
         posX, posY = event.pos
-        print("before offset", posX, posY)
-        # posX, posY = self.convertCartesianToIsometric(posX, posY)
+        # print("before offset", posX, posY)
         posX, posY = self.convertIsometricToCartesian(posX - offsetX, posY - offsetY)
         # posX += startX + self.boardCellWidth
         posX += startX - (self.boardCellWidth / 2)
         posY += startY + (self.boardCellHeight / 2)
-        # print("not converted offset", offsetX, offsetY)
-        # offsetX, offsetY = self.convertIsometricToCartesian(offsetX, offsetY)
-        # print("converted", offsetX, offsetY)
-        # posX = posX - offsetX + startX + (self.boardCellWidth)
-        # posY = posY - offsetY + startY
-        print("clicked", posX, posY)
-        # isoX, isoY = convertCartesianToIsometric(posX, posY)
-        print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
-        a1 = posX < self.cartMinX
-        a2 = posX > self.cartMaxX
-        a3 = posY < self.cartMinY
-        a4 = posY > self.cartMaxY
-        print("FIRST If less x", a1, "more x", a2, "less y", a3, "more y", a4)
-        a = a1 or a2 or a3 or a4
+        # print("clicked", posX, posY)
+        # print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
+        # a1 = posX < self.cartMinX
+        # a2 = posX > self.cartMaxX
+        # a3 = posY < self.cartMinY
+        # a4 = posY > self.cartMaxY
+        # print("FIRST If less x", a1, "more x", a2, "less y", a3, "more y", a4)
+        # a = a1 or a2 or a3 or a4
         if (posX < self.cartMinX or posX > self.cartMaxX or posY < self.cartMinY or posY > self.cartMaxY):
-            print("here")
+            # print("here")
             return
         treeX, treeY = self.convertIsometricToCartesian(self.rect.centerx - offsetX,
             self.rect.centery - offsetY)
@@ -70,15 +67,25 @@ class Trees(pygame.sprite.Sprite):
         cellMaxX = treeX + self.boardCellWidth / 2
         cellMinY = treeY - self.boardCellHeight / 2
         cellMaxY = treeY + self.boardCellHeight / 2
-        print("cell mins and maxs", cellMinX, cellMinY, cellMaxX, cellMaxY)
-        print("more x", posX >= cellMinX, "less x", posX <= cellMaxX, "more y", 
-            posY >= cellMinY, "less y", posY <= cellMaxY)
+        # print("cell mins and maxs", cellMinX, cellMinY, cellMaxX, cellMaxY)
+        # print("more x", posX >= cellMinX, "less x", posX <= cellMaxX, "more y", 
+        #     posY >= cellMinY, "less y", posY <= cellMaxY)
         if (posX >= cellMinX and posX <= cellMaxX and posY >= cellMinY and
             posY <= cellMaxY):
             self.kill()
+            self.wood += 1
+            self.addWoodToInventory()
             return True
         return False
     
+    # log image from: https://www.deviantart.com/chunsmunkey/art/Pixel-Log-750792001
+    def addWoodToInventory(self):
+        logImage = "log.png"
+        logResource = Resource(logImage, "Wood", 1, self.wood, self.inventoryBar)
+        logResource.placeInInventory()
+        resourceSprites.add(logResource)
+        print("resourceSprites", resourceSprites)
+
     def findCartesianBounds(self, cartBlockArray):
         cartBoard = getBoardBounds(cartBlockArray)
         self.cartMinX = cartBoard[0][0]
