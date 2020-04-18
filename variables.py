@@ -32,7 +32,10 @@ shopButtonRect = 0
 buyImage = None
 buyButtonRect = 0
 isShopping = False
-purchasableItems = set()
+purchasableItems = dict()
+betweenItemsOffset = 30
+drawOutline = False
+keyword = None
 baseX = 100
 baseY = 100
 # place board in center of screen

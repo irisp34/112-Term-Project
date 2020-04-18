@@ -87,6 +87,10 @@ def redrawAll(character):
     else:
         createShop()
         drawBuyButton()
+        if (drawOutline and keyword != None):
+            minX, minY, maxX, maxY = purchasableItems[keyword]
+            pygame.draw.rect(screen, (0, 52, 114), (minX, 
+                minY, maxX - minX, maxY - minY), 4)
     
     # adds resource caption only if there are resource sprites in the sprite
     # group
@@ -104,8 +108,10 @@ def redrawAll(character):
 
 def mousePressed(event):
     global isShopping
+    global keyword
+    global drawOutline
     if (isShopping):
-        selectedItem(event)
+        drawOutline, keyword = selectedItem(event)
         isShopping = endShopping(event)
     else:
         count = 1

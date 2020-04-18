@@ -15,35 +15,44 @@ def createShop():
     addBridgeToShop()
 
 def addBridgeToShop():
-    purchasableItems.add("bridge")
+    # purchasableItems.add("bridge")
     bridge = pygame.image.load("woodBridge.png").convert_alpha()
     bridgeRect = bridge.get_rect()
     location = (int(bridgeRect.width * .5), int(bridgeRect.height * .5))
     bridge = pygame.transform.scale(bridge, location)
     bridgeRect = bridge.get_rect()
-    bridgeRect.x = baseX
-    bridgeRect.y = baseY
+    bridgeRect.x = baseX + betweenItemsOffset
+    bridgeRect.y = baseY + betweenItemsOffset
+    minX, minY = bridgeRect.x, bridgeRect.y
+    maxX, maxY = bridgeRect.bottomright[0], bridgeRect.bottomright[1]
+    purchasableItems["bridge"] = (minX, minY, maxX, maxY)
     screen.blit(bridge, (bridgeRect.x, bridgeRect.y))
     return bridge, bridgeRect
 
 def selectedItem(event):
+    drawOutline = False
+    keyword = None
     pygame.draw.rect(screen, (255, 0, 0), (0, 0, 60, 60))
     posX, posY = event.pos
     print("clicked bridge", posX, posY)
     image = None
     imageRect = None
     print("items", purchasableItems)
-    for item in purchasableItems:
-        if (item.lower() == "bridge"):
-            image, imageRect = addBridgeToShop()
+    for key in purchasableItems:
+        if (key.lower() == "bridge"):
+            # image, imageRect = addBridgeToShop()
+            imageDim = purchasableItems[key]
+            keyword = key
             print("in if")
-        minX, minY = imageRect.x, imageRect.y
-        maxX, maxY = imageRect.bottomright[0], imageRect.bottomright[1]
+        # minX, minY = imageRect.x, imageRect.y
+        # maxX, maxY = imageRect.bottomright[0], imageRect.bottomright[1]
+        minX, minY, maxX, maxY = imageDim
         print("min max", minX, minY, maxX, maxY)
         print(posX >= minX, posX <= maxX, posY >= minY, posY <= maxY)
         if (posX >= minX and posX <= maxX and posY >= minY and posY <= maxY):
-            print("here")
-            pygame.draw.rect(screen, (0, 0, 0), (minX, minY, maxX, maxY))
+            # print("here")
+            drawOutline = True
+        return drawOutline, keyword
         
 
 def shopButtonInfo():
