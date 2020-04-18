@@ -162,5 +162,42 @@ def getBoardBounds(blockArray):
     bottomRight = (bottomRightCorner.rect.bottomright[0], bottomRightCorner.rect.bottomright[1])
     return [topLeft, topRight, bottomLeft, bottomRight]
 
+def createIslands():
+    # global startX
+    # global startY
+    global offsetX1
+    global offsetY1
+    global offsetX2
+    global offsetY2
+    # making 1st island
+    print("drawing island 1")
+    make2DBoard(blockSprites1, blockArray1, cartesianBlockArray1, blockRows, blockCols, cellWidth, 
+                cellHeight, startX, startY, offsetX1, offsetY1)
+    makeBoardIsometric(blockArray1)
+    print("drawing island 2")
+    offsetX2 = offsetX1 + width // 2
+    offsetY2 = offsetY1 - height // 3
+    # offsetX += width // 2
+    # offsetY -= height // 3
+    make2DBoard(blockSprites2, blockArray2, cartesianBlockArray2, blockRows, blockCols, cellWidth, 
+                cellHeight, startX, startY, offsetX2, offsetY2)
+    makeBoardIsometric(blockArray2)
+
+# draws the tan portion of the island with a border      
+def drawIslandBase(blockArray):
+    pointsLeft, pointsRight = findIslandBasePoints(blockArray)
+    # color picked from here: https://htmlcolorcodes.com/color-picker/
+    pygame.draw.polygon(screen, (204, 179, 90), pointsLeft)
+    pygame.draw.polygon(screen, (204, 179, 90), pointsRight)
+    pygame.draw.polygon(screen, (0, 0, 0), pointsRight, 2)
+    pygame.draw.polygon(screen, (0, 0, 0), pointsLeft, 2)
+
+# draws a border around each block
+def drawBlockBorders(blockArray):
+    for row in range(blockArray.shape[0]):
+        for col in range(blockArray.shape[1]):
+            block = blockArray[row, col]
+            points = findGrassPoints(block)
+            pygame.draw.polygon(screen, (0, 0, 0), points, 2)
 
 

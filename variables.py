@@ -27,6 +27,11 @@ charSprites = pygame.sprite.Group()
 treeSprites = pygame.sprite.Group()
 resourceSprites = pygame.sprite.Group()
 inventoryBarSprite = pygame.sprite.Group()
+shopImage = None
+shopButtonRect = 0
+buyImage = None
+buyButtonRect = 0
+isShopping = False
 # place board in center of screen
 offsetX1 = (width // 2) - startX
 offsetY1 = (height // 2) - startY

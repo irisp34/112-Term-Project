@@ -8,6 +8,7 @@ from variables import *
 from inventory import *
 from water import *
 from trees import *
+from shopping import *
 
 def resetScroll(character):
     character.scrollX = 0
@@ -15,16 +16,6 @@ def resetScroll(character):
     character.cartScrollX = 0
     character.cartScrollY = 0
 
-
-# draws the tan portion of the island with a border      
-def drawIslandBase(blockArray):
-    pointsLeft, pointsRight = findIslandBasePoints(blockArray)
-    # color picked from here: https://htmlcolorcodes.com/color-picker/
-    pygame.draw.polygon(screen, (204, 179, 90), pointsLeft)
-    pygame.draw.polygon(screen, (204, 179, 90), pointsRight)
-    pygame.draw.polygon(screen, (0, 0, 0), pointsRight, 2)
-    pygame.draw.polygon(screen, (0, 0, 0), pointsLeft, 2)
-    
 def scrollIslands(blockArray, scrollX, scrollY, character):
     for row in range(blockArray.shape[0]):
         for col in range(blockArray.shape[1]):
@@ -59,15 +50,9 @@ def scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrol
     scrollIslands(cartesianBlockArray2, cartScrollX, cartScrollY, character)
     character.justMoved = False
 
-# draws a border around each block
-def drawBlockBorders(blockArray):
-    for row in range(blockArray.shape[0]):
-        for col in range(blockArray.shape[1]):
-            block = blockArray[row, col]
-            points = findGrassPoints(block)
-            pygame.draw.polygon(screen, (0, 0, 0), points, 2)
 
 def redrawAll(character):
+    global isShopping
     screen.fill((255, 255, 255))
     
     scrollX = character.scrollX
@@ -81,22 +66,27 @@ def redrawAll(character):
     waterSprites.update()
     waterSprites.draw(screen)
     pygame.draw.rect(screen, (0, 255, 0),(200, 200, 50, 30))
-    drawIslandBase(blockArray1)
-    drawIslandBase(blockArray2)
-    blockSprites1.update()
-    blockSprites1.draw(screen)
-    blockSprites2.update()
-    blockSprites2.draw(screen)
-    drawBlockBorders(blockArray1)
-    drawBlockBorders(blockArray2)
-    treeSprites.update()
-    treeSprites.draw(screen)
-    charSprites.update()
-    charSprites.draw(screen)
-    inventoryBarSprite.update(screen)
-    inventoryBarSprite.draw(screen)
-    resourceSprites.update(screen)
-    resourceSprites.draw(screen)
+    if (not isShopping):
+        drawIslandBase(blockArray1)
+        drawIslandBase(blockArray2)
+        blockSprites1.update()
+        blockSprites1.draw(screen)
+        blockSprites2.update()
+        blockSprites2.draw(screen)
+        drawBlockBorders(blockArray1)
+        drawBlockBorders(blockArray2)
+        treeSprites.update()
+        treeSprites.draw(screen)
+        charSprites.update()
+        charSprites.draw(screen)
+        inventoryBarSprite.update(screen)
+        inventoryBarSprite.draw(screen)
+        resourceSprites.update(screen)
+        resourceSprites.draw(screen)
+        drawShopButton()
+    else:
+        createShop()
+        drawBuyButton()
     
     # adds resource caption only if there are resource sprites in the sprite
     # group
@@ -112,32 +102,19 @@ def redrawAll(character):
     pygame.display.flip()
     resetScroll(character)
 
-def createIslands():
-    # global startX
-    # global startY
-    global offsetX1
-    global offsetY1
-    global offsetX2
-    global offsetY2
-    # making 1st island
-    print("drawing island 1")
-    make2DBoard(blockSprites1, blockArray1, cartesianBlockArray1, blockRows, blockCols, cellWidth, 
-                cellHeight, startX, startY, offsetX1, offsetY1)
-    makeBoardIsometric(blockArray1)
-    print("drawing island 2")
-    offsetX2 = offsetX1 + width // 2
-    offsetY2 = offsetY1 - height // 3
-    # offsetX += width // 2
-    # offsetY -= height // 3
-    make2DBoard(blockSprites2, blockArray2, cartesianBlockArray2, blockRows, blockCols, cellWidth, 
-                cellHeight, startX, startY, offsetX2, offsetY2)
-    makeBoardIsometric(blockArray2)
-
-# makes Tree objects to place on the board
-def makeTrees(character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY):
-    for i in range(5):
-        tree = Trees(character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY)
-        treeSprites.add(tree)
+def mousePressed(event):
+    global isShopping
+    if (isShopping):
+        isShopping = endShopping(event)
+    else:
+        count = 1
+        for sprite in treeSprites:
+            # print("SPRITE #", count)
+            if (sprite.removeTrees(event)):
+                break
+            count += 1
+        isShopping = beginShopping(event)
+    # return isShopping
 
 def playGame():
     pygame.init()
@@ -164,13 +141,9 @@ def playGame():
             if (event.type == pygame.QUIT):
                 playing = False
             elif (event.type == pygame.MOUSEBUTTONDOWN):
-                # character.mousePressed(event)
-                count = 1
-                for sprite in treeSprites:
-                    # print("SPRITE #", count)
-                    if (sprite.removeTrees(event)):
-                        break
-                    count += 1
+                # character.jump(event)
+                mousePressed(event)
+                
                 # character.jump(posX, posY)
             # elif (event.type == pygame.KEYDOWN):
             #     if (event.key == pygame.K_DOWN):

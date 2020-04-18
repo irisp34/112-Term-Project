@@ -173,16 +173,12 @@ class Character(pygame.sprite.Sprite):
             scrollY = (0.5 * self.boardCellHeight) / 2
             self.addScroll(scrollX, scrollY)
             self.justMoved = True
-
-    def jump(self, posX, posY):
-        print("jump after", posX, posX)
-        self.rect.centerx = posX
-        self.rect.centery = posY
+        
 
     def isWalkable(self, dx, dy):
         self.findCartesianBounds(self.cartBlockArray)
-        self.cartX, self.cartY = self.convertIsometricToCartesian(self.rect.centerx - offsetX, 
-            self.rect.centery - offsetY)
+        self.cartX, self.cartY = self.convertIsometricToCartesian(self.rect.centerx - self.offsetX, 
+            self.rect.centery - self.offsetY)
         self.cartX += startX #+ (self.boardCellWidth // 2)
         self.cartY += startY + (self.boardCellHeight / 2)
         # print("curr self.cartx, self.carty", self.cartX, self.cartY)
@@ -221,7 +217,7 @@ class Character(pygame.sprite.Sprite):
         return isScrollable
 
     # fix to check within isometric board
-    def mousePressed(self, event):
+    def jump(self, event):
         posX, posY = event.pos
         print("cartesian", posX, posY)
         posX = posX - self.charWidth // 2
@@ -234,7 +230,8 @@ class Character(pygame.sprite.Sprite):
             posY = 0
         elif (posY + self.charHeight > height):
             posY = height - self.charHeight
-        self.jump(posX, posY)
+        self.rect.centerx = posX
+        self.rect.centery = posY
 
 def createCharacter(image, charSprites, cellWidth, cellHeight, blockArray, 
     cartesianBlockArray, offsetX, offsetY):
