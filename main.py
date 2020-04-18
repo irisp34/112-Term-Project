@@ -105,6 +105,7 @@ def redrawAll(character):
 def mousePressed(event):
     global isShopping
     if (isShopping):
+        selectedItem(event)
         isShopping = endShopping(event)
     else:
         count = 1

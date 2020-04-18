@@ -1,11 +1,50 @@
 import pygame
 import numpy as np
 from variables import *
-
 def createShop():
-    # cobblestone image from: https://tinyurl.com/y9poq2sb
-    background = pygame.image.load("cobblestone.jpg")
-    backgroundRect = background.get_rect()
+    # # cobblestone image from: https://tinyurl.com/y9poq2sb
+    # background = pygame.image.load("cobblestone.jpg")
+    # backgroundRect = background.get_rect()
+    # backgroundRect.x = 20
+    # backgroundRect.y = 20
+    # screen.blit(background, (backgroundRect.x, backgroundRect.y))
+    pygame.draw.rect(screen, (163, 196, 220), (baseX, baseY, width - baseX * 2, 
+        height - baseY * 2))
+    pygame.draw.rect(screen, (0, 52, 114), (baseX, baseY, width - baseX * 2, 
+        height - baseY * 2), 4)
+    addBridgeToShop()
+
+def addBridgeToShop():
+    purchasableItems.add("bridge")
+    bridge = pygame.image.load("woodBridge.png").convert_alpha()
+    bridgeRect = bridge.get_rect()
+    location = (int(bridgeRect.width * .5), int(bridgeRect.height * .5))
+    bridge = pygame.transform.scale(bridge, location)
+    bridgeRect = bridge.get_rect()
+    bridgeRect.x = baseX
+    bridgeRect.y = baseY
+    screen.blit(bridge, (bridgeRect.x, bridgeRect.y))
+    return bridge, bridgeRect
+
+def selectedItem(event):
+    pygame.draw.rect(screen, (255, 0, 0), (0, 0, 60, 60))
+    posX, posY = event.pos
+    print("clicked bridge", posX, posY)
+    image = None
+    imageRect = None
+    print("items", purchasableItems)
+    for item in purchasableItems:
+        if (item.lower() == "bridge"):
+            image, imageRect = addBridgeToShop()
+            print("in if")
+        minX, minY = imageRect.x, imageRect.y
+        maxX, maxY = imageRect.bottomright[0], imageRect.bottomright[1]
+        print("min max", minX, minY, maxX, maxY)
+        print(posX >= minX, posX <= maxX, posY >= minY, posY <= maxY)
+        if (posX >= minX and posX <= maxX and posY >= minY and posY <= maxY):
+            print("here")
+            pygame.draw.rect(screen, (0, 0, 0), (minX, minY, maxX, maxY))
+        
 
 def shopButtonInfo():
     # shop button image from: http://pixelartmaker.com/art/48b2d0645893d05
@@ -31,7 +70,7 @@ def buyButtonInfo():
     buyImage = pygame.transform.scale(buyImage, location)
     buyButtonRect = buyImage.get_rect()
     buyButtonRect.x = width / 2 - buyButtonRect.width / 2
-    buyButtonRect.y = height - 150
+    buyButtonRect.y = height - 200
     return buyImage, buyButtonRect
 
 def drawBuyButton():
@@ -53,6 +92,7 @@ def beginShopping(event):
     print("isshopping", isShopping)
     return isShopping
 
+# adjust to buy if an item is selected
 def endShopping(event):
     global isShopping
     buyImage, buyButtonRect = buyButtonInfo()

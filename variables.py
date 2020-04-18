@@ -32,6 +32,9 @@ shopButtonRect = 0
 buyImage = None
 buyButtonRect = 0
 isShopping = False
+purchasableItems = set()
+baseX = 100
+baseY = 100
 # place board in center of screen
 offsetX1 = (width // 2) - startX
 offsetY1 = (height // 2) - startY
