@@ -92,6 +92,7 @@ def redrawAll(character):
     else:
         createShop()
         drawBuyButton()
+        drawExitButton()
         # draws outline around selected item in shop
         if (drawOutline and keyword != None):
             minX, minY, maxX, maxY = purchasableItems[keyword]

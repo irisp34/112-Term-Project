@@ -69,12 +69,27 @@ def buyButtonInfo():
     buyImage = pygame.transform.scale(buyImage, location)
     buyButtonRect = buyImage.get_rect()
     buyButtonRect.x = width / 2 - buyButtonRect.width / 2
-    buyButtonRect.y = height - 200
+    buyButtonRect.y = height - 260
     return buyImage, buyButtonRect
 
 def drawBuyButton():
     buyImage, buyButtonRect = buyButtonInfo()
     screen.blit(buyImage, (buyButtonRect.x, buyButtonRect.y))
+
+def exitButtonInfo():
+    # buy button image from: http://pixelartmaker.com/art/cc53de89e33b6fa
+    exitImage = pygame.image.load("exitButton.png").convert_alpha()
+    exitButtonRect = exitImage.get_rect()
+    location = (int(exitButtonRect.width * .45), int(exitButtonRect.height * .45))
+    exitImage = pygame.transform.scale(exitImage, location)
+    exitButtonRect = exitImage.get_rect()
+    exitButtonRect.x = (width / 2) - (exitButtonRect.width / 2) + 5
+    exitButtonRect.y = height - 185
+    return exitImage, exitButtonRect
+
+def drawExitButton():
+    exitImage, exitButtonRect = exitButtonInfo()
+    screen.blit(exitImage, (exitButtonRect.x, exitButtonRect.y))
 
 def beginShopping(event):
     global isShopping
@@ -125,13 +140,19 @@ def endShopping(event, keyword):
     global drawOutline
     # global keyword
     buyImage, buyButtonRect = buyButtonInfo()
+    exitImage, exitButtonRect = exitButtonInfo()
     posX, posY = event.pos
     buyMinX, buyMinY = buyButtonRect.x, buyButtonRect.y
     buyMaxX, buyMaxY = buyButtonRect.bottomright[0], buyButtonRect.bottomright[1]
-    isInBounds = posX >= buyMinX and posX <= buyMaxX and posY >= buyMinY and posY <= buyMaxY
+    exitMinX, exitMinY = exitButtonRect.x, exitButtonRect.y
+    exitMaxX, exitMaxY = exitButtonRect.bottomright[0], exitButtonRect.bottomright[1]
+    isInBuyBounds = posX >= buyMinX and posX <= buyMaxX and posY >= buyMinY and posY <= buyMaxY
+    isInExitBounds = posX >= exitMinX and posX <= exitMaxX and posY >= exitMinY and posY <= exitMaxY
     print("endshopping keyword", keyword)
     isAffordable = affordable(keyword)
-    if (isInBounds and drawOutline and isAffordable):
+    if (isInExitBounds):
+        isShopping = False
+    if (isInBuyBounds and drawOutline and isAffordable):
         isShopping = False
         # subtractResources()
         # createBoughtItem()
