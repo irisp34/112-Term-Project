@@ -21,6 +21,31 @@ class Bridge(pygame.sprite.Sprite):
         location = (self.boardCellWidth, self.boardCellHeight)
         self.image = pygame.transform.scale(self.image, location)
         self.rect = self.image.get_rect()
+    
+    def findIslandEdges(self):
+        blockRows1 = self.cartBlockArray1.shape[0]
+        blockCols1 = self.cartBlockArray1.shape[1]
+        blockRows2 = self.cartBlockArray2.shape[0]
+        blockCols2 = self.cartBlockArray2.shape[1]
+        offsetX1 = self.blockArray1[0,0].offsetX
+        offsetY1 = self.blockArray1[0,0].offsetY
+        offsetX2 = self.blockArray2[0,0].offsetX
+        offsetY2 = self.blockArray2[0,0].offsetY
+        # if (offsetX1 > offsetX2):
+        #     if (offsetY1 > offsetY2):
+        #     elif (offsetY1 == offsetY2):
+        #     elif (offsetY1 < offsetY2):
+        # elif (offsetX1 == offsetX2):
+        #     if (offsetY1 > offsetY2):
+        #     elif (offsetY1 < offsetY2):
+        # elif (offsetX1 < offsetX2):
+        #     if (offsetY1 > offsetY2):
+        #     elif (offsetY1 == offsetY2):
+        #     elif (offsetY1 < offsetY2):
+        originRow = blockRows1 // 2
+        originCol = blockCols1 // 2
+        destinationRow = blockRows2 // 2
+        destinationCol = blockCols2 // 2
 
 def addBridgeToShop(bridgeCost, bridgeResource):
     # purchasableItems.add("bridge")

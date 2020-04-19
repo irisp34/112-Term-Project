@@ -175,8 +175,8 @@ def createIslands():
                 cellHeight, startX, startY, offsetX1, offsetY1)
     makeBoardIsometric(blockArray1)
     print("drawing island 2")
-    offsetX2 = offsetX1 + width // 2
-    offsetY2 = offsetY1 - height // 3
+    offsetX2 = offsetX1 - width // 2
+    # offsetY2 = offsetY1 - height // 3
     # offsetX += width // 2
     # offsetY -= height // 3
     make2DBoard(blockSprites2, blockArray2, cartesianBlockArray2, blockRows, blockCols, cellWidth, 

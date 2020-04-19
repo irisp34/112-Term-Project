@@ -5,12 +5,6 @@ from bridge import *
 from resources import *
 
 def createShop():
-    # # cobblestone image from: https://tinyurl.com/y9poq2sb
-    # background = pygame.image.load("cobblestone.jpg")
-    # backgroundRect = background.get_rect()
-    # backgroundRect.x = 20
-    # backgroundRect.y = 20
-    # screen.blit(background, (backgroundRect.x, backgroundRect.y))
     pygame.draw.rect(screen, (163, 196, 220), (baseX, baseY, width - baseX * 2, 
         height - baseY * 2))
     pygame.draw.rect(screen, (0, 52, 114), (baseX, baseY, width - baseX * 2, 
@@ -19,7 +13,6 @@ def createShop():
 
 def selectedItem(event):
     global drawOutline
-    # global currSelectedItem
     global drawUnaffordableMessage
     keyword = None
     pygame.draw.rect(screen, (255, 0, 0), (0, 0, 60, 60))
@@ -106,10 +99,11 @@ def beginShopping(event):
     # print("isshopping", isShopping)
     return isShopping
 
-def createBoughtItem():
-    global keyword
+# adjust to work between several islands
+def createBoughtItem(keyword):
     if (keyword == "bridge"):
-        bridge = Bridge(bridgeCost, bridgeResource)
+        bridge = Bridge(bridgeCost, bridgeResource, cellWidth, cellHeight, blockArray1,
+            cartesianBlockArray1, blockArray2, cartesianBlockArray2)
         bridgeSprites.add(bridge)
 
 # takes out Wood sprites to pay for bridge
@@ -164,6 +158,5 @@ def endShopping(event, keyword):
     if (isInBuyBounds and drawOutline and isAffordable):
         isShopping = False
         subtractResources(keyword)
-        # createBoughtItem()
-        # add subtracting resources
+        # createBoughtItem(keyword)
     return isShopping
