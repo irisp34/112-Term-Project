@@ -35,6 +35,7 @@ def selectedItem(event):
         # print(posX >= minX, posX <= maxX, posY >= minY, posY <= maxY)
         isAffordable = affordable(keyword)
         print("isAffordable", isAffordable)
+        print("drawOutline before", drawOutline)
         if (posX >= minX and posX <= maxX and posY >= minY and posY <= maxY):
             drawOutline = not drawOutline
             print("drawOutline", drawOutline)
@@ -77,7 +78,7 @@ def drawBuyButton():
     screen.blit(buyImage, (buyButtonRect.x, buyButtonRect.y))
 
 def exitButtonInfo():
-    # buy button image from: http://pixelartmaker.com/art/cc53de89e33b6fa
+    # exit button image from: http://pixelartmaker.com/art/23f04c51990a6b8
     exitImage = pygame.image.load("exitButton.png").convert_alpha()
     exitButtonRect = exitImage.get_rect()
     location = (int(exitButtonRect.width * .45), int(exitButtonRect.height * .45))
@@ -112,17 +113,23 @@ def createBoughtItem():
         bridgeSprites.add(bridge)
 
 # takes out Wood sprites to pay for bridge
-def subtractResources():
-    global keyword
+def subtractResources(keyword):
+    # global keyword
     count = 0
+    print("before kill", len(resourceSprites))
+    print("subtract", keyword)
     if (keyword == "bridge"):
         for sprite in resourceSprites:
             if (isinstance(sprite, Wood)):
                 sprite.kill()
                 count += 1
                 if (count == bridgeCost):
+                    print("after kill", len(resourceSprites))
+                    sprite.updateAmount()
                     break
 
+# checks if you can afford the thing you are trying to buy by checking how many
+# types of a resource sprite you have
 def affordable(keyword):
     print("affordable keyword", keyword)
     resourceType = None
@@ -148,13 +155,15 @@ def endShopping(event, keyword):
     exitMaxX, exitMaxY = exitButtonRect.bottomright[0], exitButtonRect.bottomright[1]
     isInBuyBounds = posX >= buyMinX and posX <= buyMaxX and posY >= buyMinY and posY <= buyMaxY
     isInExitBounds = posX >= exitMinX and posX <= exitMaxX and posY >= exitMinY and posY <= exitMaxY
-    print("endshopping keyword", keyword)
+    # print("endshopping keyword", keyword)
     isAffordable = affordable(keyword)
     if (isInExitBounds):
         isShopping = False
+        if (drawOutline):
+            drawOutline = not drawOutline
     if (isInBuyBounds and drawOutline and isAffordable):
         isShopping = False
-        # subtractResources()
+        subtractResources(keyword)
         # createBoughtItem()
         # add subtracting resources
     return isShopping

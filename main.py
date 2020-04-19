@@ -88,6 +88,7 @@ def redrawAll(character):
         charSprites.draw(screen)
         drawShopButton()
         drawOutline = False
+        drawUnaffordableMessage = False
     # shop mode
     else:
         createShop()

@@ -3,10 +3,24 @@ import numpy as np
 from variables import *
 
 class Bridge(pygame.sprite.Sprite):
-    def __init__(self, cost, resourceType):
+    def __init__(self, cost, resourceType, cellWidth, cellHeight, blockArray1, 
+        cartesianBlockArray1, blockArray2, cartesianBlockArray2):
         super().__init__()
         self.cost = cost
         self.resourceType = resourceType
+        self.image = pygame.image.load("bridge.png").convert_alpha()
+        self.rect = self.image.get_rect()
+        self.boardCellWidth = cellWidth
+        self.boardCellHeight = cellHeight
+        self.blockArray1 = blockArray1
+        self.cartBlockArray1 = cartesianBlockArray1
+        self.blockArray2 = blockArray2
+        self.cartBlockArray2 = cartesianBlockArray2
+
+    def scaleImage(self):
+        location = (self.boardCellWidth, self.boardCellHeight)
+        self.image = pygame.transform.scale(self.image, location)
+        self.rect = self.image.get_rect()
 
 def addBridgeToShop(bridgeCost, bridgeResource):
     # purchasableItems.add("bridge")

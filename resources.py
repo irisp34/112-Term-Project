@@ -67,7 +67,7 @@ def numWoodSprites(keyword):
         classType = Wood
     count = 0
     for sprite in resourceSprites:
-        print("isinstance", isinstance(sprite, classType))
+        # print("isinstance", isinstance(sprite, classType))
         if (isinstance(sprite, classType)):
             count += 1
     return count
