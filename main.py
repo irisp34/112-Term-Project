@@ -53,6 +53,8 @@ def scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrol
 
 def redrawAll(character):
     global isShopping
+    global drawOutline
+    global drawUnaffordableMessage
     screen.fill((255, 255, 255))
     
     scrollX = character.scrollX
@@ -65,7 +67,12 @@ def redrawAll(character):
 
     waterSprites.update()
     waterSprites.draw(screen)
+    inventoryBarSprite.update(screen)
+    inventoryBarSprite.draw(screen)
+    resourceSprites.update(screen)
+    resourceSprites.draw(screen)
     pygame.draw.rect(screen, (0, 255, 0),(200, 200, 50, 30))
+    # gameplay mode
     if (not isShopping):
         drawIslandBase(blockArray1)
         drawIslandBase(blockArray2)
@@ -79,25 +86,33 @@ def redrawAll(character):
         treeSprites.draw(screen)
         charSprites.update()
         charSprites.draw(screen)
-        inventoryBarSprite.update(screen)
-        inventoryBarSprite.draw(screen)
-        resourceSprites.update(screen)
-        resourceSprites.draw(screen)
         drawShopButton()
+        drawOutline = False
+    # shop mode
     else:
         createShop()
         drawBuyButton()
+        # draws outline around selected item in shop
         if (drawOutline and keyword != None):
             minX, minY, maxX, maxY = purchasableItems[keyword]
             pygame.draw.rect(screen, (0, 52, 114), (minX, 
                 minY, maxX - minX, maxY - minY), 4)
-    
-    # adds resource caption only if there are resource sprites in the sprite
-    # group
+        if (drawUnaffordableMessage):
+            minX, minY, maxX, maxY = purchasableItems[keyword]
+            font = pygame.font.Font('freesansbold.ttf', 14)
+            caption = "You can't afford this item"
+            text = font.render(caption, True, (0, 0, 0))
+            textRect = text.get_rect()
+            textRect.centerx = (minX + maxX) / 2
+            textRect.centery = maxY + 30
+            screen.blit(text, textRect)
+
+    # adds resource caption only if there are resource sprites in the sprite group
     if (resourceSprites):
         for sprite in resourceSprites:
             currCount = 0
-            if (sprite.amount >= currCount):
+            # print("sprite amount", sprite.amount)
+            if (sprite.amount > currCount):
                 currCount = sprite.amount
                 text, textRect = sprite.addCaption()
         screen.blit(text, textRect)
@@ -110,9 +125,10 @@ def mousePressed(event):
     global isShopping
     global keyword
     global drawOutline
+    global drawUnaffordableMessage
     if (isShopping):
-        drawOutline, keyword = selectedItem(event)
-        isShopping = endShopping(event)
+        drawOutline, keyword, drawUnaffordableMessage = selectedItem(event)
+        isShopping = endShopping(event, keyword)
     else:
         count = 1
         for sprite in treeSprites:

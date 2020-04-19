@@ -83,11 +83,12 @@ class Trees(pygame.sprite.Sprite):
     # log image from: https://www.deviantart.com/chunsmunkey/art/Pixel-Log-750792001
     def addWoodToInventory(self):
         logImage = "log.png"
-        logResource = Resource(logImage, "Wood", 1, self.inventoryBar)
+        logResource = Wood(logImage, "Wood", 1, self.inventoryBar)
         logResource.placeInInventory()
         # logResource.amount += 1
         resourceSprites.add(logResource)
         # print("resourceSprites", resourceSprites)
+        logResource.updateAmount()
 
     def findCartesianBounds(self, cartBlockArray):
         cartBoard = getBoardBounds(cartBlockArray)

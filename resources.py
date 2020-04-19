@@ -24,7 +24,6 @@ class Resource(pygame.sprite.Sprite):
         return image, rect
     
     def placeInInventory(self):
-        # barSpaceWidth, barSpaceHeight = self.inventoryBar.getInventorySpaceDimensions()
         inventorySpaces = self.getInventorySpaces()
         self.rect.x, self.rect.y = inventorySpaces[0]
         self.rect.centerx = self.rect.x + self.barSpaceWidth / 2
@@ -36,7 +35,6 @@ class Resource(pygame.sprite.Sprite):
         space1 = (self.inventoryBar.rect.x + 80, topEdgeOfInventorySpace)
         return [space1]
     
-    # fix caption to update for more resources
     def addCaption(self):
         font = pygame.font.Font('freesansbold.ttf', 12)
         caption = f"{self.amount} {self.resourceType.lower()}"
@@ -45,3 +43,31 @@ class Resource(pygame.sprite.Sprite):
         textRect.centerx = self.rect.centerx
         textRect.centery = self.rect.y + self.barSpaceHeight - 15
         return text, textRect
+
+    # fix to account for different resources
+    def updateAmount(self):
+        currCount = 0
+        for sprite in resourceSprites:
+            self.amount = len(resourceSprites)
+            # print("sprite amount", sprite.amount)
+            if (sprite.amount >= currCount):
+                currCount = sprite.amount
+        for sprite in resourceSprites:
+            sprite.amount = currCount
+
+class Wood(Resource):
+    def __init__(self, image, resourceType, resourceValue, inventoryBar):
+        super().__init__(image, resourceType, resourceValue, inventoryBar)
+
+
+def numWoodSprites(keyword):
+    # resourceType = resourceType[0].upper() + resourceType[1:]
+    # print("resource", resourceType)
+    if (keyword == "bridge"):
+        classType = Wood
+    count = 0
+    for sprite in resourceSprites:
+        print("isinstance", isinstance(sprite, classType))
+        if (isinstance(sprite, classType)):
+            count += 1
+    return count

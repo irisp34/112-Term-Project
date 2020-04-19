@@ -1,6 +1,9 @@
 import pygame
 import numpy as np
 from variables import *
+from bridge import *
+from resources import *
+
 def createShop():
     # # cobblestone image from: https://tinyurl.com/y9poq2sb
     # background = pygame.image.load("cobblestone.jpg")
@@ -12,49 +15,36 @@ def createShop():
         height - baseY * 2))
     pygame.draw.rect(screen, (0, 52, 114), (baseX, baseY, width - baseX * 2, 
         height - baseY * 2), 4)
-    addBridgeToShop()
-
-def addBridgeToShop():
-    # purchasableItems.add("bridge")
-    bridge = pygame.image.load("woodBridge.png").convert_alpha()
-    bridgeRect = bridge.get_rect()
-    location = (int(bridgeRect.width * .5), int(bridgeRect.height * .5))
-    bridge = pygame.transform.scale(bridge, location)
-    bridgeRect = bridge.get_rect()
-    bridgeRect.x = baseX + betweenItemsOffset
-    bridgeRect.y = baseY + betweenItemsOffset
-    minX, minY = bridgeRect.x, bridgeRect.y
-    maxX, maxY = bridgeRect.bottomright[0], bridgeRect.bottomright[1]
-    purchasableItems["bridge"] = (minX, minY, maxX, maxY)
-    screen.blit(bridge, (bridgeRect.x, bridgeRect.y))
-    return bridge, bridgeRect
+    addBridgeToShop(bridgeCost, bridgeResource)
 
 def selectedItem(event):
-    drawOutline = False
+    global drawOutline
+    # global currSelectedItem
+    global drawUnaffordableMessage
     keyword = None
     pygame.draw.rect(screen, (255, 0, 0), (0, 0, 60, 60))
     posX, posY = event.pos
-    print("clicked bridge", posX, posY)
     image = None
     imageRect = None
-    print("items", purchasableItems)
     for key in purchasableItems:
         if (key.lower() == "bridge"):
-            # image, imageRect = addBridgeToShop()
             imageDim = purchasableItems[key]
             keyword = key
-            print("in if")
-        # minX, minY = imageRect.x, imageRect.y
-        # maxX, maxY = imageRect.bottomright[0], imageRect.bottomright[1]
         minX, minY, maxX, maxY = imageDim
-        print("min max", minX, minY, maxX, maxY)
-        print(posX >= minX, posX <= maxX, posY >= minY, posY <= maxY)
+        # print("min max", minX, minY, maxX, maxY)
+        # print(posX >= minX, posX <= maxX, posY >= minY, posY <= maxY)
+        isAffordable = affordable(keyword)
+        print("isAffordable", isAffordable)
         if (posX >= minX and posX <= maxX and posY >= minY and posY <= maxY):
-            # print("here")
-            drawOutline = True
-        return drawOutline, keyword
+            drawOutline = not drawOutline
+            print("drawOutline", drawOutline)
+            if (not isAffordable and drawOutline):
+                drawUnaffordableMessage = True
+            else:
+                drawUnaffordableMessage = False
+            print("drawUnaffordableMessage", drawUnaffordableMessage)
+    return drawOutline, keyword, drawUnaffordableMessage
         
-
 def shopButtonInfo():
     # shop button image from: http://pixelartmaker.com/art/48b2d0645893d05
     shopImage = pygame.image.load("shopButton.png").convert_alpha()
@@ -88,27 +78,62 @@ def drawBuyButton():
 
 def beginShopping(event):
     global isShopping
-    print("before", isShopping)
     shopImage, shopButtonRect = shopButtonInfo()
     posX, posY = event.pos
-    print("posx y", posX, posY)
+    # print("posx y", posX, posY)
     shopMinX, shopMinY = shopButtonRect.x, shopButtonRect.y
     shopMaxX, shopMaxY = shopButtonRect.bottomright[0], shopButtonRect.bottomright[1]
-    print("shop min max", shopMinX, shopMinY, shopMaxX, shopMaxY)
-    print("x", posX >= shopMinX, posX <= shopMaxX,"y", posY >= shopMinY, posY <= shopMaxY)
+    # print("shop min max", shopMinX, shopMinY, shopMaxX, shopMaxY)
+    # print("x", posX >= shopMinX, posX <= shopMaxX,"y", posY >= shopMinY, posY <= shopMaxY)
     if (posX >= shopMinX and posX <= shopMaxX and posY >= shopMinY and posY <= shopMaxY):
         isShopping = True
-    print("isshopping", isShopping)
+    # print("isshopping", isShopping)
     return isShopping
 
-# adjust to buy if an item is selected
-def endShopping(event):
+def createBoughtItem():
+    global keyword
+    if (keyword == "bridge"):
+        bridge = Bridge(bridgeCost, bridgeResource)
+        bridgeSprites.add(bridge)
+
+# takes out Wood sprites to pay for bridge
+def subtractResources():
+    global keyword
+    count = 0
+    if (keyword == "bridge"):
+        for sprite in resourceSprites:
+            if (isinstance(sprite, Wood)):
+                sprite.kill()
+                count += 1
+                if (count == bridgeCost):
+                    break
+
+def affordable(keyword):
+    print("affordable keyword", keyword)
+    resourceType = None
+    itemCost = None
+    amountInInventory = None
+    if (keyword == "bridge"):
+        resourceType = bridgeResource
+        itemCost = bridgeCost
+        amountInInventory = numWoodSprites(keyword)
+        print("amountInInventory", amountInInventory)
+    return amountInInventory >= itemCost
+
+def endShopping(event, keyword):
     global isShopping
+    global drawOutline
+    # global keyword
     buyImage, buyButtonRect = buyButtonInfo()
     posX, posY = event.pos
     buyMinX, buyMinY = buyButtonRect.x, buyButtonRect.y
     buyMaxX, buyMaxY = buyButtonRect.bottomright[0], buyButtonRect.bottomright[1]
-    if (posX >= buyMinX and posX <= buyMaxX and posY >= buyMinY and posY <= buyMaxY):
+    isInBounds = posX >= buyMinX and posX <= buyMaxX and posY >= buyMinY and posY <= buyMaxY
+    print("endshopping keyword", keyword)
+    isAffordable = affordable(keyword)
+    if (isInBounds and drawOutline and isAffordable):
         isShopping = False
+        # subtractResources()
+        # createBoughtItem()
         # add subtracting resources
     return isShopping

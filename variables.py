@@ -27,6 +27,8 @@ charSprites = pygame.sprite.Group()
 treeSprites = pygame.sprite.Group()
 resourceSprites = pygame.sprite.Group()
 inventoryBarSprite = pygame.sprite.Group()
+bridgeSprites = pygame.sprite.Group()
+
 shopImage = None
 shopButtonRect = 0
 buyImage = None
@@ -35,9 +37,13 @@ isShopping = False
 purchasableItems = dict()
 betweenItemsOffset = 30
 drawOutline = False
+drawUnaffordableMessage = False
+# keyword is the currently selected item
 keyword = None
 baseX = 100
 baseY = 100
+bridgeCost = 3
+bridgeResource = "wood"
 # place board in center of screen
 offsetX1 = (width // 2) - startX
 offsetY1 = (height // 2) - startY
