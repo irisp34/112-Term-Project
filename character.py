@@ -185,31 +185,31 @@ class Character(pygame.sprite.Sprite):
         # print("dx", dx, dx * self.boardCellWidth, "dy", dy, dy * self.boardCellHeight)
         newX = self.cartX + dx * self.boardCellWidth
         newY = self.cartY + dy * self.boardCellHeight
-        print("newx, newy", newX, newY)
+        # print("newx, newy", newX, newY)
         # print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
         # print("less x", newX < self.cartMinX, "more x", newX > self.cartMaxX, 
         #     "less y", newY < self.cartMinY, "more y", newY > self.cartMaxY)
         for sprite in treeSprites:
-            print("NEW SPRITE")
-            print("centerx, centery", sprite.rect.centerx, self.rect.centery)
+            # print("NEW SPRITE")
+            # print("centerx, centery", sprite.rect.centerx, self.rect.centery)
             treeX, treeY = sprite.convertIsometricToCartesian(sprite.rect.centerx
                 - sprite.offsetX, self.rect.centery - sprite.offsetY)
-            print("treex, treey before", treeX, treeY)
+            # print("treex, treey before", treeX, treeY)
             treeX += startX
             treeY += startY + (self.boardCellHeight / 2)
             # treeX += (self.boardCellWidth / 2)
             # treeY += (self.boardCellHeight / 2)
             # treeX += startX - (self.boardCellWidth/ 2)
             # treeY += startY
-            print("treeX, treeY", treeX, treeY)
+            # print("treeX, treeY", treeX, treeY)
             # print("treeX, treeY", treeX - (self.boardCellWidth/ 2), treeY - (self.boardCellHeight / 2))
             cellMinX = treeX - self.boardCellWidth / 2
             cellMaxX = treeX + self.boardCellWidth / 2
             cellMinY = treeY - self.boardCellHeight / 2
             cellMaxY = treeY + self.boardCellHeight / 2
-            print("cell mins and maxs", cellMinX, cellMinY, cellMaxX, cellMaxY)
-            print("more x", newX >= cellMinX, "less x", newX <= cellMaxX, "more y", 
-            newY >= cellMinY, "less y", newY <= cellMaxY)
+            # print("cell mins and maxs", cellMinX, cellMinY, cellMaxX, cellMaxY)
+            # print("more x", newX >= cellMinX, "less x", newX <= cellMaxX, "more y", 
+            # newY >= cellMinY, "less y", newY <= cellMaxY)
             if ((newX >= cellMinX and newX <= cellMaxX) and (newY >= cellMinY 
                     and newY <= cellMaxY)):
                 return False
@@ -259,6 +259,41 @@ class Character(pygame.sprite.Sprite):
             posY = height - self.charHeight
         self.rect.centerx = posX
         self.rect.centery = posY
+
+    def killEnemy(self, event):
+        posX, posY = event.pos
+        posX, posY = self.convertIsometricToCartesian(posX - self.offsetX, posY - self.offsetY)
+        # posX += startX + self.boardCellWidth
+        posX += startX - (self.boardCellWidth / 2)
+        posY += startY + (self.boardCellHeight / 2)
+        print("clicked", posX, posY)
+        # print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
+        a1 = posX < self.cartMinX
+        a2 = posX > self.cartMaxX
+        a3 = posY < self.cartMinY
+        a4 = posY > self.cartMaxY
+        print("FIRST If less x", a1, "more x", a2, "less y", a3, "more y", a4)
+        a = a1 or a2 or a3 or a4
+        if (posX < self.cartMinX or posX > self.cartMaxX or posY < self.cartMinY or posY > self.cartMaxY):
+            return
+        for sprite in enemySprites:
+            enemyX, enemyY = self.convertIsometricToCartesian(self.rect.centerx - self.offsetX,
+                self.rect.centery - self.offsetY)
+            enemyX += startX
+            enemyY += startY + (self.boardCellHeight / 2)
+            cellMinX = enemyX - self.boardCellWidth / 2
+            cellMaxX = enemyX + self.boardCellWidth / 2
+            cellMinY = enemyY - self.boardCellHeight / 2
+            cellMaxY = enemyY + self.boardCellHeight / 2
+            print("cell mins and maxs", cellMinX, cellMinY, cellMaxX, cellMaxY)
+            print("more x", posX >= cellMinX, "less x", posX <= cellMaxX, "more y", 
+                posY >= cellMinY, "less y", posY <= cellMaxY)
+            if (posX >= cellMinX and posX <= cellMaxX and posY >= cellMinY and
+                posY <= cellMaxY):
+                sprite.kill()
+                # self.enemyThread.stopRunning()
+            #     return True
+            # return False
 
 def createCharacter(image, charSprites, cellWidth, cellHeight, blockArray, 
     cartesianBlockArray, offsetX, offsetY):

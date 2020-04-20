@@ -8,6 +8,7 @@ class Bridge(pygame.sprite.Sprite):
         super().__init__()
         self.cost = cost
         self.resourceType = resourceType
+        #bridge picture: http://pixelartmaker.com/art/4bc6db1c50b02fc
         self.image = pygame.image.load("bridge.png").convert_alpha()
         # self.image.set_colorkey((255,255,255))
         self.rect = self.image.get_rect()

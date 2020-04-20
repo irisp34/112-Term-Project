@@ -90,6 +90,8 @@ def redrawAll(character):
         treeSprites.draw(screen)
         charSprites.update()
         charSprites.draw(screen)
+        enemySprites.update()
+        enemySprites.draw(screen)
         drawShopButton()
         drawOutline = False
         drawUnaffordableMessage = False
@@ -127,7 +129,7 @@ def redrawAll(character):
     pygame.display.flip()
     resetScroll(character)
 
-def mousePressed(event):
+def mousePressed(event, character):
     global isShopping
     global keyword
     global drawOutline
@@ -142,6 +144,7 @@ def mousePressed(event):
             if (sprite.removeTrees(event)):
                 break
             count += 1
+        character.killEnemy(event)
         isShopping = beginShopping(event)
     # return isShopping
 
@@ -152,7 +155,7 @@ def playGame():
     # character picture from: https://ya-webdesign.com/imgdownload.html
     character = createCharacter("character.png", charSprites, cellWidth, 
         cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
-    createEnemies(character, charSprites, cellWidth, 
+    enemyThread = createEnemies(character, charSprites, cellWidth, 
         cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
 
     # water picture from: http://igm-tuto.blogspot.com/2014/06/pixel-art-draw-water-background.html
@@ -173,7 +176,7 @@ def playGame():
                 playing = False
             elif (event.type == pygame.MOUSEBUTTONDOWN):
                 # character.jump(event)
-                mousePressed(event)
+                mousePressed(event, character)
                 
                 # character.jump(posX, posY)
             # elif (event.type == pygame.KEYDOWN):
