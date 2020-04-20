@@ -10,6 +10,7 @@ from water import *
 from trees import *
 from shopping import *
 from bridge import *
+from enemy import *
 
 def resetScroll(character):
     character.scrollX = 0
@@ -150,6 +151,8 @@ def playGame():
 
     # character picture from: https://ya-webdesign.com/imgdownload.html
     character = createCharacter("character.png", charSprites, cellWidth, 
+        cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
+    createEnemies(character, charSprites, cellWidth, 
         cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
 
     # water picture from: http://igm-tuto.blogspot.com/2014/06/pixel-art-draw-water-background.html

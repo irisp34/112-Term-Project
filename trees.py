@@ -143,6 +143,6 @@ def sumCarbon(self):
 
 # makes Tree objects to place on the board
 def makeTrees(character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY):
-    for i in range(5):
+    for i in range(1):
         tree = Trees(character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY)
         treeSprites.add(tree)
