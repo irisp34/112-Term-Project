@@ -9,6 +9,7 @@ from inventory import *
 from water import *
 from trees import *
 from shopping import *
+from bridge import *
 
 def resetScroll(character):
     character.scrollX = 0
@@ -74,14 +75,16 @@ def redrawAll(character):
     pygame.draw.rect(screen, (0, 255, 0),(200, 200, 50, 30))
     # gameplay mode
     if (not isShopping):
-        drawIslandBase(blockArray1)
         drawIslandBase(blockArray2)
-        blockSprites1.update()
-        blockSprites1.draw(screen)
+        bridgeSprites.update()
+        bridgeSprites.draw(screen)
         blockSprites2.update()
         blockSprites2.draw(screen)
-        drawBlockBorders(blockArray1)
         drawBlockBorders(blockArray2)
+        drawIslandBase(blockArray1)
+        blockSprites1.update()
+        blockSprites1.draw(screen)
+        drawBlockBorders(blockArray1)
         treeSprites.update()
         treeSprites.draw(screen)
         charSprites.update()
@@ -156,7 +159,7 @@ def playGame():
     inventoryBar = Inventory()
     inventoryBarSprite.add(inventoryBar)
     makeTrees(character, blockArray1, cartesianBlockArray1, inventoryBar, offsetX1, offsetY1)
-    makeTrees(character, blockArray2, cartesianBlockArray2, inventoryBar, offsetX2, offsetY2)
+    # makeTrees(character, blockArray2, cartesianBlockArray2, inventoryBar, offsetX2, offsetY2)
 
     clock = pygame.time.Clock()
     playing = True

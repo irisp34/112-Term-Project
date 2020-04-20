@@ -158,5 +158,5 @@ def endShopping(event, keyword):
     if (isInBuyBounds and drawOutline and isAffordable):
         isShopping = False
         subtractResources(keyword)
-        # createBoughtItem(keyword)
+        createBoughtItem(keyword)
     return isShopping

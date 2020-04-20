@@ -22,7 +22,7 @@ class Character(pygame.sprite.Sprite):
         self.scrollY = 0
         self.cartScrollX = 0
         self.cartScrollY = 0
-        self.scrollMargin = 300
+        self.scrollMargin = 100
         # self.image = pygame.Surface([charWidth, charHeight])
         self.image = pygame.image.load(image).convert_alpha()
         self.scaleImage()
@@ -185,11 +185,38 @@ class Character(pygame.sprite.Sprite):
         # print("dx", dx, dx * self.boardCellWidth, "dy", dy, dy * self.boardCellHeight)
         newX = self.cartX + dx * self.boardCellWidth
         newY = self.cartY + dy * self.boardCellHeight
-        # print("newx, newy", newX, newY)
+        print("newx, newy", newX, newY)
         # print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
         # print("less x", newX < self.cartMinX, "more x", newX > self.cartMaxX, 
         #     "less y", newY < self.cartMinY, "more y", newY > self.cartMaxY)
-        if (newX < self.cartMinX or newX > self.cartMaxX or newY < self.cartMinY or newY > self.cartMaxY):
+        # for sprite in treeSprites:
+        #     print("NEW SPRITE")
+        #     print("centerx, centery", sprite.rect.centerx, self.rect.centery)
+        #     treeX, treeY = sprite.convertIsometricToCartesian(sprite.rect.centerx
+        #         - sprite.offsetX, self.rect.centery - sprite.offsetY)
+        #     print("treex, treey before", treeX, treeY)
+        #     treeX += startX
+        #     treeY += startY + (self.boardCellHeight / 2)
+        #     # treeX += (self.boardCellWidth / 2)
+        #     # treeY += (self.boardCellHeight / 2)
+        #     # treeX += startX - (self.boardCellWidth/ 2)
+        #     # treeY += startY
+        #     print("treeX, treeY", treeX, treeY)
+        #     # print("treeX, treeY", treeX - (self.boardCellWidth/ 2), treeY - (self.boardCellHeight / 2))
+        #     cellMinX = treeX - self.boardCellWidth / 2
+        #     cellMaxX = treeX + self.boardCellWidth / 2
+        #     cellMinY = treeY - self.boardCellHeight / 2
+        #     cellMaxY = treeY + self.boardCellHeight / 2
+        #     print("cell mins and maxs", cellMinX, cellMinY, cellMaxX, cellMaxY)
+        #     print("more x", newX >= cellMinX, "less x", newX <= cellMaxX, "more y", 
+        #     newY >= cellMinY, "less y", newY <= cellMaxY)
+        #     if ((newX >= cellMinX and newX <= cellMaxX) and (newY >= cellMinY 
+        #             and newY <= cellMaxY)):
+        #         return False
+        #     # if (newX == treeX and newY == treeY):
+        #     #     return False
+        if (newX < self.cartMinX or newX > self.cartMaxX or newY < self.cartMinY 
+                or newY > self.cartMaxY):
             return False
         self.cartX = newX
         self.cartY = newY
