@@ -193,7 +193,7 @@ class Character(pygame.sprite.Sprite):
             # print("NEW SPRITE")
             # print("centerx, centery", sprite.rect.centerx, self.rect.centery)
             treeX, treeY = sprite.convertIsometricToCartesian(sprite.rect.centerx
-                - sprite.offsetX, self.rect.centery - sprite.offsetY)
+                - sprite.offsetX, sprite.rect.centery - sprite.offsetY)
             # print("treex, treey before", treeX, treeY)
             treeX += startX
             treeY += startY + (self.boardCellHeight / 2)
@@ -277,8 +277,8 @@ class Character(pygame.sprite.Sprite):
         if (posX < self.cartMinX or posX > self.cartMaxX or posY < self.cartMinY or posY > self.cartMaxY):
             return
         for sprite in enemySprites:
-            enemyX, enemyY = self.convertIsometricToCartesian(self.rect.centerx - self.offsetX,
-                self.rect.centery - self.offsetY)
+            enemyX, enemyY = self.convertIsometricToCartesian(sprite.rect.centerx - sprite.offsetX,
+                sprite.rect.centery - sprite.offsetY)
             enemyX += startX
             enemyY += startY + (self.boardCellHeight / 2)
             cellMinX = enemyX - self.boardCellWidth / 2
