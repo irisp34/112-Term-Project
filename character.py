@@ -294,10 +294,19 @@ class Character(pygame.sprite.Sprite):
                 # self.enemyThread.stopRunning()
             #     return True
             # return False
+    
+class MainCharacter(Character):
+    def __init__(self, image, cellWidth, cellHeight, blockArray, cartesianBlockArray, offsetX, offsetY):
+        super().__init__(image, cellWidth, cellHeight, blockArray, cartesianBlockArray, offsetX, offsetY)
+
+    def collectIron(self):
+        for sprite in ironSprites:
+            if (self.rect.colliderect(sprite.rect)):
+                sprite.kill()
 
 def createCharacter(image, charSprites, cellWidth, cellHeight, blockArray, 
     cartesianBlockArray, offsetX, offsetY):
-    character = Character(image, cellWidth, cellHeight, blockArray, 
+    character = MainCharacter(image, cellWidth, cellHeight, blockArray, 
         cartesianBlockArray, offsetX, offsetY)
     charSprites.add(character)
     return character

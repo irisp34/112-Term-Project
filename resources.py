@@ -1,7 +1,7 @@
 import pygame
 import numpy as np
 from variables import *
-from trees import *
+from rawResources import *
 from inventory import *
 from character import *
 

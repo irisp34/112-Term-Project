@@ -7,7 +7,7 @@ from character import *
 from variables import *
 from inventory import *
 from water import *
-from trees import *
+from rawResources import *
 from shopping import *
 from bridge import *
 from enemy import *
@@ -92,6 +92,8 @@ def redrawAll(character):
         charSprites.draw(screen)
         enemySprites.update()
         enemySprites.draw(screen)
+        ironSprites.update()
+        ironSprites.draw(screen)
         drawShopButton()
         drawOutline = False
         drawUnaffordableMessage = False
@@ -164,8 +166,12 @@ def playGame():
     createWater(waterSprites, waterImage, rect)
     inventoryBar = Inventory()
     inventoryBarSprite.add(inventoryBar)
-    makeTrees(character, blockArray1, cartesianBlockArray1, inventoryBar, offsetX1, offsetY1)
-    # makeTrees(character, blockArray2, cartesianBlockArray2, inventoryBar, offsetX2, offsetY2)
+    makeTrees(character, blockArray1, cartesianBlockArray1, inventoryBar,
+        offsetX1, offsetY1, cellWidth, cellHeight)
+    # makeTrees(character, blockArray2, cartesianBlockArray2, inventoryBar,
+    #   offsetX2, offsetY2, cellWidth, cellHeight)
+    createIronEvent = pygame.USEREVENT + 1
+    pygame.time.set_timer(createIronEvent, 2000)
 
     clock = pygame.time.Clock()
     playing = True
@@ -177,7 +183,6 @@ def playGame():
             elif (event.type == pygame.MOUSEBUTTONDOWN):
                 # character.jump(event)
                 mousePressed(event, character)
-                
                 # character.jump(posX, posY)
             # elif (event.type == pygame.KEYDOWN):
             #     if (event.key == pygame.K_DOWN):
@@ -188,15 +193,24 @@ def playGame():
             #         character.moveLeft()
             #     elif (event.key == pygame.K_RIGHT):
             #         character.moveRight()
+            if (event.type == createIronEvent):
+                # timer = pygame.time.get_ticks()
+                if (len(ironSprites) < 4):
+                    placeIron(character, blockArray1, cartesianBlockArray1, 
+                        inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight)
         keys = pygame.key.get_pressed()
         if (keys[pygame.K_DOWN]):
             character.moveDown()
+            character.collectIron()
         elif (keys[pygame.K_UP]):
             character.moveUp()
+            character.collectIron()
         elif (keys[pygame.K_RIGHT]):
             character.moveRight()
+            character.collectIron()
         elif (keys[pygame.K_LEFT]):
             character.moveLeft()
+            character.collectIron()
     
         redrawAll(character)
     pygame.quit()
