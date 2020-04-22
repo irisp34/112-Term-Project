@@ -152,6 +152,7 @@ class RawIron(RawResources):
         return centerX, centerY
 
     def addIronToInventory(self):
+        # picture from: http://iconbug.com/detail/icon/8273/minecraft-iron-ingot/
         ironImage = "metalBar.png"
         ironResource = Iron(ironImage, "Iron", 2, self.inventoryBar)
         ironResource.placeInInventory(1)
@@ -159,15 +160,16 @@ class RawIron(RawResources):
         ironResource.updateAmount(Iron)
 
 # makes Tree objects to place on the board
-def makeTrees(character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY, cellWidth, cellHeight):
+def makeTrees(character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY, cellWidth, cellHeight, number):
     # tree image: https://www.reddit.com/r/PixelArt/comments/6ktv32/newbiecc_looking_for_tips_how_to_improve_this_tree/
-    for i in range(5):
+    for i in range(number):
         image = "tree.png"
         location = (int(cellWidth * 1.5), int(cellHeight * 1.5))
         tree = Trees(image, character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY, location)
         treeSprites.add(tree)
 
 def placeIron(character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY, cellWidth, cellHeight):
+    # picture from: http://iconbug.com/detail/icon/8273/minecraft-iron-ingot/
     image = "metalBar.png"
     location = (int(cellWidth * .6), int(cellHeight * .6))
     iron = RawIron(image, character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY, location)

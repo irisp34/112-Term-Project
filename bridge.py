@@ -3,11 +3,10 @@ import numpy as np
 from variables import *
 
 class Bridge(pygame.sprite.Sprite):
-    def __init__(self, cost, resourceType, cellWidth, cellHeight, blockArray1, 
+    def __init__(self, bridgeDict, cellWidth, cellHeight, blockArray1, 
         cartesianBlockArray1, blockArray2, cartesianBlockArray2):
         super().__init__()
-        self.cost = cost
-        self.resourceType = resourceType
+        self.bridgeDict = bridgeDict
         #bridge picture: http://pixelartmaker.com/art/4bc6db1c50b02fc
         self.image = pygame.image.load("bridge.png").convert_alpha()
         # self.image.set_colorkey((255,255,255))
@@ -98,5 +97,6 @@ class Bridge(pygame.sprite.Sprite):
         assignX = (originBlock.rect.bottomright[0] + originBlock.rect.bottomleft[0]) / 2
         assignY = originBlock.rect.bottomright[1]
         self.rect.bottomleft = assignX, assignY
+        # self.rect.midbottom = originBlock.rect.centerx, originBlock.rect.centery
         print("rect left", self.rect.bottomleft, "origin center", originBlock.rect.center)
 

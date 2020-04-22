@@ -26,22 +26,27 @@ def scrollIslands(blockArray, scrollX, scrollY, character):
                 currBlock.rect.x -= scrollX
                 currBlock.rect.y -= scrollY
 
-def scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrollY, character):
-    # for sprite in waterSprites:
-    #     if (character.justMoved):
-    #         sprite.rect.x -= scrollX
-    #         sprite.rect.y -= scrollY
-    
-    for sprite in charSprites:
+def scrollSprites(character, spriteGroup, scrollX, scrollY):
+    for sprite in spriteGroup:
         if (character.justMoved):
-            # print("before scroll", sprite.rect.centerx, sprite.rect.centery)
             sprite.rect.centerx -= scrollX
             sprite.rect.centery -= scrollY
 
-    for sprite in treeSprites:
-        if (character.justMoved):
-            sprite.rect.centerx -= scrollX
-            sprite.rect.centery -= scrollY
+def scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrollY, character):
+    # for sprite in charSprites:
+    #     if (character.justMoved):
+    #         # print("before scroll", sprite.rect.centerx, sprite.rect.centery)
+    #         sprite.rect.centerx -= scrollX
+    #         sprite.rect.centery -= scrollY
+
+    # for sprite in treeSprites:
+    #     if (character.justMoved):
+    #         sprite.rect.centerx -= scrollX
+    #         sprite.rect.centery -= scrollY
+    scrollSprites(character, charSprites, scrollX, scrollY)
+    scrollSprites(character, treeSprites, scrollX, scrollY)
+    scrollSprites(character, ironSprites, scrollX, scrollY)
+    scrollSprites(character, bridgeSprites, scrollX, scrollY)
     
     scrollIslands(blockArray1, scrollX, scrollY, character)
     # print("board bounds", getCartesianBoardBounds(cartesianBlockArray1))
@@ -77,8 +82,8 @@ def redrawAll(character):
     # gameplay mode
     if (not isShopping):
         drawIslandBase(blockArray2)
-        bridgeSprites.update()
-        bridgeSprites.draw(screen)
+        # bridgeSprites.update()
+        # bridgeSprites.draw(screen)
         blockSprites2.update()
         blockSprites2.draw(screen)
         drawBlockBorders(blockArray2)
@@ -95,6 +100,11 @@ def redrawAll(character):
         ironSprites.update()
         ironSprites.draw(screen)
         drawShopButton()
+        bridgeSprites.update()
+        bridgeSprites.draw(screen)
+        for sprite in bridgeSprites:
+            pygame.draw.polygon(screen, (255, 0, 255), (sprite.rect.topright, 
+                sprite.rect.topleft, sprite.rect.bottomleft, sprite.rect.bottomright), 4)
         drawOutline = False
         drawUnaffordableMessage = False
     # shop mode
@@ -120,15 +130,6 @@ def redrawAll(character):
     # adds resource caption only if there are resource sprites in the sprite group
     createInventoryCaptions(Wood)
     createInventoryCaptions(Iron)
-    
-    # if (resourceSprites):
-    #     for sprite in resourceSprites:
-    #         currCount = 0
-    #         # print("sprite amount", sprite.amount)
-    #         if (sprite.amount > currCount):
-    #             currCount = sprite.amount
-    #             text, textRect = sprite.addCaption()
-    #     screen.blit(text, textRect)
 
     # coordinates for first inventory box
     pygame.draw.rect(screen, (0, 255, 255),(265, 10, 90, 70), 3)
@@ -138,11 +139,6 @@ def redrawAll(character):
 def createInventoryCaptions(classType):
     text = None
     textRect = None
-    # for sprite in resourceSprites:
-    #     if (isinstance(sprite, classType)):
-    #         text, textRect = sprite.addCaption()
-    #         screen.blit(text, textRect)
-    #         return
     for sprite in resourceSprites:
         currCount = 0
         # print("sprite amount", sprite.amount)
@@ -189,11 +185,13 @@ def playGame():
     inventoryBar = Inventory()
     inventoryBarSprite.add(inventoryBar)
     makeTrees(character, blockArray1, cartesianBlockArray1, inventoryBar,
-        offsetX1, offsetY1, cellWidth, cellHeight)
+        offsetX1, offsetY1, cellWidth, cellHeight, 5)
     # makeTrees(character, blockArray2, cartesianBlockArray2, inventoryBar,
-    #   offsetX2, offsetY2, cellWidth, cellHeight)
+    #   offsetX2, offsetY2, cellWidth, cellHeight, 5)
     createIronEvent = pygame.USEREVENT + 1
+    createTreeEvent = pygame.USEREVENT + 2
     pygame.time.set_timer(createIronEvent, 2000)
+    pygame.time.set_timer(createTreeEvent, 4000)
 
     clock = pygame.time.Clock()
     playing = True
@@ -216,10 +214,14 @@ def playGame():
             #     elif (event.key == pygame.K_RIGHT):
             #         character.moveRight()
             if (event.type == createIronEvent):
-                # timer = pygame.time.get_ticks()
                 if (len(ironSprites) < 4):
                     placeIron(character, blockArray1, cartesianBlockArray1, 
                         inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight)
+            elif (event.type == createTreeEvent):
+                # fix to spawn on specific island
+                if (len(treeSprites) < 2):
+                    makeTrees(character, blockArray1, cartesianBlockArray1, 
+                        inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight, 1)
         keys = pygame.key.get_pressed()
         if (keys[pygame.K_DOWN]):
             character.moveDown()

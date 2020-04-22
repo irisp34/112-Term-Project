@@ -22,8 +22,8 @@ def createCostCaption(resourceDict, resourceRect):
     font = pygame.font.Font('freesansbold.ttf', 16)
     caption = "Cost: "
     for key in resourceDict:
-        caption += f"{key} {resourceDict[key]},"
-    caption = caption[:-1]
+        caption += f"{resourceDict[key]} {key}, "
+    caption = caption[:-2]
     # caption = f"Cost: {bridgeCost} {bridgeResource}"
     text = font.render(caption, True, (0, 0, 0))
     textRect = text.get_rect()
@@ -47,11 +47,12 @@ def addBridgeToShop(bridgeDict):
     return bridge, bridgeRect
 
 def addHammerToShop(hammerDict):
+    # hammer picture from: https://minecraft.novaskin.me/search?q=axe%20iron
     hammer = pygame.image.load("hammer.png").convert_alpha()
     hammerRect = hammer.get_rect()
-    location = (int(hammerRect.width * .5), int(hammerRect.height * .5))
+    location = (int(hammerRect.width * .2), int(hammerRect.height * .2))
     hammer, hammerRect = scaleImage(hammer, location)
-    hammerRect.x = baseX + betweenItemsOffset
+    hammerRect.x = baseX + betweenItemsOffset + 200
     hammerRect.y = baseY + betweenItemsOffset
     minX, minY = hammerRect.x, hammerRect.y
     maxX, maxY = hammerRect.bottomright[0], hammerRect.bottomright[1]
@@ -85,6 +86,8 @@ def selectedItem(event):
                 drawUnaffordableMessage = True
             else:
                 drawUnaffordableMessage = False
+        if (drawOutline):
+            return drawOutline, keyword, drawUnaffordableMessage
             # print("drawUnaffordableMessage", drawUnaffordableMessage)
     return drawOutline, keyword, drawUnaffordableMessage
         
@@ -147,7 +150,7 @@ def beginShopping(event):
 # adjust to work between several islands
 def createBoughtItem(keyword):
     if (keyword == "bridge"):
-        bridge = Bridge(bridgeCost, bridgeResource, cellWidth, cellHeight, blockArray1,
+        bridge = Bridge(bridgeDict, cellWidth, cellHeight, blockArray1,
             cartesianBlockArray1, blockArray2, cartesianBlockArray2)
         bridgeSprites.add(bridge)
 
@@ -162,9 +165,9 @@ def subtractResources(keyword):
             if (isinstance(sprite, Wood)):
                 sprite.kill()
                 count += 1
-                if (count == bridgeCost):
+                if (count == bridgeDict["wood"]):
                     print("after kill", len(resourceSprites))
-                    sprite.updateAmount()
+                    sprite.updateAmount(Wood)
                     break
     elif (keyword == "hammer"):
         woodCount = 0
@@ -177,7 +180,8 @@ def subtractResources(keyword):
                 ironCount += 1
                 sprite.kill()
             if (woodCount == hammerCosts["wood"] and ironCount == hammerCosts["iron"]):
-                sprite.updateAmount()
+                sprite.updateAmount(Wood)
+                sprite.updateAmount(Iron)
                 break
 
 # checks if you can afford the thing you are trying to buy by checking how many

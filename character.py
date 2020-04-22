@@ -179,7 +179,7 @@ class Character(pygame.sprite.Sprite):
         self.findCartesianBounds(self.cartBlockArray)
         self.cartX, self.cartY = self.convertIsometricToCartesian(self.rect.centerx - self.offsetX, 
             self.rect.centery - self.offsetY)
-        self.cartX += startX #+ (self.boardCellWidth // 2)
+        self.cartX += startX
         self.cartY += startY + (self.boardCellHeight / 2)
         # print("curr self.cartx, self.carty", self.cartX, self.cartY)
         # print("dx", dx, dx * self.boardCellWidth, "dy", dy, dy * self.boardCellHeight)
@@ -197,12 +197,6 @@ class Character(pygame.sprite.Sprite):
             # print("treex, treey before", treeX, treeY)
             treeX += startX
             treeY += startY + (self.boardCellHeight / 2)
-            # treeX += (self.boardCellWidth / 2)
-            # treeY += (self.boardCellHeight / 2)
-            # treeX += startX - (self.boardCellWidth/ 2)
-            # treeY += startY
-            # print("treeX, treeY", treeX, treeY)
-            # print("treeX, treeY", treeX - (self.boardCellWidth/ 2), treeY - (self.boardCellHeight / 2))
             cellMinX = treeX - self.boardCellWidth / 2
             cellMaxX = treeX + self.boardCellWidth / 2
             cellMinY = treeY - self.boardCellHeight / 2
@@ -213,15 +207,54 @@ class Character(pygame.sprite.Sprite):
             if ((newX >= cellMinX and newX <= cellMaxX) and (newY >= cellMinY 
                     and newY <= cellMaxY)):
                 return False
-        #     # if (newX == treeX and newY == treeY):
-        #     #     return False
         if (newX < self.cartMinX or newX > self.cartMaxX or newY < self.cartMinY 
                 or newY > self.cartMaxY):
+            if (len(bridgeSprites) != 0):
+                if (not self.canWalkAcrossBridge(newX, newY)):
+                    return False
+                else:
+                    self.cartX = newX
+                    self.cartY = newY
+                    return True
             return False
         self.cartX = newX
         self.cartY = newY
         return True
+    
+    def canWalkAcrossBridge(self, newX, newY):
+        for sprite in bridgeSprites:
+            # leftBottomCorner = sprite.rect.bottomleft + (0, -.25 * sprite.rect.height)
+            # leftBottomX, leftBottomY = self.convertIsometricToCartesian(leftBottomCorner[0]
+            #     + self.offsetX, leftBottomCorner[1] + self.offsetY)
 
+            rightBottomCorner = (sprite.rect.bottomleft[0] +.1 * sprite.rect.width, 
+                sprite.rect.bottomleft[1])
+            print("right bottom corner", rightBottomCorner, "rect", sprite.rect.bottomleft)
+            rightBottomX, rightBottomY = self.convertIsometricToCartesian(rightBottomCorner[0]
+                - self.offsetX, rightBottomCorner[1] - self.offsetY)
+            leftTopCorner = (sprite.rect.topright[0] -.1 * sprite.rect.width, 
+                sprite.rect.topright[1])
+            print("left top corner", leftTopCorner, "rect", sprite.rect.topright)
+            leftTopX, leftTopY = self.convertIsometricToCartesian(leftTopCorner[0]
+                - self.offsetX, leftTopCorner[1] - self.offsetY)
+
+            # rightTopCorner = sprite.rect.bottomleft + (0, .25 * sprite.rect.height)
+            # rightTopX, rightTopY = self.convertIsometricToCartesian(rightTopCorner[0]
+            #     + self.offsetX, rightTopCorner[1] + self.offsetY)
+            print("lefttopx and y", leftTopX, leftTopY, "rightbottom x, y", rightBottomX, rightBottomY)
+            bridgeMinX = leftTopX + startX
+            bridgeMinY = leftTopY + startY + (self.boardCellHeight / 2)
+            bridgeMaxX = rightBottomX + startX
+            bridgeMaxY = rightBottomY + startY + (self.boardCellHeight / 2)
+            print("newx", newX, "newy", newY)
+            print("minx and maxx", bridgeMinX, bridgeMaxX, "min max y", bridgeMinY, bridgeMaxY)
+            print("in min x", newX > bridgeMinX, "in max x", newX < bridgeMaxX,
+                "in min y", newY > bridgeMinY, "in max y", newY < bridgeMaxY)
+            if (newX > bridgeMinX and newX < bridgeMaxX and newY > bridgeMinY
+                and newY < bridgeMaxY):
+                return True
+        return False
+ 
     # loosely adapted from SideScroller2 example in 112 Notes to fit isometric 
     # coordinates and desired scrolling effect: 
     # http://www.cs.cmu.edu/~112/notes/notes-animations-part2.html#sidescrollerExamples
