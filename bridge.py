@@ -62,6 +62,7 @@ class Bridge(pygame.sprite.Sprite):
             print(self.blockArray2[blockRows2, blockCols2].rect.topright[0])
             locationX = abs(self.blockArray1[blockRows1, 0].rect.topright[0] - 
                 self.blockArray2[blockRows2, blockCols2].rect.topright[0])
+            self.bridgeName = "1to5"
         elif (isUpRight):
             print("here")
             originRow = 0
@@ -72,6 +73,7 @@ class Bridge(pygame.sprite.Sprite):
             print(self.blockArray2[blockRows2, blockCols2].rect.topright[0])
             locationX = abs(self.blockArray1[0, blockCols1].rect.topright[0] - 
                 self.blockArray2[blockRows2, blockCols2].rect.topright[0])
+            self.bridgeName = "1to2"
         elif (isDownLeft):
             originRow = blockRows1
             originCol = blockCols1 // 2
@@ -79,6 +81,7 @@ class Bridge(pygame.sprite.Sprite):
             destinationCol = blockCols2 // 2
             locationX = abs(self.blockArray1[0, blockCols1].rect.topright[0] - 
                 self.blockArray2[0, 0].rect.topright[0])
+            self.bridgeName = "1to4"
         elif (isDownRight):
             originRow = blockRows1 // 2
             originCol = blockCols1
@@ -86,6 +89,7 @@ class Bridge(pygame.sprite.Sprite):
             destinationCol = 0
             locationX = abs(self.blockArray1[0, blockCols1].rect.topright[0] - 
                 self.blockArray2[0, 0].rect.topright[0])
+            self.bridgeName = "1to3"
         self.scaleImage(locationX)
         return originRow, originCol, destinationRow, destinationCol
 

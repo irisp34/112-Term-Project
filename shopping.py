@@ -69,14 +69,18 @@ def selectedItem(event):
     posX, posY = event.pos
     image = None
     imageRect = None
+    currKey = None
     for key in purchasableItems:
+        print("key", key)
         # if (key.lower() == "bridge"):
         imageDim = purchasableItems[key]
-        keyword = key
+        # keyword = key
+        currKey = key
+        print("currKey", currKey)
         minX, minY, maxX, maxY = imageDim
         # print("min max", minX, minY, maxX, maxY)
         # print(posX >= minX, posX <= maxX, posY >= minY, posY <= maxY)
-        isAffordable = affordable(keyword)
+        isAffordable = affordable(currKey)
         # print("isAffordable", isAffordable)
         # print("drawOutline before", drawOutline)
         if (posX >= minX and posX <= maxX and posY >= minY and posY <= maxY):
@@ -87,8 +91,12 @@ def selectedItem(event):
             else:
                 drawUnaffordableMessage = False
         if (drawOutline):
-            return drawOutline, keyword, drawUnaffordableMessage
+            # return drawOutline, keyword, drawUnaffordableMessage
+            break
             # print("drawUnaffordableMessage", drawUnaffordableMessage)
+    print("HERE")
+    keyword = currKey
+    print("keyword before return", keyword)
     return drawOutline, keyword, drawUnaffordableMessage
         
 def shopButtonInfo():
@@ -148,11 +156,17 @@ def beginShopping(event):
     return isShopping
 
 # adjust to work between several islands
-def createBoughtItem(keyword):
+def createBoughtItem(keyword, inventoryBar):
     if (keyword == "bridge"):
         bridge = Bridge(bridgeDict, cellWidth, cellHeight, blockArray1,
             cartesianBlockArray1, blockArray2, cartesianBlockArray2)
         bridgeSprites.add(bridge)
+    # elif (keyword == "hammer"):
+    #     pass
+        # hammer = Hammer("hammer.png", "hammer", 1, inventoryBar)
+        # resourceSprites.add(hammer)
+        # hammer.placeInInventory(2)
+        # hammer.updateAmount(Hammer)
 
 # takes out Wood sprites to pay for bridge
 def subtractResources(keyword):
@@ -206,7 +220,7 @@ def affordable(keyword):
     # return amountInInventory >= itemCost
     return True
 
-def endShopping(event, keyword):
+def endShopping(event, keyword, inventoryBar):
     global isShopping
     global drawOutline
     # global keyword
@@ -225,8 +239,9 @@ def endShopping(event, keyword):
         isShopping = False
         if (drawOutline):
             drawOutline = not drawOutline
+    print("isinbuybounds", isInBuyBounds, "drawoutline", drawOutline, "afford", isAffordable)
     if (isInBuyBounds and drawOutline and isAffordable):
         isShopping = False
         subtractResources(keyword)
-        createBoughtItem(keyword)
+        createBoughtItem(keyword, inventoryBar)
     return isShopping

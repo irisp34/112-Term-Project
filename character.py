@@ -33,7 +33,6 @@ class Character(pygame.sprite.Sprite):
         self.findCartesianBounds(self.cartBlockArray)
         self.rect.centerx, self.rect.centery = self.getRandomBoardCenter(self.blockArray)
         print("centerx, centery", self.rect.centerx, self.rect.centery)
-        print("mins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
         self.justMoved = False
 
     def addScroll(self, scrollX, scrollY):
@@ -73,15 +72,21 @@ class Character(pygame.sprite.Sprite):
         self.maxY = boardCoordinates[3][1] #+ self.boardCellHeight / 4
     
     def findCartesianBounds(self, cartBlockArray):
-        # cartesianX, cartesianY = self.convertIsometricToCartesian(self.rect.centerx, self.rect.centery)
         # top left, top right, bottom left, bottom right
-        # print("in character", self.cartBlockArray)
         cartBoard = getBoardBounds(cartBlockArray)
-        # print("IN CHARACTER", cartBoard)
         self.cartMinX = cartBoard[0][0]
         self.cartMinY = cartBoard[0][1]
         self.cartMaxX = cartBoard[3][0]
         self.cartMaxY = cartBoard[3][1]
+    
+    def findOtherIslandCartesianBounds(self, cartBlockArray):
+        # top left, top right, bottom left, bottom right
+        cartBoard = getBoardBounds(cartBlockArray)
+        cartMinX = cartBoard[0][0]
+        cartMinY = cartBoard[0][1]
+        cartMaxX = cartBoard[3][0]
+        cartMaxY = cartBoard[3][1]
+        return cartMinX, cartMinY, cartMaxX, cartMaxY
     
     def findIsometricCenters(self, blockArray):
         boardCenters = getIsometricBoardCenters(blockArray)
@@ -176,13 +181,12 @@ class Character(pygame.sprite.Sprite):
         
 
     def isWalkable(self, dx, dy):
+        global cartesianBlockArray2
         self.findCartesianBounds(self.cartBlockArray)
         self.cartX, self.cartY = self.convertIsometricToCartesian(self.rect.centerx - self.offsetX, 
             self.rect.centery - self.offsetY)
         self.cartX += startX
         self.cartY += startY + (self.boardCellHeight / 2)
-        # print("curr self.cartx, self.carty", self.cartX, self.cartY)
-        # print("dx", dx, dx * self.boardCellWidth, "dy", dy, dy * self.boardCellHeight)
         newX = self.cartX + dx * self.boardCellWidth
         newY = self.cartY + dy * self.boardCellHeight
         # print("newx, newy", newX, newY)
@@ -190,11 +194,8 @@ class Character(pygame.sprite.Sprite):
         # print("less x", newX < self.cartMinX, "more x", newX > self.cartMaxX, 
         #     "less y", newY < self.cartMinY, "more y", newY > self.cartMaxY)
         for sprite in treeSprites:
-            # print("NEW SPRITE")
-            # print("centerx, centery", sprite.rect.centerx, self.rect.centery)
             treeX, treeY = sprite.convertIsometricToCartesian(sprite.rect.centerx
                 - sprite.offsetX, sprite.rect.centery - sprite.offsetY)
-            # print("treex, treey before", treeX, treeY)
             treeX += startX
             treeY += startY + (self.boardCellHeight / 2)
             cellMinX = treeX - self.boardCellWidth / 2
@@ -210,18 +211,36 @@ class Character(pygame.sprite.Sprite):
         if (newX < self.cartMinX or newX > self.cartMaxX or newY < self.cartMinY 
                 or newY > self.cartMaxY):
             if (len(bridgeSprites) != 0):
-                if (not self.canWalkAcrossBridge(newX, newY)):
-                    return False
-                else:
-                    self.cartX = newX
-                    self.cartY = newY
+                if (self.canWalkAcrossBridge(newX, newY)):
+                    self.setNewPosition(newX, newY)
+                    return True
+            print("walktoisland", walkToIsland2)
+            if (walkToIsland2):
+                cartMinX2, cartMinY2, cartMaxX2, cartMaxY2 = self.findOtherIslandCartesianBounds(cartesianBlockArray2)
+                result = self.checkInIsland(cartMinX2, cartMinY2, cartMaxX2, cartMaxY2, newX, newY)
+                if (result):
                     return True
             return False
-        self.cartX = newX
-        self.cartY = newY
+        self.setNewPosition(newX, newY)
         return True
     
+    def setNewPosition(self, newX, newY):
+        self.cartX = newX
+        self.cartY = newY
+
+    def checkInIsland(self, cartMinX, cartMinY, cartMaxX, cartMaxY, newX, newY):
+        print("newx newy", newX, newY)
+        print("cartmins and maxs", cartMinX, cartMinY, cartMaxX, cartMaxY)
+        print("less x", newX < cartMinX, "more x", newX > cartMaxX, 
+            "less y", newY < cartMinY, "more y", newY > cartMaxY)
+        if (newX < cartMinX or newX > cartMaxX or newY < cartMinY 
+                or newY > cartMaxY):
+            return False
+        else:
+            return True
+    
     def canWalkAcrossBridge(self, newX, newY):
+        global walkToIsland2
         for sprite in bridgeSprites:
             # leftBottomCorner = sprite.rect.bottomleft + (0, -.25 * sprite.rect.height)
             # leftBottomX, leftBottomY = self.convertIsometricToCartesian(leftBottomCorner[0]
@@ -229,29 +248,32 @@ class Character(pygame.sprite.Sprite):
 
             rightBottomCorner = (sprite.rect.bottomleft[0] +.1 * sprite.rect.width, 
                 sprite.rect.bottomleft[1])
-            print("right bottom corner", rightBottomCorner, "rect", sprite.rect.bottomleft)
+            # print("right bottom corner", rightBottomCorner, "rect", sprite.rect.bottomleft)
             rightBottomX, rightBottomY = self.convertIsometricToCartesian(rightBottomCorner[0]
                 - self.offsetX, rightBottomCorner[1] - self.offsetY)
             leftTopCorner = (sprite.rect.topright[0] -.1 * sprite.rect.width, 
                 sprite.rect.topright[1])
-            print("left top corner", leftTopCorner, "rect", sprite.rect.topright)
+            # print("left top corner", leftTopCorner, "rect", sprite.rect.topright)
             leftTopX, leftTopY = self.convertIsometricToCartesian(leftTopCorner[0]
                 - self.offsetX, leftTopCorner[1] - self.offsetY)
 
             # rightTopCorner = sprite.rect.bottomleft + (0, .25 * sprite.rect.height)
             # rightTopX, rightTopY = self.convertIsometricToCartesian(rightTopCorner[0]
             #     + self.offsetX, rightTopCorner[1] + self.offsetY)
-            print("lefttopx and y", leftTopX, leftTopY, "rightbottom x, y", rightBottomX, rightBottomY)
+            # print("lefttopx and y", leftTopX, leftTopY, "rightbottom x, y", rightBottomX, rightBottomY)
             bridgeMinX = leftTopX + startX
             bridgeMinY = leftTopY + startY + (self.boardCellHeight / 2)
             bridgeMaxX = rightBottomX + startX
             bridgeMaxY = rightBottomY + startY + (self.boardCellHeight / 2)
-            print("newx", newX, "newy", newY)
-            print("minx and maxx", bridgeMinX, bridgeMaxX, "min max y", bridgeMinY, bridgeMaxY)
-            print("in min x", newX > bridgeMinX, "in max x", newX < bridgeMaxX,
-                "in min y", newY > bridgeMinY, "in max y", newY < bridgeMaxY)
+            # print("newx", newX, "newy", newY)
+            # print("minx and maxx", bridgeMinX, bridgeMaxX, "min max y", bridgeMinY, bridgeMaxY)
+            # print("in min x", newX > bridgeMinX, "in max x", newX < bridgeMaxX,
+            #     "in min y", newY > bridgeMinY, "in max y", newY < bridgeMaxY)
             if (newX > bridgeMinX and newX < bridgeMaxX and newY > bridgeMinY
                 and newY < bridgeMaxY):
+                # ADJUST FOR OTHER ISLANDS
+                if (sprite.bridgeName == "1to2"):
+                    walkToIsland2 = True
                 return True
         return False
  

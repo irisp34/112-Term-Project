@@ -61,6 +61,8 @@ offsetY1 = (height // 2) - startY
 offsetX2 = 0
 offsetY2 = 0
 
+walkToIsland2 = False
+
 
 
     

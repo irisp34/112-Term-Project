@@ -96,6 +96,11 @@ class Iron(Resource):
         self.amount = 0
         # self.getAmount()
 
+class Hammer(Resource):
+    def __init__(self, image, resourceType, resourceValue, inventoryBar):
+        super().__init__(image, resourceType, resourceValue, inventoryBar)
+        self.amount = 0
+
     
                 
 def numResourceSprites(resource):

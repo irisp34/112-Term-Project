@@ -149,14 +149,15 @@ def createInventoryCaptions(classType):
     if (textRect != None and text != None):
         screen.blit(text, textRect)
 
-def mousePressed(event, character):
+def mousePressed(event, character, inventoryBar):
     global isShopping
     global keyword
     global drawOutline
     global drawUnaffordableMessage
+    print("clicked", event.pos)
     if (isShopping):
         drawOutline, keyword, drawUnaffordableMessage = selectedItem(event)
-        isShopping = endShopping(event, keyword)
+        isShopping = endShopping(event, keyword, inventoryBar)
     else:
         count = 1
         for sprite in treeSprites:
@@ -202,7 +203,7 @@ def playGame():
                 playing = False
             elif (event.type == pygame.MOUSEBUTTONDOWN):
                 # character.jump(event)
-                mousePressed(event, character)
+                mousePressed(event, character, inventoryBar)
                 # character.jump(posX, posY)
             # elif (event.type == pygame.KEYDOWN):
             #     if (event.key == pygame.K_DOWN):
