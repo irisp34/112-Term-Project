@@ -189,7 +189,7 @@ class Character(pygame.sprite.Sprite):
         self.cartY += startY + (self.boardCellHeight / 2)
         newX = self.cartX + dx * self.boardCellWidth
         newY = self.cartY + dy * self.boardCellHeight
-        # print("newx, newy", newX, newY)
+        print("newx, newy", newX, newY)
         # print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
         # print("less x", newX < self.cartMinX, "more x", newX > self.cartMaxX, 
         #     "less y", newY < self.cartMinY, "more y", newY > self.cartMaxY)
@@ -229,7 +229,7 @@ class Character(pygame.sprite.Sprite):
         self.cartY = newY
 
     def checkInIsland(self, cartMinX, cartMinY, cartMaxX, cartMaxY, newX, newY):
-        print("newx newy", newX, newY)
+        # print("newx newy", newX, newY)
         print("cartmins and maxs", cartMinX, cartMinY, cartMaxX, cartMaxY)
         print("less x", newX < cartMinX, "more x", newX > cartMaxX, 
             "less y", newY < cartMinY, "more y", newY > cartMaxY)

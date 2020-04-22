@@ -65,11 +65,13 @@ def selectedItem(event):
     global drawOutline
     global drawUnaffordableMessage
     keyword = None
+    # global keyword
     pygame.draw.rect(screen, (255, 0, 0), (0, 0, 60, 60))
     posX, posY = event.pos
     image = None
     imageRect = None
     currKey = None
+    current = drawOutline
     for key in purchasableItems:
         print("key", key)
         # if (key.lower() == "bridge"):
@@ -90,11 +92,16 @@ def selectedItem(event):
                 drawUnaffordableMessage = True
             else:
                 drawUnaffordableMessage = False
+        # if (drawOutline and key == keyword):
         if (drawOutline):
             # return drawOutline, keyword, drawUnaffordableMessage
             break
             # print("drawUnaffordableMessage", drawUnaffordableMessage)
     print("HERE")
+    # if (current):
+    #     keyword = None
+    # else:
+    #     keyword = currKey
     keyword = currKey
     print("keyword before return", keyword)
     return drawOutline, keyword, drawUnaffordableMessage

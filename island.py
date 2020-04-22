@@ -48,8 +48,11 @@ class Block(pygame.sprite.Sprite):
         halfHeight = self.cellHeight / 2
         self.rect.x = ((col - row) * halfWidth) + self.offsetX
         self.rect.y = ((row + col) * halfHeight) + self.offsetY
-        # self.rect.centerx = self.rect.x + halfWidth
-        # self.rect.centery = self.rect.y + halfHeight
+    
+    def convertIsometricToCartesian(self, isoX, isoY):
+        cartesianX = (isoX + isoY * 2) / 2
+        cartesianY = (2*isoY - isoX) / 2
+        return (cartesianX, cartesianY)
     
     def scaleImage(self):
         self.image = pygame.transform.scale(self.image, (self.cellWidth, self.cellHeight))
@@ -162,6 +165,23 @@ def getBoardBounds(blockArray):
     bottomRight = (bottomRightCorner.rect.bottomright[0], bottomRightCorner.rect.bottomright[1])
     return [topLeft, topRight, bottomLeft, bottomRight]
 
+def updateCartesianCoordinates(blockArray, cartesianBlockArray, diffOffsetX, diffOffsetY):
+    for row in range(cartesianBlockArray.shape[0]):
+        for col in range(cartesianBlockArray.shape[1]):
+            # isoBlock = blockArray[row, col]
+            cartBlock = cartesianBlockArray[row, col]
+            # cartX, cartY = isoBlock.convertIsometricToCartesian(isoBlock.rect.x
+            #     - isoBlock.offsetX, isoBlock.rect.y - isoBlock.offsetY)
+            # cartX += startX
+            # cartY += startY - cellHeight / 2
+            # cartBlock.rect.x, cartBlock.rect.y = cartX, cartY
+            # newX = cartBlock.rect.x + diffOffsetX
+            # newY = cartBlock.rect.y + diffOffsetY
+            diffOffsetX, diffOffsetY = cartBlock.convertIsometricToCartesian(diffOffsetX, diffOffsetY)
+            print("DIFFOFFSET converted", diffOffsetX, diffOffsetY)
+            cartBlock.rect.x += diffOffsetX
+            cartBlock.rect.y += diffOffsetY
+
 def createIslands():
     # global startX
     # global startY
@@ -179,9 +199,13 @@ def createIslands():
     offsetY2 = offsetY1 - height // 5
     # offsetX += width // 2
     # offsetY -= height // 3
+    diffOffsetX = offsetX2 - offsetX1
+    diffOffsetY = offsetY2 - offsetY1
+    print("DIFFOFFSET", diffOffsetX, diffOffsetY)
     make2DBoard(blockSprites2, blockArray2, cartesianBlockArray2, blockRows, blockCols, cellWidth, 
                 cellHeight, startX, startY, offsetX2, offsetY2)
     makeBoardIsometric(blockArray2)
+    updateCartesianCoordinates(blockArray2, cartesianBlockArray2, diffOffsetX, diffOffsetY)
 
 # draws the tan portion of the island with a border      
 def drawIslandBase(blockArray):
