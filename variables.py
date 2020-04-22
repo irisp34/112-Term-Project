@@ -44,15 +44,22 @@ drawUnaffordableMessage = False
 keyword = None
 baseX = 100
 baseY = 100
-bridgeCost = 3
-bridgeResource = "wood"
+# various resource costs
+# bridgeCost = 3
+# bridgeResource = "wood"
+bridgeDict = dict()
+bridgeDict["wood"] = 3
+# hammerCosts = [1, 1]
+# hammerResources = ["wood", "iron"]
+hammerDict = dict()
+hammerDict["wood"] = 1
+hammerDict["iron"] = 1
+
 # place board in center of screen
 offsetX1 = (width // 2) - startX
 offsetY1 = (height // 2) - startY
 offsetX2 = 0
 offsetY2 = 0
-# offsetX = 0
-# offsetY = 0
 
 
 

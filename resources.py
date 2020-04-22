@@ -12,7 +12,7 @@ class Resource(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.resourceType = resourceType
         self.resourceValue = resourceValue
-        self.amount = len(resourceSprites) + 1
+        # self.amount = len(resourceSprites) + 1
         self.inventoryBar = inventoryBar
         self.image, self.rect = self.scaleImage(self.image, self.rect)
     
@@ -23,17 +23,29 @@ class Resource(pygame.sprite.Sprite):
         rect = image.get_rect()
         return image, rect
     
-    def placeInInventory(self):
+    # generalize to put resources in spaces not filled
+    def placeInInventory(self, space):
         inventorySpaces = self.getInventorySpaces()
-        self.rect.x, self.rect.y = inventorySpaces[0]
+        self.rect.x, self.rect.y = inventorySpaces[space]
         self.rect.centerx = self.rect.x + self.barSpaceWidth / 2
         self.rect.centery = self.rect.y + self.barSpaceHeight / 2
         print("log location", self.rect.x, self.rect.y)
 
     def getInventorySpaces(self):
+        spaceTopCorners = []
         topEdgeOfInventorySpace = 10
-        space1 = (self.inventoryBar.rect.x + 80, topEdgeOfInventorySpace)
-        return [space1]
+        leftEdgeOfRect = 80
+        betweenInventorySpaces = 20
+        leftEdgeOfFirstSpace = self.inventoryBar.rect.x + leftEdgeOfRect
+        # nextEdgeOfSpace = leftEdgeOfFirstSpace + 
+        for i in range(6):
+            spaceX = leftEdgeOfFirstSpace + (self.barSpaceWidth + 
+                betweenInventorySpaces) * i
+            spaceY = topEdgeOfInventorySpace
+            spaceTopCorners.append((spaceX, spaceY))
+        # space1 = (leftEdgeOfFirstSpace, topEdgeOfInventorySpace)
+        # space2 = (self.inventoryBar.rect.x + )
+        return spaceTopCorners
     
     def addCaption(self):
         font = pygame.font.Font('freesansbold.ttf', 12)
@@ -45,26 +57,54 @@ class Resource(pygame.sprite.Sprite):
         return text, textRect
 
     # fix to account for different resources
-    def updateAmount(self):
+    def updateAmount(self, classType):
         currCount = 0
+        # for sprite in resourceSprites:
+        #     # sprite.getAmount(classType)
+        #     # self.amount = len(resourceSprites)
+        #     # print("sprite amount", sprite.amount)
+        #     if (isinstance(sprite, classType)):
+        #         if (sprite.amount >= currCount):
+        #             currCount = sprite.amount
+        # for sprite in resourceSprites:
+        #     if (isinstance(sprite, classType)):
+        #         sprite.amount = currCount
+        currAmount = self.getAmount(classType)
         for sprite in resourceSprites:
-            self.amount = len(resourceSprites)
-            # print("sprite amount", sprite.amount)
-            if (sprite.amount >= currCount):
-                currCount = sprite.amount
+            if (isinstance(sprite, classType)):
+                sprite = currAmount
+    
+    def getAmount(self, classType):
         for sprite in resourceSprites:
-            sprite.amount = currCount
+            if (isinstance(sprite, classType)):
+                self.amount += 1
 
 class Wood(Resource):
     def __init__(self, image, resourceType, resourceValue, inventoryBar):
         super().__init__(image, resourceType, resourceValue, inventoryBar)
+        self.amount = 0
+        # self.getAmount()
+    
+    # def getAmount(self):
+    #     for sprite in resourceSprites:
+    #         if (isinstance(sprite, Wood)):
+    #             self.amount += 1
 
+class Iron(Resource):
+    def __init__(self, image, resourceType, resourceValue, inventoryBar):
+        super().__init__(image, resourceType, resourceValue, inventoryBar)
+        self.amount = 0
+        # self.getAmount()
 
-def numWoodSprites(keyword):
+    
+                
+def numResourceSprites(resource):
     # resourceType = resourceType[0].upper() + resourceType[1:]
     # print("resource", resourceType)
-    if (keyword == "bridge"):
+    if (resource == "wood"):
         classType = Wood
+    elif (resource == "iron"):
+        classType = Iron
     count = 0
     for sprite in resourceSprites:
         # print("isinstance", isinstance(sprite, classType))

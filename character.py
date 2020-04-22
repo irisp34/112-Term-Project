@@ -227,19 +227,13 @@ class Character(pygame.sprite.Sprite):
     # http://www.cs.cmu.edu/~112/notes/notes-animations-part2.html#sidescrollerExamples
     def makePlayerVisible(self):
         isScrollable = False
-        # cartScrollX = self.boardCellWidth * dx
-        # cartScrollY = self.boardCellHeight * dy
         if (self.cartX < self.scrollMargin + self.scrollX):
-            # self.scrollX = self.cartX - self.scrollMargin
             isScrollable = True
         elif (self.cartX + self.scrollMargin > self.scrollX + width):
-            # self.scrollX = self.cartX + self.scrollMargin - width
             isScrollable = True
         if (self.cartY < self.scrollMargin + self.scrollY):
-            # self.scrollY = self.cartY - self.scrollMargin
             isScrollable = True
         elif (self.cartY + self.scrollMargin > self.scrollX + height):
-            # self.scrollX = self.cartX + self.scrollMargin - height
             isScrollable = True
         return isScrollable
 
@@ -303,6 +297,7 @@ class MainCharacter(Character):
         for sprite in ironSprites:
             if (self.rect.colliderect(sprite.rect)):
                 sprite.kill()
+                sprite.addIronToInventory()
 
 def createCharacter(image, charSprites, cellWidth, cellHeight, blockArray, 
     cartesianBlockArray, offsetX, offsetY):

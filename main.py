@@ -118,18 +118,40 @@ def redrawAll(character):
             screen.blit(text, textRect)
 
     # adds resource caption only if there are resource sprites in the sprite group
-    if (resourceSprites):
-        for sprite in resourceSprites:
-            currCount = 0
-            # print("sprite amount", sprite.amount)
-            if (sprite.amount > currCount):
-                currCount = sprite.amount
-                text, textRect = sprite.addCaption()
-        screen.blit(text, textRect)
+    createInventoryCaptions(Wood)
+    createInventoryCaptions(Iron)
+    
+    # if (resourceSprites):
+    #     for sprite in resourceSprites:
+    #         currCount = 0
+    #         # print("sprite amount", sprite.amount)
+    #         if (sprite.amount > currCount):
+    #             currCount = sprite.amount
+    #             text, textRect = sprite.addCaption()
+    #     screen.blit(text, textRect)
+
     # coordinates for first inventory box
     pygame.draw.rect(screen, (0, 255, 255),(265, 10, 90, 70), 3)
     pygame.display.flip()
     resetScroll(character)
+
+def createInventoryCaptions(classType):
+    text = None
+    textRect = None
+    # for sprite in resourceSprites:
+    #     if (isinstance(sprite, classType)):
+    #         text, textRect = sprite.addCaption()
+    #         screen.blit(text, textRect)
+    #         return
+    for sprite in resourceSprites:
+        currCount = 0
+        # print("sprite amount", sprite.amount)
+        if (isinstance(sprite, classType)):
+            if (sprite.amount > currCount):
+                currCount = sprite.amount
+                text, textRect = sprite.addCaption()
+    if (textRect != None and text != None):
+        screen.blit(text, textRect)
 
 def mousePressed(event, character):
     global isShopping
@@ -157,8 +179,8 @@ def playGame():
     # character picture from: https://ya-webdesign.com/imgdownload.html
     character = createCharacter("character.png", charSprites, cellWidth, 
         cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
-    enemyThread = createEnemies(character, charSprites, cellWidth, 
-        cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
+    # enemyThread = createEnemies(character, charSprites, cellWidth, 
+    #     cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
 
     # water picture from: http://igm-tuto.blogspot.com/2014/06/pixel-art-draw-water-background.html
     waterImage = pygame.image.load("water.png").convert_alpha()

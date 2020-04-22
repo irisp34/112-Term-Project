@@ -9,7 +9,56 @@ def createShop():
         height - baseY * 2))
     pygame.draw.rect(screen, (0, 52, 114), (baseX, baseY, width - baseX * 2, 
         height - baseY * 2), 4)
-    addBridgeToShop(bridgeCost, bridgeResource)
+    addBridgeToShop(bridgeDict)
+    addHammerToShop(hammerDict)
+
+def scaleImage(image, location):
+    image = pygame.transform.scale(image, location)
+    rect = image.get_rect()
+    return image, rect
+
+# takes in list of costs, list of resources, and the image rect
+def createCostCaption(resourceDict, resourceRect):
+    font = pygame.font.Font('freesansbold.ttf', 16)
+    caption = "Cost: "
+    for key in resourceDict:
+        caption += f"{key} {resourceDict[key]},"
+    caption = caption[:-1]
+    # caption = f"Cost: {bridgeCost} {bridgeResource}"
+    text = font.render(caption, True, (0, 0, 0))
+    textRect = text.get_rect()
+    textRect.centerx = resourceRect.centerx
+    textRect.centery = resourceRect.bottomright[1] + 15
+    screen.blit(text, textRect)
+
+def addBridgeToShop(bridgeDict):
+    bridge = pygame.image.load("woodBridge.png").convert_alpha()
+    bridgeRect = bridge.get_rect()
+    location = (int(bridgeRect.width * .5), int(bridgeRect.height * .5))
+    bridge, bridgeRect = scaleImage(bridge, location)
+    bridgeRect.x = baseX + betweenItemsOffset
+    bridgeRect.y = baseY + betweenItemsOffset
+    minX, minY = bridgeRect.x, bridgeRect.y
+    maxX, maxY = bridgeRect.bottomright[0], bridgeRect.bottomright[1]
+    # adds this items to dictionary of items that can be purchased
+    purchasableItems["bridge"] = (minX, minY, maxX, maxY)
+    screen.blit(bridge, (bridgeRect.x, bridgeRect.y))
+    createCostCaption(bridgeDict, bridgeRect)
+    return bridge, bridgeRect
+
+def addHammerToShop(hammerDict):
+    hammer = pygame.image.load("hammer.png").convert_alpha()
+    hammerRect = hammer.get_rect()
+    location = (int(hammerRect.width * .5), int(hammerRect.height * .5))
+    hammer, hammerRect = scaleImage(hammer, location)
+    hammerRect.x = baseX + betweenItemsOffset
+    hammerRect.y = baseY + betweenItemsOffset
+    minX, minY = hammerRect.x, hammerRect.y
+    maxX, maxY = hammerRect.bottomright[0], hammerRect.bottomright[1]
+    purchasableItems["hammer"] = (minX, minY, maxX, maxY)
+    screen.blit(hammer, (hammerRect.x, hammerRect.y))
+    createCostCaption(hammerDict, hammerRect)
+    return hammer, hammerRect
 
 def selectedItem(event):
     global drawOutline
@@ -20,23 +69,23 @@ def selectedItem(event):
     image = None
     imageRect = None
     for key in purchasableItems:
-        if (key.lower() == "bridge"):
-            imageDim = purchasableItems[key]
-            keyword = key
+        # if (key.lower() == "bridge"):
+        imageDim = purchasableItems[key]
+        keyword = key
         minX, minY, maxX, maxY = imageDim
         # print("min max", minX, minY, maxX, maxY)
         # print(posX >= minX, posX <= maxX, posY >= minY, posY <= maxY)
         isAffordable = affordable(keyword)
-        print("isAffordable", isAffordable)
-        print("drawOutline before", drawOutline)
+        # print("isAffordable", isAffordable)
+        # print("drawOutline before", drawOutline)
         if (posX >= minX and posX <= maxX and posY >= minY and posY <= maxY):
             drawOutline = not drawOutline
-            print("drawOutline", drawOutline)
+            # print("drawOutline", drawOutline)
             if (not isAffordable and drawOutline):
                 drawUnaffordableMessage = True
             else:
                 drawUnaffordableMessage = False
-            print("drawUnaffordableMessage", drawUnaffordableMessage)
+            # print("drawUnaffordableMessage", drawUnaffordableMessage)
     return drawOutline, keyword, drawUnaffordableMessage
         
 def shopButtonInfo():
@@ -89,14 +138,10 @@ def beginShopping(event):
     global isShopping
     shopImage, shopButtonRect = shopButtonInfo()
     posX, posY = event.pos
-    # print("posx y", posX, posY)
     shopMinX, shopMinY = shopButtonRect.x, shopButtonRect.y
     shopMaxX, shopMaxY = shopButtonRect.bottomright[0], shopButtonRect.bottomright[1]
-    # print("shop min max", shopMinX, shopMinY, shopMaxX, shopMaxY)
-    # print("x", posX >= shopMinX, posX <= shopMaxX,"y", posY >= shopMinY, posY <= shopMaxY)
     if (posX >= shopMinX and posX <= shopMaxX and posY >= shopMinY and posY <= shopMaxY):
         isShopping = True
-    # print("isshopping", isShopping)
     return isShopping
 
 # adjust to work between several islands
@@ -121,20 +166,41 @@ def subtractResources(keyword):
                     print("after kill", len(resourceSprites))
                     sprite.updateAmount()
                     break
+    elif (keyword == "hammer"):
+        woodCount = 0
+        ironCount = 0
+        for sprite in resourceSprites:
+            if (isinstance(sprite, Wood)):
+                woodCount += 1
+                sprite.kill()
+            elif (isinstance(sprite, Iron)):
+                ironCount += 1
+                sprite.kill()
+            if (woodCount == hammerCosts["wood"] and ironCount == hammerCosts["iron"]):
+                sprite.updateAmount()
+                break
 
 # checks if you can afford the thing you are trying to buy by checking how many
 # types of a resource sprite you have
 def affordable(keyword):
     print("affordable keyword", keyword)
-    resourceType = None
-    itemCost = None
-    amountInInventory = None
+    # resourceType = None
+    # itemCost = None
+    # amountInInventory = None
+    currDict = None
     if (keyword == "bridge"):
-        resourceType = bridgeResource
-        itemCost = bridgeCost
-        amountInInventory = numWoodSprites(keyword)
-        print("amountInInventory", amountInInventory)
-    return amountInInventory >= itemCost
+        # resourceType = bridgeResource
+        # itemCost = bridgeCost
+        # amountInInventory = numResourceSprites(resourceType)
+        # print("amountInInventory", amountInInventory)
+        currDict = bridgeDict
+    elif (keyword == "hammer"):
+        currDict = hammerDict
+    for key in currDict:
+        if (numResourceSprites(key) < currDict[key]):
+            return False
+    # return amountInInventory >= itemCost
+    return True
 
 def endShopping(event, keyword):
     global isShopping

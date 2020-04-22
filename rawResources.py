@@ -138,13 +138,11 @@ class Trees(RawResources):
     def addWoodToInventory(self):
         logImage = "log.png"
         logResource = Wood(logImage, "Wood", 1, self.inventoryBar)
-        logResource.placeInInventory()
-        # logResource.amount += 1
+        logResource.placeInInventory(0)
         resourceSprites.add(logResource)
-        # print("resourceSprites", resourceSprites)
-        logResource.updateAmount()
+        logResource.updateAmount(Wood)
 
-class Iron(RawResources):
+class RawIron(RawResources):
     def __init__(self, image, character, blockArray, cartesianBlockArray, inventoryBar, offsetX, offsetY, location):
         super().__init__(image, character, blockArray, cartesianBlockArray, inventoryBar, offsetX, offsetY, location)
 
@@ -152,6 +150,13 @@ class Iron(RawResources):
         centerX = (block.rect.centerx)
         centerY = (block.rect.centery)
         return centerX, centerY
+
+    def addIronToInventory(self):
+        ironImage = "metalBar.png"
+        ironResource = Iron(ironImage, "Iron", 2, self.inventoryBar)
+        ironResource.placeInInventory(1)
+        resourceSprites.add(ironResource)
+        ironResource.updateAmount(Iron)
 
 # makes Tree objects to place on the board
 def makeTrees(character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY, cellWidth, cellHeight):
@@ -165,7 +170,7 @@ def makeTrees(character, blockArray, cartBlockArray, inventoryBar, offsetX, offs
 def placeIron(character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY, cellWidth, cellHeight):
     image = "metalBar.png"
     location = (int(cellWidth * .6), int(cellHeight * .6))
-    iron = Iron(image, character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY, location)
+    iron = RawIron(image, character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY, location)
     ironSprites.add(iron)
 
 def sumCarbon():
