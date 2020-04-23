@@ -4,7 +4,8 @@ import os
 import numpy as np
 from island import *
 from character import *
-from variables import *
+# from variables import *
+import variables
 from inventory import *
 from water import *
 from rawResources import *
@@ -48,6 +49,7 @@ def scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrol
     scrollSprites(character, treeSprites, scrollX, scrollY)
     scrollSprites(character, ironSprites, scrollX, scrollY)
     scrollSprites(character, bridgeSprites, scrollX, scrollY)
+    scrollSprites(character, enemySprites, scrollX, scrollY)
     
     scrollIslands(blockArray1, scrollX, scrollY, character)
     # print("board bounds", getCartesianBoardBounds(cartesianBlockArray1))
@@ -60,7 +62,7 @@ def scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrol
 
 
 def redrawAll(character):
-    global isShopping
+    # global isShopping
     global drawOutline
     global drawUnaffordableMessage
     screen.fill((255, 255, 255))
@@ -83,7 +85,7 @@ def redrawAll(character):
     # if (isGameOver):
     #     drawGameOver()
     # gameplay mode
-    if (not isShopping):
+    if (not variables.isShopping):
         drawIslandBase(blockArray2)
         bridgeSprites.update()
         bridgeSprites.draw(screen)
@@ -139,6 +141,7 @@ def redrawAll(character):
     # adds resource caption only if there are resource sprites in the sprite group
     createInventoryCaptions(Wood)
     createInventoryCaptions(Iron)
+    createInventoryCaptions(Hammer)
 
     # coordinates for first inventory box
     pygame.draw.rect(screen, (0, 255, 255),(265, 10, 90, 70), 3)
@@ -159,15 +162,15 @@ def createInventoryCaptions(classType):
         screen.blit(text, textRect)
 
 def mousePressed(event, character, inventoryBar):
-    global isShopping
+    # global isShopping
     global keyword
     global drawOutline
     global drawUnaffordableMessage
     print("clicked", event.pos)
-    if (isShopping):
+    if (variables.isShopping):
         drawOutline, keyword, drawUnaffordableMessage = selectedItem(event, keyword)
-        isShopping = endShopping(event, keyword, inventoryBar)
-        if (not isShopping):
+        variables.isShopping = endShopping(event, keyword, inventoryBar)
+        if (not variables.isShopping):
             keyword = None
             drawOutline = False
     else:
@@ -178,12 +181,12 @@ def mousePressed(event, character, inventoryBar):
                 break
             count += 1
         character.killEnemy(event)
-        isShopping = beginShopping(event)
-    # return isShopping
+        variables.isShopping = beginShopping(event)
+    # return variables.isShopping
 
 def playGame():
     global isGameOver
-    global isShopping
+    # global isShopping
     pygame.init()
     createIslands()
 

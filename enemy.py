@@ -4,7 +4,8 @@ import pygame
 import random
 from character import *
 from island import *
-from variables import *
+# from variables import *
+import variables
 
 class Enemy(Character):
     # enemy picture: https://www.gamedevmarket.net/asset/evil-tree-pixel-art-monster-enemy-10227/
@@ -44,8 +45,8 @@ class EnemyThread(threading.Thread):
             time.sleep(3)
             if (not self.isRunning):
                 return
-            # if (isShopping):
-            #     continue
+            if (variables.isShopping):
+                continue
             isWalkable = False
             while (not isWalkable):
                 direction = self.getDirection()

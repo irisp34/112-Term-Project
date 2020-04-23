@@ -69,15 +69,21 @@ class Resource(pygame.sprite.Sprite):
         # for sprite in resourceSprites:
         #     if (isinstance(sprite, classType)):
         #         sprite.amount = currCount
+        print("update", resourceSprites)
         currAmount = self.getAmount(classType)
+        # currAmount = numResourceSprites(resource)
+        print("class", classType, "curramount", currAmount)
         for sprite in resourceSprites:
             if (isinstance(sprite, classType)):
-                sprite = currAmount
+                sprite.amount = currAmount
     
     def getAmount(self, classType):
+        print("inget amount", resourceSprites)
+        count = 0
         for sprite in resourceSprites:
             if (isinstance(sprite, classType)):
-                self.amount += 1
+                count += 1
+        return count
 
 class Wood(Resource):
     def __init__(self, image, resourceType, resourceValue, inventoryBar):
@@ -110,6 +116,8 @@ def numResourceSprites(resource):
         classType = Wood
     elif (resource == "iron"):
         classType = Iron
+    elif (resource == "hammer"):
+        classType = Hammer
     count = 0
     for sprite in resourceSprites:
         # print("isinstance", isinstance(sprite, classType))

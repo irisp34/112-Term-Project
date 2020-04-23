@@ -64,6 +64,8 @@ offsetY2 = 0
 
 walkToIsland2 = False
 
+score = 0
+
 
 
     
