@@ -4,6 +4,7 @@ import pygame
 import random
 from character import *
 from island import *
+from variables import *
 
 class Enemy(Character):
     # enemy picture: https://www.gamedevmarket.net/asset/evil-tree-pixel-art-monster-enemy-10227/
@@ -24,6 +25,7 @@ class Enemy(Character):
 
 # learned about threading in python from: https://pymotw.com/3/threading/
 class EnemyThread(threading.Thread):
+    # global isShopping
     def __init__(self, threadID, name):
       threading.Thread.__init__(self)
       self.threadID = threadID
@@ -42,6 +44,8 @@ class EnemyThread(threading.Thread):
             time.sleep(3)
             if (not self.isRunning):
                 return
+            # if (isShopping):
+            #     continue
             isWalkable = False
             while (not isWalkable):
                 direction = self.getDirection()

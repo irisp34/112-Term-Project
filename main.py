@@ -80,10 +80,10 @@ def redrawAll(character):
     resourceSprites.update(screen)
     resourceSprites.draw(screen)
     pygame.draw.rect(screen, (0, 255, 0),(200, 200, 50, 30))
-    if (isGameOver):
-        drawGameOver()
+    # if (isGameOver):
+    #     drawGameOver()
     # gameplay mode
-    elif (not isShopping):
+    if (not isShopping):
         drawIslandBase(blockArray2)
         bridgeSprites.update()
         bridgeSprites.draw(screen)
@@ -183,6 +183,7 @@ def mousePressed(event, character, inventoryBar):
 
 def playGame():
     global isGameOver
+    global isShopping
     pygame.init()
     createIslands()
 
@@ -198,10 +199,10 @@ def playGame():
     createWater(waterSprites, waterImage, rect)
     inventoryBar = Inventory()
     inventoryBarSprite.add(inventoryBar)
-    # makeTrees(character, blockArray1, cartesianBlockArray1, inventoryBar,
-    #     offsetX1, offsetY1, cellWidth, cellHeight, 10)
-    # makeTrees(character, blockArray2, cartesianBlockArray2, inventoryBar,
-    #   offsetX2, offsetY2, cellWidth, cellHeight, 5)
+    makeTrees(character, blockArray1, cartesianBlockArray1, inventoryBar,
+        offsetX1, offsetY1, cellWidth, cellHeight, 6)
+    makeTrees(character, blockArray2, cartesianBlockArray2, inventoryBar,
+      offsetX2, offsetY2, cellWidth, cellHeight, 5)
     createIronEvent = pygame.USEREVENT + 1
     createTreeEvent = pygame.USEREVENT + 2
     pygame.time.set_timer(createIronEvent, 2000)
@@ -229,7 +230,7 @@ def playGame():
             #     elif (event.key == pygame.K_RIGHT):
             #         character.moveRight()
             if (event.type == createIronEvent):
-                if (len(ironSprites) < 0):
+                if (len(ironSprites) < 4):
                     placeIron(character, blockArray1, cartesianBlockArray1, 
                         inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight)
             elif (event.type == createTreeEvent):

@@ -102,12 +102,6 @@ def selectedItem(event, currentItem):
             return drawOutline, selectedItem, drawUnaffordableMessage
             # print("drawUnaffordableMessage", drawUnaffordableMessage)
     print("HERE")
-    if (selectedItem != None):
-        drawOutline = True
-        keyword = selectedItem
-    else:
-        drawOutline = False
-        keyword = None
     print("keyword before return", keyword)
     return drawOutline, currentItem, drawUnaffordableMessage
         
@@ -173,12 +167,11 @@ def createBoughtItem(keyword, inventoryBar):
         bridge = Bridge(bridgeDict, cellWidth, cellHeight, blockArray1,
             cartesianBlockArray1, blockArray2, cartesianBlockArray2)
         bridgeSprites.add(bridge)
-    # elif (keyword == "hammer"):
-    #     pass
-        # hammer = Hammer("hammer.png", "hammer", 1, inventoryBar)
-        # resourceSprites.add(hammer)
-        # hammer.placeInInventory(2)
-        # hammer.updateAmount(Hammer)
+    elif (keyword == "hammer"):
+        hammer = Hammer("hammer.png", "hammer", 1, inventoryBar)
+        resourceSprites.add(hammer)
+        hammer.placeInInventory(2)
+        hammer.updateAmount(Hammer)
 
 # takes out Wood sprites to pay for bridge
 def subtractResources(keyword):
@@ -205,7 +198,7 @@ def subtractResources(keyword):
             elif (isinstance(sprite, Iron)):
                 ironCount += 1
                 sprite.kill()
-            if (woodCount == hammerCosts["wood"] and ironCount == hammerCosts["iron"]):
+            if (woodCount == hammerDict["wood"] and ironCount == hammerDict["iron"]):
                 sprite.updateAmount(Wood)
                 sprite.updateAmount(Iron)
                 break
@@ -213,6 +206,9 @@ def subtractResources(keyword):
 # checks if you can afford the thing you are trying to buy by checking how many
 # types of a resource sprite you have
 def affordable(keyword):
+    if (keyword == None):
+        return True
+
     print("affordable keyword", keyword)
     # resourceType = None
     # itemCost = None
