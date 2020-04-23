@@ -195,19 +195,20 @@ def subtractResources(keyword):
         print("wood", numResourceSprites("wood"))
         print("iron", numResourceSprites("iron"))
         for sprite in resourceSprites:
-            if (isinstance(sprite, Wood)):
-                woodCount += 1
-                sprite.kill()
-            elif (isinstance(sprite, Iron)):
-                ironCount += 1
-                sprite.kill()
             if (woodCount == hammerDict["wood"] and ironCount == hammerDict["iron"]):
                 sprite.updateAmount(Wood)
                 sprite.updateAmount(Iron)
                 print("length after", len(resourceSprites))
                 print("wood", numResourceSprites("wood"))
                 print("iron", numResourceSprites("iron"))
-                break
+                return
+            elif (isinstance(sprite, Wood) and woodCount != hammerDict["wood"]):
+                woodCount += 1
+                sprite.kill()
+            elif (isinstance(sprite, Iron) and ironCount != hammerDict["iron"]):
+                ironCount += 1
+                sprite.kill()
+            
 
 # checks if you can afford the thing you are trying to buy by checking how many
 # types of a resource sprite you have

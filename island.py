@@ -167,7 +167,7 @@ def getBoardBounds(blockArray):
 
 def updateCartesianCoordinates(blockArray, cartesianBlockArray, diffOffsetX, diffOffsetY):
     diffOffsetX, diffOffsetY = cartesianBlockArray[0,0].convertIsometricToCartesian(diffOffsetX, diffOffsetY)
-    print("DIFFOFFSET converted", diffOffsetX, diffOffsetY)
+    # print("DIFFOFFSET converted", diffOffsetX, diffOffsetY)
     for row in range(cartesianBlockArray.shape[0]):
         for col in range(cartesianBlockArray.shape[1]):
             # isoBlock = blockArray[row, col]
@@ -201,7 +201,7 @@ def createIslands():
     # offsetY -= height // 3
     diffOffsetX = offsetX2 - offsetX1
     diffOffsetY = offsetY2 - offsetY1
-    print("DIFFOFFSET", diffOffsetX, diffOffsetY)
+    # print("DIFFOFFSET", diffOffsetX, diffOffsetY)
     make2DBoard(blockSprites2, blockArray2, cartesianBlockArray2, blockRows, blockCols, cellWidth, 
                 cellHeight, startX, startY, offsetX2, offsetY2)
     makeBoardIsometric(blockArray2)

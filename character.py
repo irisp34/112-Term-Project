@@ -218,6 +218,7 @@ class Character(pygame.sprite.Sprite):
                 cartMinX2, cartMinY2, cartMaxX2, cartMaxY2 = self.findOtherIslandCartesianBounds(cartesianBlockArray2)
                 result = self.checkInIsland(cartMinX2, cartMinY2, cartMaxX2, cartMaxY2, newX, newY)
                 if (result):
+                    self.setNewCartBoundaries(cartesianBlockArray2)
                     return True
             return False
         self.setNewPosition(newX, newY)
@@ -226,12 +227,19 @@ class Character(pygame.sprite.Sprite):
     def setNewPosition(self, newX, newY):
         self.cartX = newX
         self.cartY = newY
+    
+    def setNewCartBoundaries(self, cartBlockArray):
+        cartMinX, cartMinY, cartMaxX, cartMaxY = self.findOtherIslandCartesianBounds(cartBlockArray)
+        self.cartMinX = cartMinX
+        self.cartMinY = cartMinY
+        self.cartMaxX = cartMaxX
+        self.cartMaxY = cartMaxY
 
     def checkInIsland(self, cartMinX, cartMinY, cartMaxX, cartMaxY, newX, newY):
         # print("newx newy", newX, newY)
-        print("cartmins and maxs", cartMinX, cartMinY, cartMaxX, cartMaxY)
-        print("less x", newX < cartMinX, "more x", newX > cartMaxX, 
-            "less y", newY < cartMinY, "more y", newY > cartMaxY)
+        # print("cartmins and maxs", cartMinX, cartMinY, cartMaxX, cartMaxY)
+        # print("less x", newX < cartMinX, "more x", newX > cartMaxX, 
+        #     "less y", newY < cartMinY, "more y", newY > cartMaxY)
         if (newX < cartMinX or newX > cartMaxX or newY < cartMinY 
                 or newY > cartMaxY):
             return False
@@ -308,13 +316,15 @@ class Character(pygame.sprite.Sprite):
         self.rect.centerx = posX
         self.rect.centery = posY
 
+    # can only kill enemy if it is on the same island as the character
     def killEnemy(self, event):
         posX, posY = event.pos
+        print("enemy event pos", posX, posY)
         posX, posY = self.convertIsometricToCartesian(posX - self.offsetX, posY - self.offsetY)
         # posX += startX + self.boardCellWidth
         posX += startX - (self.boardCellWidth / 2)
         posY += startY + (self.boardCellHeight / 2)
-        print("clicked", posX, posY)
+        print("clicked enemy", posX, posY)
         # print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
         a1 = posX < self.cartMinX
         a2 = posX > self.cartMaxX

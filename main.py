@@ -166,7 +166,7 @@ def mousePressed(event, character, inventoryBar):
     global keyword
     global drawOutline
     global drawUnaffordableMessage
-    print("clicked", event.pos)
+    print("clicked mouse pressed", event.pos)
     if (variables.isShopping):
         drawOutline, keyword, drawUnaffordableMessage = selectedItem(event, keyword)
         variables.isShopping = endShopping(event, keyword, inventoryBar)
@@ -205,7 +205,7 @@ def playGame():
     makeTrees(character, blockArray1, cartesianBlockArray1, inventoryBar,
         offsetX1, offsetY1, cellWidth, cellHeight, 6)
     makeTrees(character, blockArray2, cartesianBlockArray2, inventoryBar,
-      offsetX2, offsetY2, cellWidth, cellHeight, 5)
+      offsetX1, offsetY1, cellWidth, cellHeight, 2)
     createIronEvent = pygame.USEREVENT + 1
     createTreeEvent = pygame.USEREVENT + 2
     pygame.time.set_timer(createIronEvent, 2000)
@@ -233,12 +233,12 @@ def playGame():
             #     elif (event.key == pygame.K_RIGHT):
             #         character.moveRight()
             if (event.type == createIronEvent):
-                if (len(ironSprites) < 4):
+                if (len(ironSprites) < 0):
                     placeIron(character, blockArray1, cartesianBlockArray1, 
                         inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight)
             elif (event.type == createTreeEvent):
                 # fix to spawn on specific island
-                if (len(treeSprites) < 11):
+                if (len(treeSprites) < 0):
                     count = 0
                     print("tree #", count)
                     makeTrees(character, blockArray1, cartesianBlockArray1, 
