@@ -166,6 +166,8 @@ def getBoardBounds(blockArray):
     return [topLeft, topRight, bottomLeft, bottomRight]
 
 def updateCartesianCoordinates(blockArray, cartesianBlockArray, diffOffsetX, diffOffsetY):
+    diffOffsetX, diffOffsetY = cartesianBlockArray[0,0].convertIsometricToCartesian(diffOffsetX, diffOffsetY)
+    print("DIFFOFFSET converted", diffOffsetX, diffOffsetY)
     for row in range(cartesianBlockArray.shape[0]):
         for col in range(cartesianBlockArray.shape[1]):
             # isoBlock = blockArray[row, col]
@@ -177,8 +179,6 @@ def updateCartesianCoordinates(blockArray, cartesianBlockArray, diffOffsetX, dif
             # cartBlock.rect.x, cartBlock.rect.y = cartX, cartY
             # newX = cartBlock.rect.x + diffOffsetX
             # newY = cartBlock.rect.y + diffOffsetY
-            diffOffsetX, diffOffsetY = cartBlock.convertIsometricToCartesian(diffOffsetX, diffOffsetY)
-            print("DIFFOFFSET converted", diffOffsetX, diffOffsetY)
             cartBlock.rect.x += diffOffsetX
             cartBlock.rect.y += diffOffsetY
 

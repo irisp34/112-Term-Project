@@ -40,6 +40,7 @@ purchasableItems = dict()
 betweenItemsOffset = 30
 drawOutline = False
 drawUnaffordableMessage = False
+isGameOver = False
 # keyword is the currently selected item
 keyword = None
 baseX = 100

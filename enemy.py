@@ -17,7 +17,7 @@ class Enemy(Character):
         super().kill()
 
     def scaleImage(self):
-        location = (self.boardCellWidth * 2, self.boardCellHeight * 2)
+        location = (self.boardCellWidth, self.boardCellHeight)
         self.image = pygame.transform.scale(self.image, location)
         self.rect = self.image.get_rect()
 
@@ -76,3 +76,12 @@ def createEnemies(character, charSprites, cellWidth, cellHeight, blockArray,
     thread.setEnemy(enemy)
     thread.start()
     return thread
+
+def checkEnemyCollision(character, enemySprites):
+    global isGameOver
+    for sprite in enemySprites:
+        if (character.rect.colliderect(sprite.rect)):
+            isGameOver = True
+    # print("in enemy", isGameOver)
+    return isGameOver
+            

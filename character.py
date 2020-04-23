@@ -189,7 +189,7 @@ class Character(pygame.sprite.Sprite):
         self.cartY += startY + (self.boardCellHeight / 2)
         newX = self.cartX + dx * self.boardCellWidth
         newY = self.cartY + dy * self.boardCellHeight
-        print("newx, newy", newX, newY)
+        # print("newx, newy", newX, newY)
         # print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
         # print("less x", newX < self.cartMinX, "more x", newX > self.cartMaxX, 
         #     "less y", newY < self.cartMinY, "more y", newY > self.cartMaxY)
@@ -214,7 +214,6 @@ class Character(pygame.sprite.Sprite):
                 if (self.canWalkAcrossBridge(newX, newY)):
                     self.setNewPosition(newX, newY)
                     return True
-            print("walktoisland", walkToIsland2)
             if (walkToIsland2):
                 cartMinX2, cartMinY2, cartMaxX2, cartMaxY2 = self.findOtherIslandCartesianBounds(cartesianBlockArray2)
                 result = self.checkInIsland(cartMinX2, cartMinY2, cartMaxX2, cartMaxY2, newX, newY)

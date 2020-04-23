@@ -61,17 +61,17 @@ def addHammerToShop(hammerDict):
     createCostCaption(hammerDict, hammerRect)
     return hammer, hammerRect
 
-def selectedItem(event):
+def selectedItem(event, currentItem):
     global drawOutline
     global drawUnaffordableMessage
-    keyword = None
-    # global keyword
+    # keyword = None
+    # # global keyword
     pygame.draw.rect(screen, (255, 0, 0), (0, 0, 60, 60))
     posX, posY = event.pos
     image = None
     imageRect = None
     currKey = None
-    current = drawOutline
+    selectedItem = None
     for key in purchasableItems:
         print("key", key)
         # if (key.lower() == "bridge"):
@@ -86,25 +86,30 @@ def selectedItem(event):
         # print("isAffordable", isAffordable)
         # print("drawOutline before", drawOutline)
         if (posX >= minX and posX <= maxX and posY >= minY and posY <= maxY):
-            drawOutline = not drawOutline
+            if (currKey == currentItem):
+                return False, None, False
+
+            drawOutline = True
+            selectedItem = currKey
+            # drawOutline = not drawOutline
             # print("drawOutline", drawOutline)
             if (not isAffordable and drawOutline):
                 drawUnaffordableMessage = True
             else:
                 drawUnaffordableMessage = False
         # if (drawOutline and key == keyword):
-        if (drawOutline):
-            # return drawOutline, keyword, drawUnaffordableMessage
-            break
+        if (selectedItem != None):
+            return drawOutline, selectedItem, drawUnaffordableMessage
             # print("drawUnaffordableMessage", drawUnaffordableMessage)
     print("HERE")
-    # if (current):
-    #     keyword = None
-    # else:
-    #     keyword = currKey
-    keyword = currKey
+    if (selectedItem != None):
+        drawOutline = True
+        keyword = selectedItem
+    else:
+        drawOutline = False
+        keyword = None
     print("keyword before return", keyword)
-    return drawOutline, keyword, drawUnaffordableMessage
+    return drawOutline, currentItem, drawUnaffordableMessage
         
 def shopButtonInfo():
     # shop button image from: http://pixelartmaker.com/art/48b2d0645893d05

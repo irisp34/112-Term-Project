@@ -11,6 +11,7 @@ from rawResources import *
 from shopping import *
 from bridge import *
 from enemy import *
+from gameOver import *
 
 def resetScroll(character):
     character.scrollX = 0
@@ -79,11 +80,13 @@ def redrawAll(character):
     resourceSprites.update(screen)
     resourceSprites.draw(screen)
     pygame.draw.rect(screen, (0, 255, 0),(200, 200, 50, 30))
+    if (isGameOver):
+        drawGameOver()
     # gameplay mode
-    if (not isShopping):
+    elif (not isShopping):
         drawIslandBase(blockArray2)
-        # bridgeSprites.update()
-        # bridgeSprites.draw(screen)
+        bridgeSprites.update()
+        bridgeSprites.draw(screen)
         blockSprites2.update()
         blockSprites2.draw(screen)
         drawBlockBorders(blockArray2)
@@ -100,13 +103,19 @@ def redrawAll(character):
         ironSprites.update()
         ironSprites.draw(screen)
         drawShopButton()
-        bridgeSprites.update()
-        bridgeSprites.draw(screen)
+        # bridgeSprites.update()
+        # bridgeSprites.draw(screen)
         for sprite in bridgeSprites:
             pygame.draw.polygon(screen, (255, 0, 255), (sprite.rect.topright, 
                 sprite.rect.topleft, sprite.rect.bottomleft, sprite.rect.bottomright), 4)
         drawOutline = False
         drawUnaffordableMessage = False
+        for sprite in charSprites:
+            pygame.draw.polygon(screen, (155, 0, 255), (sprite.rect.topright, 
+                sprite.rect.topleft, sprite.rect.bottomleft, sprite.rect.bottomright), 4)
+        for sprite in enemySprites:
+            pygame.draw.polygon(screen, (155, 0, 255), (sprite.rect.topright, 
+                sprite.rect.topleft, sprite.rect.bottomleft, sprite.rect.bottomright), 4)
     # shop mode
     else:
         createShop()
@@ -156,8 +165,11 @@ def mousePressed(event, character, inventoryBar):
     global drawUnaffordableMessage
     print("clicked", event.pos)
     if (isShopping):
-        drawOutline, keyword, drawUnaffordableMessage = selectedItem(event)
+        drawOutline, keyword, drawUnaffordableMessage = selectedItem(event, keyword)
         isShopping = endShopping(event, keyword, inventoryBar)
+        if (not isShopping):
+            keyword = None
+            drawOutline = False
     else:
         count = 1
         for sprite in treeSprites:
@@ -170,14 +182,15 @@ def mousePressed(event, character, inventoryBar):
     # return isShopping
 
 def playGame():
+    global isGameOver
     pygame.init()
     createIslands()
 
     # character picture from: https://ya-webdesign.com/imgdownload.html
     character = createCharacter("character.png", charSprites, cellWidth, 
         cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
-    # enemyThread = createEnemies(character, charSprites, cellWidth, 
-    #     cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
+    enemyThread = createEnemies(character, charSprites, cellWidth, 
+        cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
 
     # water picture from: http://igm-tuto.blogspot.com/2014/06/pixel-art-draw-water-background.html
     waterImage = pygame.image.load("water.png").convert_alpha()
@@ -185,18 +198,19 @@ def playGame():
     createWater(waterSprites, waterImage, rect)
     inventoryBar = Inventory()
     inventoryBarSprite.add(inventoryBar)
-    makeTrees(character, blockArray1, cartesianBlockArray1, inventoryBar,
-        offsetX1, offsetY1, cellWidth, cellHeight, 5)
+    # makeTrees(character, blockArray1, cartesianBlockArray1, inventoryBar,
+    #     offsetX1, offsetY1, cellWidth, cellHeight, 10)
     # makeTrees(character, blockArray2, cartesianBlockArray2, inventoryBar,
     #   offsetX2, offsetY2, cellWidth, cellHeight, 5)
     createIronEvent = pygame.USEREVENT + 1
     createTreeEvent = pygame.USEREVENT + 2
     pygame.time.set_timer(createIronEvent, 2000)
-    pygame.time.set_timer(createTreeEvent, 4000)
+    pygame.time.set_timer(createTreeEvent, 1000)
 
     clock = pygame.time.Clock()
     playing = True
     while playing:
+        isGameOver = checkEnemyCollision(character, enemySprites)
         time = clock.tick(fps) # waits for next frame
         for event in pygame.event.get():
             if (event.type == pygame.QUIT):
@@ -215,14 +229,22 @@ def playGame():
             #     elif (event.key == pygame.K_RIGHT):
             #         character.moveRight()
             if (event.type == createIronEvent):
-                if (len(ironSprites) < 4):
+                if (len(ironSprites) < 0):
                     placeIron(character, blockArray1, cartesianBlockArray1, 
                         inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight)
             elif (event.type == createTreeEvent):
                 # fix to spawn on specific island
-                if (len(treeSprites) < 2):
+                if (len(treeSprites) < 11):
+                    count = 0
+                    print("tree #", count)
                     makeTrees(character, blockArray1, cartesianBlockArray1, 
                         inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight, 1)
+                    count += 1
+            # elif (event.type == pygame.K_SPACE and isGameOver):
+            #     print("HERE")
+            #     isGameOver = False
+            #     playing = False
+            #     # playGame()
         keys = pygame.key.get_pressed()
         if (keys[pygame.K_DOWN]):
             character.moveDown()
@@ -236,8 +258,18 @@ def playGame():
         elif (keys[pygame.K_LEFT]):
             character.moveLeft()
             character.collectIron()
+        # elif (keys[pygame.K_r] and isGameOver):
+        #     print("HERE")
+        #     isGameOver = False
+        #     playing = False
     
         redrawAll(character)
+    # print("???", isGameOver)
+    # if (not isGameOver):
+    #     print("here??")
+    #     playGame()
     pygame.quit()
     os._exit(0)
+
+# if (not isGameOver):
 playGame()
