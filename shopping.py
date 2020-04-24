@@ -11,6 +11,7 @@ def createShop():
         height - baseY * 2), 4)
     addBridgeToShop(bridgeDict)
     addHammerToShop(hammerDict)
+    addFarmToShop(farmDict)
 
 def scaleImage(image, location):
     image = pygame.transform.scale(image, location)
@@ -60,6 +61,21 @@ def addHammerToShop(hammerDict):
     screen.blit(hammer, (hammerRect.x, hammerRect.y))
     createCostCaption(hammerDict, hammerRect)
     return hammer, hammerRect
+
+def addFarmToShop(farmDict):
+    # farm picture from: https://www.deviantart.com/thkaspar/art/Unfinished-Isometric-Farm-297762732
+    farm = pygame.image.load("farm.png").convert_alpha()
+    farmRect = farm.get_rect()
+    location = (int(farmRect.width * .5), int(farmRect.height * .5))
+    farm, farmRect = scaleImage(farm, location)
+    farmRect.x = baseX + betweenItemsOffset + 350
+    farmRect.y = baseY + betweenItemsOffset
+    minX, minY = farmRect.x, farmRect.y
+    maxX, maxY = farmRect.bottomright[0], farmRect.bottomright[1]
+    purchasableItems["farm"] = (minX, minY, maxX, maxY)
+    screen.blit(farm, (farmRect.x, farmRect.y))
+    createCostCaption(farmDict, farmRect)
+    return farm, farmRect
 
 def selectedItem(event, currentItem):
     global drawOutline
@@ -172,7 +188,9 @@ def createBoughtItem(keyword, inventoryBar):
         resourceSprites.add(hammer)
         hammer.placeInInventory(2)
         hammer.updateAmount(Hammer)
-
+    elif (keyword == "farm"):
+        farm = Farm(farmDictblockArray1, cartesianBlockArray1)
+        buildingSprites.add(bridge)
 # takes out Wood sprites to pay for bridge
 def subtractResources(keyword):
     # global keyword
@@ -191,21 +209,29 @@ def subtractResources(keyword):
     elif (keyword == "hammer"):
         woodCount = 0
         ironCount = 0
-        print("length before", len(resourceSprites))
-        print("wood", numResourceSprites("wood"))
-        print("iron", numResourceSprites("iron"))
         for sprite in resourceSprites:
             if (woodCount == hammerDict["wood"] and ironCount == hammerDict["iron"]):
                 sprite.updateAmount(Wood)
                 sprite.updateAmount(Iron)
-                print("length after", len(resourceSprites))
-                print("wood", numResourceSprites("wood"))
-                print("iron", numResourceSprites("iron"))
                 return
             elif (isinstance(sprite, Wood) and woodCount != hammerDict["wood"]):
                 woodCount += 1
                 sprite.kill()
             elif (isinstance(sprite, Iron) and ironCount != hammerDict["iron"]):
+                ironCount += 1
+                sprite.kill()
+    elif (keyword == "farm"):
+        woodCount = 0
+        hammerCount = 0
+        for sprite in resourceSprites:
+            if (woodCount == farmDict["wood"] and hammerCount == farmDict["hammer"]):
+                sprite.updateAmount(Wood)
+                sprite.updateAmount(Iron)
+                return
+            elif (isinstance(sprite, Wood) and woodCount != farmDict["wood"]):
+                woodCount += 1
+                sprite.kill()
+            elif (isinstance(sprite, Hammer) and hammerCount != farmDict["hammer"]):
                 ironCount += 1
                 sprite.kill()
             
@@ -229,6 +255,8 @@ def affordable(keyword):
         currDict = bridgeDict
     elif (keyword == "hammer"):
         currDict = hammerDict
+    elif (keyword == "farm"):
+        currDict = farmDict
     for key in currDict:
         if (numResourceSprites(key) < currDict[key]):
             return False

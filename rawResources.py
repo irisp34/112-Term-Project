@@ -24,7 +24,7 @@ class RawResources(pygame.sprite.Sprite):
         self.image, self.rect = self.scaleImage(self.image, self.rect, self.scaleLocation)
         self.rect.centerx, self.rect.centery, self.block = self.getRandomBoardCenter(self.blockArray)
         self.originalX, self.originalY = self.rect.centerx, self.rect.centery
-        self.adjustBlockCenter()
+        # self.adjustBlockCenter()
         print("after placed", self.rect.centerx, self.rect.centery)
         self.findCartesianBounds(self.cartBlockArray)
     
@@ -34,8 +34,10 @@ class RawResources(pygame.sprite.Sprite):
         return image, rect
 
     def findBlockCenter(self, block):
-        centerX = (block.rect.centerx)
-        centerY = (block.rect.centery)
+        # centerX = (block.rect.centerx)
+        # centerY = (block.rect.centery)
+        centerX = (block.rect.centerx + block.rect.midtop[0]) / 2
+        centerY = (block.rect.centery + block.rect.midtop[1]) / 2
         return centerX, centerY
 
     def pickRandomRowAndCol(self, boardRows, boardCols):
@@ -94,27 +96,29 @@ class RawResources(pygame.sprite.Sprite):
         randRow, randCol = self.pickRandomRowAndCol(boardRows, boardCols)
         block = blockArray[randRow, randCol]
         for sprite in treeSprites:
-            trueCenterX, trueCenterY = self.findOriginalCenter(sprite.block)
-            seenCenters.append((trueCenterX, trueCenterY))
+            # trueCenterX, trueCenterY = self.findOriginalCenter(sprite.block)
+            # seenCenters.append((trueCenterX, trueCenterY))
             # print("appending", sprite.rect.centerx, sprite.rect.centery)
-            # seenCenters.append((sprite.rect.centerx, sprite.rect.centery))
-        print("after trees", seenCenters)
+            seenCenters.append((sprite.rect.centerx, sprite.rect.centery))
+        # print("after trees", seenCenters)
         for sprite in ironSprites:
+            seenCenters.append((sprite.rect.centerx, sprite.rect.centery))
+        for sprite in enemySprites:
             seenCenters.append((sprite.rect.centerx, sprite.rect.centery))
         charCenterX = self.character.rect.centerx
         charCenterY = self.character.rect.centery
+        seenCenters.append((charCenterX, charCenterY))
         centerX, centerY = self.findBlockCenter(block)
         # centerX, centerY = block.rect.centerx, block.rect.centery
-        seenCenters.append((charCenterX, charCenterY))
-        print("before while centerX and y", centerX, centerY)
+        # print("before while centerX and y", centerX, centerY)
         # print("after character", seenCenters)
         while ((centerX, centerY) in seenCenters):
             randRow, randCol = self.pickRandomRowAndCol(boardRows, boardCols)
             block = blockArray[randRow, randCol]
             centerX, centerY = self.findBlockCenter(block)
             # centerX, centerY = block.rect.centerx, block.rect.centery
-            print("currCenterX and y", centerX, centerY)
-        print("placed")
+            # print("currCenterX and y", centerX, centerY)
+        # print("placed")
         return centerX, centerY, block
 
 

@@ -126,9 +126,9 @@ def make2DBoard(blockSprites, blockArray, cartesianBlockArray, blockRows,
 def makeBoardIsometric(blockArray):
     for row in range(blockArray.shape[0]):
         for col in range(blockArray.shape[1]):
-            print("before x",blockArray[row, col].rect.x, "y", blockArray[row, col].rect.y)
+            # print("before x",blockArray[row, col].rect.x, "y", blockArray[row, col].rect.y)
             blockArray[row, col].makeBlockIsometric(row, col)
-            print("after x", blockArray[row, col].rect.x, "y", blockArray[row, col].rect.y)
+            # print("after x", blockArray[row, col].rect.x, "y", blockArray[row, col].rect.y)
 
 def getBoardCorners(blockArray):
     topLeftCorner = blockArray[0, 0]
@@ -195,10 +195,10 @@ def createIslands():
                 cellHeight, startX, startY, offsetX1, offsetY1)
     makeBoardIsometric(blockArray1)
     print("drawing island 2")
-    offsetX2 = offsetX1 + width // 4
-    offsetY2 = offsetY1 - height // 5
-    # offsetX += width // 2
-    # offsetY -= height // 3
+    # offsetX2 = offsetX1 + width // 4
+    # offsetY2 = offsetY1 - height // 5
+    offsetX2 = offsetX1 + width // 1.48
+    offsetY2 = offsetY1 - height // 3
     diffOffsetX = offsetX2 - offsetX1
     diffOffsetY = offsetY2 - offsetY1
     # print("DIFFOFFSET", diffOffsetX, diffOffsetY)

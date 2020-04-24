@@ -13,6 +13,8 @@ startX = 100
 startY = 100
 # startX = 0
 # startY = 0
+# blockRows = 10
+# blockCols = 10
 blockRows = 4
 blockCols = 4
 
@@ -23,6 +25,7 @@ cartesianBlockArray2 = np.empty(shape=(blockRows, blockCols), dtype = object)
 blockSprites1 = pygame.sprite.Group()
 blockSprites2 = pygame.sprite.Group()
 waterSprites = pygame.sprite.Group()
+buildingSprites = pygame.sprite.Group()
 charSprites = pygame.sprite.Group()
 enemySprites = pygame.sprite.Group()
 ironSprites = pygame.sprite.Group()
@@ -41,6 +44,12 @@ betweenItemsOffset = 30
 drawOutline = False
 drawUnaffordableMessage = False
 isGameOver = False
+isSplashScreen = True
+isInstructionsScreen = True
+fromMainScreen = False
+fromStartScreen = False
+mainInstructionsButton = None
+startInstructionsButton = None
 # keyword is the currently selected item
 keyword = None
 baseX = 100
@@ -55,6 +64,9 @@ bridgeDict["wood"] = 3
 hammerDict = dict()
 hammerDict["wood"] = 1
 hammerDict["iron"] = 1
+farmDict = dict()
+farmDict["wood"] = 4
+farmDict["hammer"] = 1
 
 # place board in center of screen
 offsetX1 = (width // 2) - startX

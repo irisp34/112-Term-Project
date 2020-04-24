@@ -45,7 +45,8 @@ class EnemyThread(threading.Thread):
             time.sleep(3)
             if (not self.isRunning):
                 return
-            if (variables.isShopping):
+            if (variables.isShopping or variables.isInstructionsScreen or 
+                variables.isSplashScreen):
                 continue
             isWalkable = False
             while (not isWalkable):
@@ -83,10 +84,10 @@ def createEnemies(character, charSprites, cellWidth, cellHeight, blockArray,
     return thread
 
 def checkEnemyCollision(character, enemySprites):
-    global isGameOver
+    # global isGameOver
     for sprite in enemySprites:
         if (character.rect.colliderect(sprite.rect)):
-            isGameOver = True
+            variable.isGameOver = True
     # print("in enemy", isGameOver)
-    return isGameOver
+    # return isGameOver
             

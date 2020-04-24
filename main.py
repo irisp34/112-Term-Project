@@ -13,6 +13,7 @@ from shopping import *
 from bridge import *
 from enemy import *
 from gameOver import *
+from startScreen import *
 
 def resetScroll(character):
     character.scrollX = 0
@@ -82,10 +83,14 @@ def redrawAll(character):
     resourceSprites.update(screen)
     resourceSprites.draw(screen)
     pygame.draw.rect(screen, (0, 255, 0),(200, 200, 50, 30))
-    # if (isGameOver):
-    #     drawGameOver()
+    if (variables.isSplashScreen):
+        drawStartScreen()
+    elif (variables.isInstructionsScreen):
+        drawInstructionsScreen()
+    elif (variables.isGameOver):
+        drawGameOver()
     # gameplay mode
-    if (not variables.isShopping):
+    elif (not variables.isShopping):
         drawIslandBase(blockArray2)
         bridgeSprites.update()
         bridgeSprites.draw(screen)
@@ -105,6 +110,7 @@ def redrawAll(character):
         ironSprites.update()
         ironSprites.draw(screen)
         drawShopButton()
+        drawInstructionsButton()
         # bridgeSprites.update()
         # bridgeSprites.draw(screen)
         for sprite in bridgeSprites:
@@ -173,6 +179,10 @@ def mousePressed(event, character, inventoryBar):
         if (not variables.isShopping):
             keyword = None
             drawOutline = False
+    elif (variables.isSplashScreen):
+        endStartScreen(event)
+    elif (variables.isInstructionsScreen):
+        endInstructionsScreen(event)
     else:
         count = 1
         for sprite in treeSprites:
@@ -182,10 +192,11 @@ def mousePressed(event, character, inventoryBar):
             count += 1
         character.killEnemy(event)
         variables.isShopping = beginShopping(event)
+        beginInstructionsScreen(event)
     # return variables.isShopping
 
 def playGame():
-    global isGameOver
+    # global isGameOver
     # global isShopping
     pygame.init()
     createIslands()
@@ -205,16 +216,18 @@ def playGame():
     makeTrees(character, blockArray1, cartesianBlockArray1, inventoryBar,
         offsetX1, offsetY1, cellWidth, cellHeight, 6)
     makeTrees(character, blockArray2, cartesianBlockArray2, inventoryBar,
-      offsetX1, offsetY1, cellWidth, cellHeight, 2)
+      offsetX1, offsetY1, cellWidth, cellHeight, 5)
     createIronEvent = pygame.USEREVENT + 1
     createTreeEvent = pygame.USEREVENT + 2
+    createEnemyEvent = pygame.USEREVENT + 3
     pygame.time.set_timer(createIronEvent, 2000)
     pygame.time.set_timer(createTreeEvent, 1000)
+    pygame.time.set_timer(createEnemyEvent, 2000)
 
     clock = pygame.time.Clock()
     playing = True
     while playing:
-        isGameOver = checkEnemyCollision(character, enemySprites)
+        checkEnemyCollision(character, enemySprites)
         time = clock.tick(fps) # waits for next frame
         for event in pygame.event.get():
             if (event.type == pygame.QUIT):
@@ -233,17 +246,21 @@ def playGame():
             #     elif (event.key == pygame.K_RIGHT):
             #         character.moveRight()
             if (event.type == createIronEvent):
-                if (len(ironSprites) < 0):
+                if (len(ironSprites) < 5):
                     placeIron(character, blockArray1, cartesianBlockArray1, 
                         inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight)
             elif (event.type == createTreeEvent):
                 # fix to spawn on specific island
-                if (len(treeSprites) < 0):
+                if (len(treeSprites) < 7):
                     count = 0
                     print("tree #", count)
                     makeTrees(character, blockArray1, cartesianBlockArray1, 
                         inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight, 1)
                     count += 1
+            elif (event.type == createEnemyEvent):
+                if (len(enemySprites) == 0):
+                    createEnemies(character, charSprites, cellWidth, cellHeight, 
+                        blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
             # elif (event.type == pygame.K_SPACE and isGameOver):
             #     print("HERE")
             #     isGameOver = False

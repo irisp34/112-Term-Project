@@ -22,7 +22,7 @@ class Character(pygame.sprite.Sprite):
         self.scrollY = 0
         self.cartScrollX = 0
         self.cartScrollY = 0
-        self.scrollMargin = 100
+        self.scrollMargin = 150
         # self.image = pygame.Surface([charWidth, charHeight])
         self.image = pygame.image.load(image).convert_alpha()
         self.scaleImage()
@@ -109,7 +109,7 @@ class Character(pygame.sprite.Sprite):
         self.charWidth, self.charHeight = self.image.get_size()
 
     def scaleImage(self):
-        location = (self.boardCellWidth, self.boardCellHeight)
+        location = (int (self.boardCellWidth), int(self.boardCellHeight))
         self.image = pygame.transform.scale(self.image, location)
         self.rect = self.image.get_rect()
     
@@ -124,7 +124,7 @@ class Character(pygame.sprite.Sprite):
         return col
 
     def moveRight(self):
-        print("right")
+        # print("right")
         if (not self.isWalkable(1, 0)):
             return
         self.rect.centerx += self.boardCellWidth
@@ -132,13 +132,13 @@ class Character(pygame.sprite.Sprite):
         if (self.makePlayerVisible()):
             # scrollX = self.boardCellWidth
             # scrollY = 0.5 * self.boardCellHeight
-            scrollX = self.boardCellWidth / 2
-            scrollY = (0.5 * self.boardCellHeight) / 2
+            scrollX = self.boardCellWidth
+            scrollY = (0.5 * self.boardCellHeight)
             self.addScroll(scrollX, scrollY)
             self.justMoved = True
         
     def moveLeft(self):
-        print("left")
+        # print("left")
         if (not self.isWalkable(-1, 0)):
             return
         self.rect.centerx -= self.boardCellWidth
@@ -146,13 +146,13 @@ class Character(pygame.sprite.Sprite):
         if (self.makePlayerVisible()):
             # scrollX = -self.boardCellWidth
             # scrollY = -0.5 * self.boardCellHeight
-            scrollX = -self.boardCellWidth / 2
-            scrollY = (-0.5 * self.boardCellHeight) / 2
+            scrollX = -self.boardCellWidth
+            scrollY = (-0.5 * self.boardCellHeight)
             self.addScroll(scrollX, scrollY)
             self.justMoved = True
 
     def moveUp(self):
-        print("up")
+        # print("up")
         if (not self.isWalkable(0, -1)):
             return
         self.rect.centerx += self.boardCellWidth
@@ -160,13 +160,13 @@ class Character(pygame.sprite.Sprite):
         if (self.makePlayerVisible()):
             # scrollX = self.boardCellWidth
             # scrollY = -0.5 * self.boardCellHeight
-            scrollX = self.boardCellWidth / 2
-            scrollY = (-0.5 * self.boardCellHeight) / 2
+            scrollX = self.boardCellWidth
+            scrollY = (-0.5 * self.boardCellHeight)
             self.addScroll(scrollX, scrollY)
             self.justMoved = True
  
     def moveDown(self):
-        print("down")
+        # print("down")
         if (not self.isWalkable(0, 1)):
             return
         self.rect.centerx -= self.boardCellWidth
@@ -174,8 +174,8 @@ class Character(pygame.sprite.Sprite):
         if (self.makePlayerVisible()):
             # scrollX = -self.boardCellWidth
             # scrollY = 0.5 * self.boardCellHeight
-            scrollX = -self.boardCellWidth / 2
-            scrollY = (0.5 * self.boardCellHeight) / 2
+            scrollX = -self.boardCellWidth
+            scrollY = (0.5 * self.boardCellHeight)
             self.addScroll(scrollX, scrollY)
             self.justMoved = True
         
@@ -186,6 +186,7 @@ class Character(pygame.sprite.Sprite):
         self.cartX, self.cartY = self.convertIsometricToCartesian(self.rect.centerx - self.offsetX, 
             self.rect.centery - self.offsetY)
         self.cartX += startX
+        # self.cartY += startY + (self.boardCellHeight / 2)
         self.cartY += startY + (self.boardCellHeight / 2)
         newX = self.cartX + dx * self.boardCellWidth
         newY = self.cartY + dy * self.boardCellHeight
@@ -253,12 +254,12 @@ class Character(pygame.sprite.Sprite):
             # leftBottomX, leftBottomY = self.convertIsometricToCartesian(leftBottomCorner[0]
             #     + self.offsetX, leftBottomCorner[1] + self.offsetY)
 
-            rightBottomCorner = (sprite.rect.bottomleft[0] +.1 * sprite.rect.width, 
+            rightBottomCorner = (sprite.rect.bottomleft[0] +.04 * sprite.rect.width, 
                 sprite.rect.bottomleft[1])
             # print("right bottom corner", rightBottomCorner, "rect", sprite.rect.bottomleft)
             rightBottomX, rightBottomY = self.convertIsometricToCartesian(rightBottomCorner[0]
                 - self.offsetX, rightBottomCorner[1] - self.offsetY)
-            leftTopCorner = (sprite.rect.topright[0] -.1 * sprite.rect.width, 
+            leftTopCorner = (sprite.rect.topright[0] -.04 * sprite.rect.width, 
                 sprite.rect.topright[1])
             # print("left top corner", leftTopCorner, "rect", sprite.rect.topright)
             leftTopX, leftTopY = self.convertIsometricToCartesian(leftTopCorner[0]
@@ -295,7 +296,7 @@ class Character(pygame.sprite.Sprite):
             isScrollable = True
         if (self.cartY < self.scrollMargin + self.scrollY):
             isScrollable = True
-        elif (self.cartY + self.scrollMargin > self.scrollX + height):
+        elif (self.cartY + self.scrollMargin > self.scrollY + height):
             isScrollable = True
         return isScrollable
 

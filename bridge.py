@@ -12,7 +12,10 @@ class Bridge(pygame.sprite.Sprite):
         # self.image.set_colorkey((255,255,255))
         self.rect = self.image.get_rect()
         #change to fit all islands
+        #angle for 4 blocks
         self.angle = 35
+        #angle for 10
+        self.angle = 30
         self.boardCellWidth = cellWidth
         self.boardCellHeight = cellHeight
         self.blockArray1 = blockArray1
