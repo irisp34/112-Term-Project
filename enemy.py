@@ -87,7 +87,7 @@ def checkEnemyCollision(character, enemySprites):
     # global isGameOver
     for sprite in enemySprites:
         if (character.rect.colliderect(sprite.rect)):
-            variable.isGameOver = True
+            variables.isGameOver = True
     # print("in enemy", isGameOver)
     # return isGameOver
             

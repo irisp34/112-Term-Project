@@ -85,8 +85,8 @@ def redrawAll(character):
     pygame.draw.rect(screen, (0, 255, 0),(200, 200, 50, 30))
     if (variables.isSplashScreen):
         drawStartScreen()
-    elif (variables.isInstructionsScreen):
-        drawInstructionsScreen()
+    # elif (variables.isInstructionsScreen):
+    #     drawInstructionsScreen()
     elif (variables.isGameOver):
         drawGameOver()
     # gameplay mode
@@ -175,15 +175,21 @@ def mousePressed(event, character, inventoryBar):
     print("clicked mouse pressed", event.pos)
     if (variables.isShopping):
         drawOutline, keyword, drawUnaffordableMessage = selectedItem(event, keyword)
+        print("in main", drawOutline, keyword, drawUnaffordableMessage)
         variables.isShopping = endShopping(event, keyword, inventoryBar)
+        print("right after end shopping", variables.isShopping)
         if (not variables.isShopping):
             keyword = None
             drawOutline = False
     elif (variables.isSplashScreen):
         endStartScreen(event)
-    elif (variables.isInstructionsScreen):
-        endInstructionsScreen(event)
+    # elif (variables.isInstructionsScreen):
+    #     endInstructionsScreen(event)
+    # elif(not variables.isInstructionsScreen and not variables.isSplashScreen
+    #     and not variables.isShopping):
+    #     beginInstructionsScreen(event)
     else:
+        # beginInstructionsScreen(event)
         count = 1
         for sprite in treeSprites:
             # print("SPRITE #", count)
@@ -191,6 +197,7 @@ def mousePressed(event, character, inventoryBar):
                 break
             count += 1
         character.killEnemy(event)
+        print("testing begin shopping")
         variables.isShopping = beginShopping(event)
         beginInstructionsScreen(event)
     # return variables.isShopping
@@ -246,7 +253,7 @@ def playGame():
             #     elif (event.key == pygame.K_RIGHT):
             #         character.moveRight()
             if (event.type == createIronEvent):
-                if (len(ironSprites) < 5):
+                if (len(ironSprites) < 4):
                     placeIron(character, blockArray1, cartesianBlockArray1, 
                         inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight)
             elif (event.type == createTreeEvent):

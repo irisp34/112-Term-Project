@@ -43,7 +43,7 @@ def instructionsButtonInfo():
         variables.mainInstructionsButton = instructionsButtonRect
     else:
         instructionsButtonRect.x = width - 25 - instructionsButtonRect.width
-        instructionsButtonRect.y = height - 85
+        instructionsButtonRect.y = height - 185
         variables.startInstructionsButton = instructionsButtonRect
     return instructionsImage, instructionsButtonRect
 
@@ -105,14 +105,14 @@ def beginInstructionsScreen(event):
         variables.mainInstructionsButton = True
 
 def endInstructionsScreen(event):
-    instructionsImage, instructionsButtonRect = instructionsButtonInfo()
+    exitImage, exitButtonRect = exitButtonInfo()
     posX, posY = event.pos
-    instructionsMinX, instructionsMinY = instructionsButtonRect.x, instructionsButtonRect.y
-    instructionsMaxX, instructionsMaxY = (instructionsButtonRect.bottomright[0],
-    instructionsButtonRect.bottomright[1])
-    isInInstructionsBounds = (posX >= instructionsMinX and posX <= instructionsMaxX 
-        and posY >= instructionsMinY and posY <= instructionsMaxY)
-    if (isInInstructionsBounds):
+    exitMinX, exitMinY = exitButtonRect.x, exitButtonRect.y
+    exitMaxX, exitMaxY = (exitButtonRect.bottomright[0],
+    exitButtonRect.bottomright[1])
+    isInExitBounds = (posX >= exitMinX and posX <= exitMaxX 
+        and posY >= exitMinY and posY <= exitMaxY)
+    if (isInExitBounds):
         variables.isInstructionsScreen = False
 
 def endStartScreen(event):

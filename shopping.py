@@ -171,8 +171,12 @@ def beginShopping(event):
     global isShopping
     shopImage, shopButtonRect = shopButtonInfo()
     posX, posY = event.pos
+    print("pso", posX, posY)
     shopMinX, shopMinY = shopButtonRect.x, shopButtonRect.y
     shopMaxX, shopMaxY = shopButtonRect.bottomright[0], shopButtonRect.bottomright[1]
+    print("shopmins and maxs", shopMinX, shopMinY, shopMaxX, shopMaxY)
+    print("in begin shopping", posX >= shopMinX and posX <= shopMaxX 
+        and posY >= shopMinY and posY <= shopMaxY)
     if (posX >= shopMinX and posX <= shopMaxX and posY >= shopMinY and posY <= shopMaxY):
         isShopping = True
     return isShopping
