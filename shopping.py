@@ -188,17 +188,17 @@ def createBoughtItem(keyword, inventoryBar):
         bridge = Bridge(bridgeDict, cellWidth, cellHeight, blockArray1,
             cartesianBlockArray1, blockArray2, cartesianBlockArray2)
         bridgeSprites.add(bridge)
-        # score.pointsDict["bridges built"] += 1
+        score.pointsDict["bridges built"] += 1
     elif (keyword == "hammer"):
         hammer = Hammer("hammer.png", "hammer", 1, inventoryBar)
         resourceSprites.add(hammer)
         hammer.placeInInventory(2)
         hammer.updateAmount(Hammer)
-        # score.pointsDict["hammers created"] += 1
+        score.pointsDict["hammers created"] += 1
     elif (keyword == "farm"):
         farm = Farm(farmDictblockArray1, cartesianBlockArray1)
         buildingSprites.add(bridge)
-        # score.pointsDict["farms built"] += 1
+        score.pointsDict["farms built"] += 1
 
 # takes out Wood sprites to pay for bridge
 def subtractResources(keyword):

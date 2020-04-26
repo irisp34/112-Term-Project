@@ -4,6 +4,8 @@ from variables import *
 from rawResources import *
 from inventory import *
 from character import *
+# from score import *
+import score
 
 class Resource(pygame.sprite.Sprite):
     def __init__(self, image, resourceType, resourceValue, inventoryBar):

@@ -17,6 +17,7 @@ class Block(pygame.sprite.Sprite):
         self.startY = startY
         self.offsetX = offsetX
         self.offsetY = offsetY
+        self.isEmpty = True
         # self.image = pygame.Surface([self.cellWidth, self.cellHeight])
 
         # grass image from https://clipart.info/natural-grass-png-top-view-12874

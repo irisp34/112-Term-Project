@@ -210,6 +210,7 @@ class Character(pygame.sprite.Sprite):
             if ((newX >= cellMinX and newX <= cellMaxX) and (newY >= cellMinY 
                     and newY <= cellMaxY)):
                 return False
+        # check if out of island 1
         if (newX < self.cartMinX or newX > self.cartMaxX or newY < self.cartMinY 
                 or newY > self.cartMaxY):
             if (len(bridgeSprites) != 0):
@@ -223,6 +224,7 @@ class Character(pygame.sprite.Sprite):
                     self.setNewCartBoundaries(cartesianBlockArray2)
                     return True
             return False
+        
         self.setNewPosition(newX, newY)
         return True
     
@@ -254,7 +256,7 @@ class Character(pygame.sprite.Sprite):
             # leftBottomCorner = sprite.rect.bottomleft + (0, -.25 * sprite.rect.height)
             # leftBottomX, leftBottomY = self.convertIsometricToCartesian(leftBottomCorner[0]
             #     + self.offsetX, leftBottomCorner[1] + self.offsetY)
-
+            #.04 for 10, .1 for 4 blocks
             rightBottomCorner = (sprite.rect.bottomleft[0] +.04 * sprite.rect.width, 
                 sprite.rect.bottomleft[1])
             # print("right bottom corner", rightBottomCorner, "rect", sprite.rect.bottomleft)
@@ -351,7 +353,7 @@ class Character(pygame.sprite.Sprite):
             if (posX >= cellMinX and posX <= cellMaxX and posY >= cellMinY and
                 posY <= cellMaxY):
                 sprite.kill()
-                # score.pointsDict["enemies killed"] += 1
+                score.pointsDict["enemies killed"] += 1
 
                 # self.enemyThread.stopRunning()
             #     return True
@@ -366,7 +368,7 @@ class MainCharacter(Character):
             if (self.rect.colliderect(sprite.rect)):
                 sprite.kill()
                 sprite.addIronToInventory()
-                # score.pointsDict["iron collected"] += 1
+                score.pointsDict["iron collected"] += 1
 
 def createCharacter(image, charSprites, cellWidth, cellHeight, blockArray, 
     cartesianBlockArray, offsetX, offsetY):

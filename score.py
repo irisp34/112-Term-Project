@@ -2,6 +2,7 @@ import pygame
 import numpy as np
 import variables
 from startScreen import *
+# from rawResources import *
 
 pointsDict = dict()
 pointsDict["trees collected"] = 0

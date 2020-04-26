@@ -4,7 +4,9 @@ import random
 from variables import *
 from character import *
 from island import *
-from resources import *
+# from resources import *
+import resources
+# from score import *
 import score
 
 class RawResources(pygame.sprite.Sprite):
@@ -90,37 +92,47 @@ class RawResources(pygame.sprite.Sprite):
 
     # fix bug to not place on trees or character
     def getRandomBoardCenter(self, blockArray):
-        global treeSprites
-        seenCenters = []
+        # global treeSprites
+        # seenCenters = []
         boardRows = blockArray.shape[0]
         boardCols = blockArray.shape[1]
-        randRow, randCol = self.pickRandomRowAndCol(boardRows, boardCols)
-        block = blockArray[randRow, randCol]
-        for sprite in treeSprites:
-            # trueCenterX, trueCenterY = self.findOriginalCenter(sprite.block)
-            # seenCenters.append((trueCenterX, trueCenterY))
-            # print("appending", sprite.rect.centerx, sprite.rect.centery)
-            seenCenters.append((sprite.rect.centerx, sprite.rect.centery))
-        # print("after trees", seenCenters)
-        for sprite in ironSprites:
-            seenCenters.append((sprite.rect.centerx, sprite.rect.centery))
-        for sprite in enemySprites:
-            seenCenters.append((sprite.rect.centerx, sprite.rect.centery))
-        charCenterX = self.character.rect.centerx
-        charCenterY = self.character.rect.centery
-        seenCenters.append((charCenterX, charCenterY))
-        centerX, centerY = self.findBlockCenter(block)
-        # centerX, centerY = block.rect.centerx, block.rect.centery
-        # print("before while centerX and y", centerX, centerY)
-        # print("after character", seenCenters)
-        while ((centerX, centerY) in seenCenters):
+        maxVal = boardRows * boardCols
+        count = 0
+        while (True):
             randRow, randCol = self.pickRandomRowAndCol(boardRows, boardCols)
             block = blockArray[randRow, randCol]
-            centerX, centerY = self.findBlockCenter(block)
-            # centerX, centerY = block.rect.centerx, block.rect.centery
-            # print("currCenterX and y", centerX, centerY)
-        # print("placed")
-        return centerX, centerY, block
+            if (block.isEmpty):
+                block.isEmpty = False
+                centerX, centerY = self.findBlockCenter(block)
+                return centerX, centerY, block
+            count += 1
+            if (count > maxVal):
+                print("Try times exceeds max value")
+        # for sprite in treeSprites:
+        #     # trueCenterX, trueCenterY = self.findOriginalCenter(sprite.block)
+        #     # seenCenters.append((trueCenterX, trueCenterY))
+        #     # print("appending", sprite.rect.centerx, sprite.rect.centery)
+        #     seenCenters.append((sprite.rect.centerx, sprite.rect.centery))
+        # # print("after trees", seenCenters)
+        # for sprite in ironSprites:
+        #     seenCenters.append((sprite.rect.centerx, sprite.rect.centery))
+        # for sprite in enemySprites:
+        #     seenCenters.append((sprite.rect.centerx, sprite.rect.centery))
+        # charCenterX = self.character.rect.centerx
+        # charCenterY = self.character.rect.centery
+        # seenCenters.append((charCenterX, charCenterY))
+        # centerX, centerY = self.findBlockCenter(block)
+        # # centerX, centerY = block.rect.centerx, block.rect.centery
+        # # print("before while centerX and y", centerX, centerY)
+        # # print("after character", seenCenters)
+        # while ((centerX, centerY) in seenCenters):
+        #     randRow, randCol = self.pickRandomRowAndCol(boardRows, boardCols)
+        #     block = blockArray[randRow, randCol]
+        #     centerX, centerY = self.findBlockCenter(block)
+        #     # centerX, centerY = block.rect.centerx, block.rect.centery
+        #     # print("currCenterX and y", centerX, centerY)
+        # # print("placed")
+        # return centerX, centerY, block
 
 
 class Trees(RawResources):
@@ -159,17 +171,18 @@ class Trees(RawResources):
         if (posX >= cellMinX and posX <= cellMaxX and posY >= cellMinY and
             posY <= cellMaxY):
             self.kill()
+            self.block.isEmpty = True
             self.addWoodToInventory()
-            # score.pointsDict["trees collected"] += 1
+            score.pointsDict["trees collected"] += 1
             return True
         return False
     # log image from: https://www.deviantart.com/chunsmunkey/art/Pixel-Log-750792001
     def addWoodToInventory(self):
         logImage = "log.png"
-        logResource = Wood(logImage, "Wood", 1, self.inventoryBar)
+        logResource = resources.Wood(logImage, "Wood", 1, self.inventoryBar)
         logResource.placeInInventory(0)
         resourceSprites.add(logResource)
-        logResource.updateAmount(Wood)
+        logResource.updateAmount(resources.Wood)
     
     def adjustBlockCenter(self):
         self.rect.centerx = (self.block.rect.centerx + self.block.rect.midtop[0]) / 2
@@ -186,12 +199,13 @@ class RawIron(RawResources):
         # return centerX, centerY
 
     def addIronToInventory(self):
+        self.block.isEmpty = True
         # picture from: http://iconbug.com/detail/icon/8273/minecraft-iron-ingot/
         ironImage = "metalBar.png"
-        ironResource = Iron(ironImage, "Iron", 2, self.inventoryBar)
+        ironResource = resources.Iron(ironImage, "Iron", 2, self.inventoryBar)
         ironResource.placeInInventory(1)
         resourceSprites.add(ironResource)
-        ironResource.updateAmount(Iron)
+        ironResource.updateAmount(resources.Iron)
 
 # makes Tree objects to place on the board
 def makeTrees(character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY, cellWidth, cellHeight, number):

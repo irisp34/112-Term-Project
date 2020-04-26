@@ -2,6 +2,7 @@
 import pygame
 import os
 import numpy as np
+import pickle
 from island import *
 from character import *
 # from variables import *
@@ -15,6 +16,7 @@ from enemy import *
 from gameOver import *
 from startScreen import *
 from score import *
+# import score
 
 def resetScroll(character):
     character.scrollX = 0
@@ -82,8 +84,8 @@ def redrawAll(character):
     waterSprites.draw(screen)
     inventoryBarSprite.update(screen)
     inventoryBarSprite.draw(screen)
-    resourceSprites.update(screen)
-    resourceSprites.draw(screen)
+    variables.resourceSprites.update(screen)
+    variables.resourceSprites.draw(screen)
     pygame.draw.rect(screen, (0, 255, 0),(200, 200, 50, 30))
     if (variables.isSplashScreen):
         drawStartScreen()
@@ -113,7 +115,7 @@ def redrawAll(character):
         ironSprites.draw(screen)
         drawShopButton()
         drawInstructionsButton()
-        # displayScore()
+        displayScore()
 
         for sprite in bridgeSprites:
             pygame.draw.polygon(screen, (255, 0, 255), (sprite.rect.topright, 
@@ -204,6 +206,12 @@ def mousePressed(event, character, inventoryBar):
         beginInstructionsScreen(event)
     # return variables.isShopping
 
+def bridgeCount():
+    count = 0
+    for sprite in variables.bridgeSprites:
+        count += 1
+    return count
+
 def playGame():
     # global isGameOver
     # global isShopping
@@ -222,6 +230,43 @@ def playGame():
     createWater(waterSprites, waterImage, rect)
     inventoryBar = Inventory()
     inventoryBarSprite.add(inventoryBar)
+    # https://www.techcoil.com/blog/how-to-save-and-load-objects-to-and-from-file-in-python-via-facilities-from-the-pickle-module/
+    if os.path.exists('resources.bin'):
+        try:
+            with open('resources.bin', 'rb') as resourcefile:
+                resources = pickle.load(resourcefile)
+                count = resources['wood']
+                for i in range(count):
+                    logImage = "log.png"
+                    logResource = Wood(logImage, "Wood", 1, inventoryBar)
+                    logResource.placeInInventory(0)
+                    resourceSprites.add(logResource)
+                    logResource.updateAmount(Wood)
+                    variables.resourceSprites.add(logResource)
+
+                count = resources['iron']
+                for i in range(count):
+                    ironImage = "metalBar.png"
+                    ironResource = Iron(ironImage, "Iron", 2, inventoryBar)
+                    ironResource.placeInInventory(1)
+                    resourceSprites.add(ironResource)
+                    ironResource.updateAmount(Iron)
+
+                count = resources['hammer']
+                for i in range(count):
+                    hammer = Hammer("hammer.png", "hammer", 1, inventoryBar)
+                    resourceSprites.add(hammer)
+                    hammer.placeInInventory(2)
+                    hammer.updateAmount(Hammer)
+
+                count = resources['bridge']
+                for i in range(count):
+                    bridge = Bridge(bridgeDict, cellWidth, cellHeight, blockArray1,
+                        cartesianBlockArray1, blockArray2, cartesianBlockArray2)
+                    bridgeSprites.add(bridge)
+        except EOFError as error:
+            print('ooops')
+
     makeTrees(character, blockArray1, cartesianBlockArray1, inventoryBar,
         offsetX1, offsetY1, cellWidth, cellHeight, 6)
     makeTrees(character, blockArray2, cartesianBlockArray2, inventoryBar,
@@ -300,6 +345,24 @@ def playGame():
     # if (not isGameOver):
     #     print("here??")
     #     playGame()
+
+    if (variables.isGameOver):
+        if os.path.exists('resources.bin'):
+            os.remove('resources.bin')
+    else:
+        # https://www.techcoil.com/blog/how-to-save-and-load-objects-to-and-from-file-in-python-via-facilities-from-the-pickle-module/
+        resources = dict()
+        count = numResourceSprites('wood')
+        resources['wood'] = count
+        count = numResourceSprites('iron')
+        resources['iron'] = count
+        count = numResourceSprites('hammer')
+        resources['hammer'] = count
+        count = bridgeCount()
+        resources['bridge'] = count
+        with open('resources.bin', 'wb') as resourcefile:
+            pickle.dump(resources, resourcefile)
+            
     pygame.quit()
     os._exit(0)
 
