@@ -40,11 +40,11 @@ def instructionsButtonInfo():
     if (variables.isSplashScreen):
         instructionsButtonRect.x = width // 2 - instructionsButtonRect.width // 2
         instructionsButtonRect.y = height - 185
-        variables.mainInstructionsButton = instructionsButtonRect
+        variables.startInstructionsButton = instructionsButtonRect
     else:
         instructionsButtonRect.x = width - 25 - instructionsButtonRect.width
         instructionsButtonRect.y = height - 185
-        variables.startInstructionsButton = instructionsButtonRect
+        variables.mainInstructionsButton = instructionsButtonRect
     return instructionsImage, instructionsButtonRect
 
 def drawInstructionsButton():
@@ -59,7 +59,7 @@ def backButtonInfo():
     backImage = pygame.transform.scale(backImage, location)
     backButtonRect = backImage.get_rect()
     backButtonRect.x = width // 2 - backButtonRect.width // 2
-    backButtonRect.y = height - 185
+    backButtonRect.y = height - 210
     return backImage, backButtonRect
 
 def drawBackButton():
@@ -106,13 +106,22 @@ def beginInstructionsScreen(event):
 
 def endInstructionsScreen(event):
     exitImage, exitButtonRect = exitButtonInfo()
+    backImage, backButtonRect = backButtonInfo()
     posX, posY = event.pos
     exitMinX, exitMinY = exitButtonRect.x, exitButtonRect.y
     exitMaxX, exitMaxY = (exitButtonRect.bottomright[0],
     exitButtonRect.bottomright[1])
+    backMinX, backMinY = backButtonRect.x, backButtonRect.y
+    backMaxX, backMaxY = (backButtonRect.bottomright[0],
+    backButtonRect.bottomright[1])
     isInExitBounds = (posX >= exitMinX and posX <= exitMaxX 
         and posY >= exitMinY and posY <= exitMaxY)
-    if (isInExitBounds):
+    isInBackBounds = (posX >= backMinX and posX <= backMaxX 
+        and posY >= backMinY and posY <= backMaxY)
+    if (isInExitBounds and variables.mainInstructionsButton):
+        variables.isInstructionsScreen = False
+    elif (isInBackBounds and variables.startInstructionsButton):
+        variables.isSplashScreen = True
         variables.isInstructionsScreen = False
 
 def endStartScreen(event):
@@ -128,8 +137,11 @@ def endStartScreen(event):
         and posY >= startMinY and posY <= startMaxY)
     isInInstructionsBounds = (posX >= instructionsMinX and posX <= instructionsMaxX 
         and posY >= instructionsMinY and posY <= instructionsMaxY)
+    print("in instructiosn bound", isInInstructionsBounds)
     if (isInStartBounds):
         variables.isSplashScreen = False
     elif (isInInstructionsBounds):
+        # print("set instructions to true")
+        variables.isSplashScreen = False
         variables.isInstructionsScreen = True
         variables.startInstructionsButton = True

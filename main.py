@@ -63,6 +63,7 @@ def scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrol
 
 
 def redrawAll(character):
+    # print("redrawAll", variables.isSplashScreen, variables.isInstructionsScreen)
     # global isShopping
     global drawOutline
     global drawUnaffordableMessage
@@ -85,8 +86,8 @@ def redrawAll(character):
     pygame.draw.rect(screen, (0, 255, 0),(200, 200, 50, 30))
     if (variables.isSplashScreen):
         drawStartScreen()
-    # elif (variables.isInstructionsScreen):
-    #     drawInstructionsScreen()
+    elif (variables.isInstructionsScreen):
+        drawInstructionsScreen()
     elif (variables.isGameOver):
         drawGameOver()
     # gameplay mode
@@ -183,13 +184,13 @@ def mousePressed(event, character, inventoryBar):
             drawOutline = False
     elif (variables.isSplashScreen):
         endStartScreen(event)
-    # elif (variables.isInstructionsScreen):
-    #     endInstructionsScreen(event)
+    elif (variables.isInstructionsScreen):
+        endInstructionsScreen(event)
     # elif(not variables.isInstructionsScreen and not variables.isSplashScreen
     #     and not variables.isShopping):
     #     beginInstructionsScreen(event)
     else:
-        # beginInstructionsScreen(event)
+        beginInstructionsScreen(event)
         count = 1
         for sprite in treeSprites:
             # print("SPRITE #", count)
@@ -211,8 +212,8 @@ def playGame():
     # character picture from: https://ya-webdesign.com/imgdownload.html
     character = createCharacter("character.png", charSprites, cellWidth, 
         cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
-    enemyThread = createEnemies(character, charSprites, cellWidth, 
-        cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
+    # enemyThread = createEnemies(character, charSprites, cellWidth, 
+    #     cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
 
     # water picture from: http://igm-tuto.blogspot.com/2014/06/pixel-art-draw-water-background.html
     waterImage = pygame.image.load("water.png").convert_alpha()
@@ -229,7 +230,7 @@ def playGame():
     createEnemyEvent = pygame.USEREVENT + 3
     pygame.time.set_timer(createIronEvent, 2000)
     pygame.time.set_timer(createTreeEvent, 1000)
-    pygame.time.set_timer(createEnemyEvent, 2000)
+    pygame.time.set_timer(createEnemyEvent, 3000)
 
     clock = pygame.time.Clock()
     playing = True
@@ -252,7 +253,9 @@ def playGame():
             #         character.moveLeft()
             #     elif (event.key == pygame.K_RIGHT):
             #         character.moveRight()
-            if (event.type == createIronEvent):
+            if (event.type == createIronEvent and not variables.isSplashScreen
+                and not variables.isInstructionsScreen and not variables.isGameOver
+                and not variables.isShopping):
                 if (len(ironSprites) < 4):
                     placeIron(character, blockArray1, cartesianBlockArray1, 
                         inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight)
