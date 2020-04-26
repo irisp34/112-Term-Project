@@ -14,6 +14,7 @@ from bridge import *
 from enemy import *
 from gameOver import *
 from startScreen import *
+from score import *
 
 def resetScroll(character):
     character.scrollX = 0
@@ -112,8 +113,8 @@ def redrawAll(character):
         ironSprites.draw(screen)
         drawShopButton()
         drawInstructionsButton()
-        # bridgeSprites.update()
-        # bridgeSprites.draw(screen)
+        # displayScore()
+
         for sprite in bridgeSprites:
             pygame.draw.polygon(screen, (255, 0, 255), (sprite.rect.topright, 
                 sprite.rect.topleft, sprite.rect.bottomleft, sprite.rect.bottomright), 4)
@@ -267,10 +268,10 @@ def playGame():
                     makeTrees(character, blockArray1, cartesianBlockArray1, 
                         inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight, 1)
                     count += 1
-            elif (event.type == createEnemyEvent):
-                if (len(enemySprites) == 0):
-                    createEnemies(character, charSprites, cellWidth, cellHeight, 
-                        blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
+            # elif (event.type == createEnemyEvent):
+            #     if (len(enemySprites) == 0):
+            #         createEnemies(character, charSprites, cellWidth, cellHeight, 
+            #             blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
             # elif (event.type == pygame.K_SPACE and isGameOver):
             #     print("HERE")
             #     isGameOver = False

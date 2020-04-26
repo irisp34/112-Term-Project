@@ -5,6 +5,7 @@ from variables import *
 from character import *
 from island import *
 from resources import *
+import score
 
 class RawResources(pygame.sprite.Sprite):
     def __init__(self, image, character, blockArray, cartesianBlockArray, 
@@ -159,6 +160,7 @@ class Trees(RawResources):
             posY <= cellMaxY):
             self.kill()
             self.addWoodToInventory()
+            # score.pointsDict["trees collected"] += 1
             return True
         return False
     # log image from: https://www.deviantart.com/chunsmunkey/art/Pixel-Log-750792001

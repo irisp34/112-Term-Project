@@ -5,6 +5,7 @@ import random
 import pygame
 from island import *
 from variables import *
+import score
 
 # character class that controls the main person
 class Character(pygame.sprite.Sprite):
@@ -350,6 +351,8 @@ class Character(pygame.sprite.Sprite):
             if (posX >= cellMinX and posX <= cellMaxX and posY >= cellMinY and
                 posY <= cellMaxY):
                 sprite.kill()
+                # score.pointsDict["enemies killed"] += 1
+
                 # self.enemyThread.stopRunning()
             #     return True
             # return False
@@ -363,6 +366,7 @@ class MainCharacter(Character):
             if (self.rect.colliderect(sprite.rect)):
                 sprite.kill()
                 sprite.addIronToInventory()
+                # score.pointsDict["iron collected"] += 1
 
 def createCharacter(image, charSprites, cellWidth, cellHeight, blockArray, 
     cartesianBlockArray, offsetX, offsetY):

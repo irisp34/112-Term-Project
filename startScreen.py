@@ -43,7 +43,7 @@ def instructionsButtonInfo():
         variables.startInstructionsButton = instructionsButtonRect
     else:
         instructionsButtonRect.x = width - 25 - instructionsButtonRect.width
-        instructionsButtonRect.y = height - 185
+        instructionsButtonRect.y = height - 125
         variables.mainInstructionsButton = instructionsButtonRect
     return instructionsImage, instructionsButtonRect
 
