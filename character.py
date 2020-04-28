@@ -228,8 +228,10 @@ class Character(pygame.sprite.Sprite):
             print("cell mins and maxs", cellMinX, cellMinY, cellMaxX, cellMaxY)
             print("more x", newX >= cellMinX, "less x", newX <= cellMaxX, "more y", 
             newY >= cellMinY, "less y", newY <= cellMaxY)
-            if ((newX >= cellMinX and newX <= cellMaxX) and (newY >= cellMinY 
-                    and newY <= cellMaxY)):
+            # if ((newX >= cellMinX and newX <= cellMaxX) and (newY >= cellMinY 
+            #         and newY <= cellMaxY)):
+            if ((newX >= self.cartMinX and newX <= self.cartMaxX) and (newY >= self.cartMinY
+                    and newY <= self.cartMaxY)):
                 return False
         # check if out of island 1
         if (newX < self.cartMinX or newX > self.cartMaxX or newY < self.cartMinY 
