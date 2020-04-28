@@ -1,11 +1,15 @@
-# main while loop which starts the game 
+#########################################################################
+# 15112 Term Project Spring 2020
+# By: Iris Pan
+# This file runs the game and contains the main Pygame while loop to set
+# up all graphics
+#########################################################################
 import pygame
 import os
 import numpy as np
 import pickle
 from island import *
 from character import *
-# from variables import *
 import variables
 from inventory import *
 from water import *
@@ -16,15 +20,18 @@ from enemy import *
 from gameOver import *
 from startScreen import *
 from buildings import *
-#from score import *
 import score
 
+# resets all the character scrolls back to zero after moving and scrolling all
+# elements that need to be scrolled
 def resetScroll(character):
     character.scrollX = 0
     character.scrollY = 0
     character.cartScrollX = 0
     character.cartScrollY = 0
 
+# adds the current scroll values to each block of the blockArray to make it move
+# with the character
 def scrollIslands(blockArray, scrollX, scrollY):
     for row in range(blockArray.shape[0]):
         for col in range(blockArray.shape[1]):
@@ -32,22 +39,14 @@ def scrollIslands(blockArray, scrollX, scrollY):
             currBlock.rect.x -= scrollX
             currBlock.rect.y -= scrollY
 
+# scrolls all sprites within a sprite Group
 def scrollSprites(spriteGroup, scrollX, scrollY):
     for sprite in spriteGroup:
         sprite.rect.centerx -= scrollX
         sprite.rect.centery -= scrollY
 
+# this function scrolls all elements in the game and then resets scrolls
 def scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrollY, character):
-    # for sprite in charSprites:
-    #     if (character.justMoved):
-    #         # print("before scroll", sprite.rect.centerx, sprite.rect.centery)
-    #         sprite.rect.centerx -= scrollX
-    #         sprite.rect.centery -= scrollY
-
-    # for sprite in treeSprites:
-    #     if (character.justMoved):
-    #         sprite.rect.centerx -= scrollX
-    #         sprite.rect.centery -= scrollY
     if (character.justMoved):
         scrollSprites(charSprites, scrollX, scrollY)
         scrollSprites(treeSprites, scrollX, scrollY)
@@ -62,10 +61,8 @@ def scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrol
         scrollIslands(cartesianBlockArray2, cartScrollX, cartScrollY)
     character.justMoved = False
 
-
+# main draw function which updates and drawns all sprites on the screen
 def redrawAll(character):
-    # print("redrawAll", variables.isSplashScreen, variables.isInstructionsScreen)
-    # global isShopping
     global drawOutline
     global drawUnaffordableMessage
     screen.fill((255, 255, 255))
@@ -74,17 +71,16 @@ def redrawAll(character):
     scrollY = character.scrollY
     cartScrollX = character.cartScrollX
     cartScrollY = character.cartScrollY
-    # print("scrollX scrollY", scrollX, scrollY)
 
     scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrollY, character)
 
+    # constructs the background and the inventory bar
     waterSprites.update()
     waterSprites.draw(screen)
     inventoryBarSprite.update(screen)
     inventoryBarSprite.draw(screen)
     variables.resourceSprites.update(screen)
     variables.resourceSprites.draw(screen)
-    pygame.draw.rect(screen, (0, 255, 0),(200, 200, 50, 30))
     if (variables.isSplashScreen):
         drawStartScreen()
     elif (variables.isInstructionsScreen):
@@ -138,6 +134,7 @@ def redrawAll(character):
             minX, minY, maxX, maxY = purchasableItems[keyword]
             pygame.draw.rect(screen, (0, 52, 114), (minX, 
                 minY, maxX - minX, maxY - minY), 4)
+        # tells the user if they have picked an item in the shop they cannot afford
         if (drawUnaffordableMessage):
             minX, minY, maxX, maxY = purchasableItems[keyword]
             font = pygame.font.Font('freesansbold.ttf', 14)
@@ -153,17 +150,16 @@ def redrawAll(character):
     createInventoryCaptions(Iron)
     createInventoryCaptions(Hammer)
 
-    # coordinates for first inventory box
-    pygame.draw.rect(screen, (0, 255, 255),(265, 10, 90, 70), 3)
     pygame.display.flip()
     resetScroll(character)
 
+# loops through all the inventory sprites present and creates a caption which tells
+# the user how many of that resource they have
 def createInventoryCaptions(classType):
     text = None
     textRect = None
     for sprite in resourceSprites:
         currCount = 0
-        # print("sprite amount", sprite.amount)
         if (isinstance(sprite, classType)):
             if (sprite.amount > currCount):
                 currCount = sprite.amount
@@ -171,6 +167,8 @@ def createInventoryCaptions(classType):
     if (textRect != None and text != None):
         screen.blit(text, textRect)
 
+# calls the appropriate function that executes the correct action when the mouse
+# is pressed
 def mousePressed(event, character, inventoryBar):
     # global isShopping
     global keyword
@@ -179,9 +177,7 @@ def mousePressed(event, character, inventoryBar):
     print("clicked mouse pressed", event.pos)
     if (variables.isShopping):
         drawOutline, keyword, drawUnaffordableMessage = selectedItem(event, keyword)
-        # print("in main", drawOutline, keyword, drawUnaffordableMessage)
         variables.isShopping = endShopping(event, keyword, inventoryBar)
-        # print("right after end shopping", variables.isShopping)
         if (not variables.isShopping):
             keyword = None
             drawOutline = False
@@ -189,22 +185,16 @@ def mousePressed(event, character, inventoryBar):
         endStartScreen(event)
     elif (variables.isInstructionsScreen):
         endInstructionsScreen(event)
-    # elif(not variables.isInstructionsScreen and not variables.isSplashScreen
-    #     and not variables.isShopping):
-    #     beginInstructionsScreen(event)
     else:
         beginInstructionsScreen(event)
         count = 1
         for sprite in treeSprites:
-            # print("SPRITE #", count)
             if (sprite.removeTrees(event)):
                 break
             count += 1
         character.killEnemy(event)
-        # print("testing begin shopping")
         variables.isShopping = beginShopping(event)
         beginInstructionsScreen(event)
-    # return variables.isShopping
 
 def bridgeCount():
     count = 0
@@ -212,11 +202,8 @@ def bridgeCount():
         count += 1
     return count
 
+# main function which starts the game
 def playGame():
-    # global totalCartScrollX
-    # global totalCartScrollY
-    # global totalIsoScrollX
-    # global totalIsoScrollY
     pygame.init()
 
     # water picture from: http://igm-tuto.blogspot.com/2014/06/pixel-art-draw-water-background.html
@@ -235,6 +222,9 @@ def playGame():
     factoryList = None
     scrollValues = None
 
+    # this section reads in a file that is saved from the last time the game is
+    # played and reassigns variables appropriately. If no file was saved at the
+    # last iteration of the game, this is skipped
     # https://www.techcoil.com/blog/how-to-save-and-load-objects-to-and-from-file-in-python-via-facilities-from-the-pickle-module/
     if os.path.exists('resources.bin'):
         try:
@@ -278,15 +268,12 @@ def playGame():
                 ironList2 = resources['iron2']
                 farmList = resources["farm"]
                 factoryList = resources["factory"]
-                # variables.totalIsoScrollX = resources["totalScrolls"][0]
-                # variables.totalIsoScrollY = resources["totalScrolls"][1]
-                # variables.totalCartScrollX = resources["totalScrolls"][2]
-                # variables.totalCartScrollY = resources["totalScrolls"][3]
                 scrollValues = resources["totalScrolls"]
 
         except EOFError as error:
             print('ooops')
 
+    # adjusts scrolling on the islands after the game is reloaded
     createIslands()
     if (scrollValues != None):
         totalIsoScrollX = scrollValues[0]
@@ -299,6 +286,7 @@ def playGame():
             scrollIslands(blockArray2, totalIsoScrollX, totalIsoScrollY)
             scrollIslands(cartesianBlockArray2, totalCartScrollX, totalCartScrollY)
 
+    # world building for character, enemy, and trees
     # character picture from: https://ya-webdesign.com/imgdownload.html
     character = createCharacter("character.png", charSprites, cellWidth, 
         cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1, characterPosition)
@@ -308,7 +296,8 @@ def playGame():
         offsetX1, offsetY1, cellWidth, cellHeight, 6, 1, treeList1)
     makeTrees(character, blockArray2, cartesianBlockArray2, inventoryBar,
       offsetX1, offsetY1, cellWidth, cellHeight, 5, 2, treeList2)
-      
+    
+    # places any buildings or resources from the saved version of the game
     if (ironList1 is not None):
         for iron in ironList1:
             placeIron(character, blockArray1, cartesianBlockArray1, 
@@ -334,13 +323,14 @@ def playGame():
                 offsetX1, offsetY1, cellWidth, cellHeight, location, 1, factoryPos)
             buildingSprites.add(factory)
 
+    # generates events that will be executed automatically after a certain time
     createIronEvent = pygame.USEREVENT + 1
     createTreeEvent = pygame.USEREVENT + 2
     createEnemyEvent = pygame.USEREVENT + 3
     farmWoodEvent = pygame.USEREVENT + 4
     factoryIronEvent = pygame.USEREVENT + 5
-    pygame.time.set_timer(createIronEvent, 2000)
-    pygame.time.set_timer(createTreeEvent, 1000)
+    pygame.time.set_timer(createIronEvent, 3000)
+    pygame.time.set_timer(createTreeEvent, 2000)
     pygame.time.set_timer(createEnemyEvent, 3000)
     pygame.time.set_timer(farmWoodEvent, 3000)
     pygame.time.set_timer(factoryIronEvent, 3000)
@@ -356,6 +346,7 @@ def playGame():
             elif (event.type == pygame.MOUSEBUTTONDOWN):
                 # character.jump(event)
                 mousePressed(event, character, inventoryBar)
+            # replenishes iron within the game (iron only exists on the main island)
             if (event.type == createIronEvent and not variables.isSplashScreen
                 and not variables.isInstructionsScreen and not variables.isGameOver
                 and not variables.isShopping):
@@ -363,6 +354,7 @@ def playGame():
                     placeIron(character, blockArray1, cartesianBlockArray1, 
                         inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight, 1)
                     character.collectIron()
+            # replenishes trees on each island
             elif (event.type == createTreeEvent):
                 treeCount1 = sumTreesOnIsland(1)
                 treeCount2 = sumTreesOnIsland(2)
@@ -373,7 +365,8 @@ def playGame():
                 elif (treeCount2 < 3):
                     makeTrees(character, blockArray1, cartesianBlockArray1, 
                         inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight, 1, 2)
-                
+            # for each Farm that is built, wood will automatically be produced
+            # from that farm. This section adds the newly produced wood to inventory
             elif (event.type == farmWoodEvent and not variables.isGameOver):
                 for building in buildingSprites:
                     if (isinstance(building, Farm)):
@@ -384,7 +377,8 @@ def playGame():
                             inventoryBar, offsetX1, offsetY1, location, 1)
                         tree.addWoodToInventory()
                         variables.isBuildingProduction = False
-
+            # factories generate iron like farms with wood. These iron resources
+            # are automatically added to inventory
             elif (event.type == factoryIronEvent and not variables.isGameOver):
                 for building in buildingSprites:
                     if (isinstance(building, Factory)):
@@ -396,15 +390,12 @@ def playGame():
                             offsetX1, offsetY1, location, 1)
                         iron.addIronToInventory()
                         variables.isBuildingProduction = False
+            # when the current enemy is killed, a new one is spawned.
             elif (event.type == createEnemyEvent and not variables.isGameOver):
                 if (len(enemySprites) == 0):
                     enemy = createEnemies(character, charSprites, cellWidth, cellHeight, 
                         blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
-            # elif (event.type == pygame.K_SPACE and isGameOver):
-            #     print("HERE")
-            #     isGameOver = False
-            #     playing = False
-            #     # playGame()
+
         keys = pygame.key.get_pressed()
         if (keys[pygame.K_DOWN]):
             character.moveDown()
@@ -418,20 +409,15 @@ def playGame():
         elif (keys[pygame.K_LEFT]):
             character.moveLeft()
             character.collectIron()
-        # elif (keys[pygame.K_r] and isGameOver):
-        #     print("HERE")
-        #     isGameOver = False
-        #     playing = False
     
         redrawAll(character)
-    # print("???", isGameOver)
-    # if (not isGameOver):
-    #     print("here??")
-    #     playGame()
 
+    # removes the current saved resources file if the game is over
     if (variables.isGameOver):
         if os.path.exists('resources.bin'):
             os.remove('resources.bin')
+    # if the game is not over, all relevant resource characteristics are stored
+    # into the file
     else:
         # https://www.techcoil.com/blog/how-to-save-and-load-objects-to-and-from-file-in-python-via-facilities-from-the-pickle-module/
         resources = dict()
@@ -483,8 +469,6 @@ def playGame():
         factoryList = []
         resources['farm'] = farmList
         resources["factory"] = factoryList
-        # treeList2 = []
-        # resources['trees2'] = treeList2
         for sprite in buildingSprites:
             if (isinstance(sprite, Farm)):
                 farmDic = dict()
@@ -523,5 +507,4 @@ def playGame():
     pygame.quit()
     os._exit(0)
 
-# if (not isGameOver):
 playGame()
