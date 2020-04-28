@@ -15,6 +15,8 @@ from bridge import *
 from enemy import *
 from gameOver import *
 from startScreen import *
+#from score import *
+import score
 
 def resetScroll(character):
     character.scrollX = 0
@@ -64,6 +66,7 @@ def scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrol
 
 
 def redrawAll(character):
+    # print("redrawAll", variables.isSplashScreen, variables.isInstructionsScreen)
     # global isShopping
     global drawOutline
     global drawUnaffordableMessage
@@ -86,8 +89,8 @@ def redrawAll(character):
     pygame.draw.rect(screen, (0, 255, 0),(200, 200, 50, 30))
     if (variables.isSplashScreen):
         drawStartScreen()
-    # elif (variables.isInstructionsScreen):
-    #     drawInstructionsScreen()
+    elif (variables.isInstructionsScreen):
+        drawInstructionsScreen()
     elif (variables.isGameOver):
         drawGameOver()
     # gameplay mode
@@ -112,6 +115,8 @@ def redrawAll(character):
         ironSprites.draw(screen)
         drawShopButton()
         drawInstructionsButton()
+        score.displayScore()
+
         for sprite in bridgeSprites:
             pygame.draw.polygon(screen, (255, 0, 255), (sprite.rect.topright, 
                 sprite.rect.topleft, sprite.rect.bottomleft, sprite.rect.bottomright), 4)
@@ -213,19 +218,21 @@ def playGame():
     pygame.init()
     createIslands()
 
-    # character picture from: https://ya-webdesign.com/imgdownload.html
-    character = createCharacter("character.png", charSprites, cellWidth, 
-        cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
-    # enemyThread = createEnemies(character, charSprites, cellWidth, 
-        # cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
-
     # water picture from: http://igm-tuto.blogspot.com/2014/06/pixel-art-draw-water-background.html
     waterImage = pygame.image.load("water.png").convert_alpha()
     rect = waterImage.get_rect()
     createWater(waterSprites, waterImage, rect)
-
     inventoryBar = Inventory()
     inventoryBarSprite.add(inventoryBar)
+    characterX = None
+    characterY = None
+    enemyX = None
+    enemyY = None
+    treeList1 = None
+    treeList2 = None
+    ironList1 = None
+    ironList2 = None
+
     # https://www.techcoil.com/blog/how-to-save-and-load-objects-to-and-from-file-in-python-via-facilities-from-the-pickle-module/
     if os.path.exists('resources.bin'):
         try:
@@ -260,19 +267,46 @@ def playGame():
                     bridge = Bridge(bridgeDict, cellWidth, cellHeight, blockArray1,
                         cartesianBlockArray1, blockArray2, cartesianBlockArray2)
                     bridgeSprites.add(bridge)
+                score.pointsDict = resources['score']
+                charDic = resources['character']
+                characterX = charDic['x']
+                characterY = charDic['y']
+                enmDic = resources['enemy']
+                enemyX = enmDic['x']
+                enemyY = enmDic['y']
+                treeList1 = resources['trees1']
+                treeList2 = resources['trees2']
+                ironList1 = resources['iron1']
+                ironList2 = resources['iron2']
         except EOFError as error:
             print('ooops')
 
+    # character picture from: https://ya-webdesign.com/imgdownload.html
+    character = createCharacter("character.png", charSprites, cellWidth, 
+        cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1, characterX, characterY)
+    enemy = createEnemies(character, charSprites, cellWidth, 
+        cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1, enemyX, enemyY)
+
     makeTrees(character, blockArray1, cartesianBlockArray1, inventoryBar,
-        offsetX1, offsetY1, cellWidth, cellHeight, 6)
+        offsetX1, offsetY1, cellWidth, cellHeight, 6, 1, treeList1)
     makeTrees(character, blockArray2, cartesianBlockArray2, inventoryBar,
-      offsetX1, offsetY1, cellWidth, cellHeight, 5)
+      offsetX1, offsetY1, cellWidth, cellHeight, 5, 2, treeList2)
+    
+    if (ironList1 is not None):
+        for iron in ironList1:
+            placeIron(character, blockArray1, cartesianBlockArray1, 
+                inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight, 1, iron)
+    if (ironList2 is not None):
+        for iron in ironList2:
+            placeIron(character, blockArray2, cartesianBlockArray2, 
+                inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight, 2, iron)
+
     createIronEvent = pygame.USEREVENT + 1
     createTreeEvent = pygame.USEREVENT + 2
     createEnemyEvent = pygame.USEREVENT + 3
     pygame.time.set_timer(createIronEvent, 2000)
     pygame.time.set_timer(createTreeEvent, 1000)
-    pygame.time.set_timer(createEnemyEvent, 2000)
+    pygame.time.set_timer(createEnemyEvent, 3000)
 
     clock = pygame.time.Clock()
     playing = True
@@ -295,10 +329,12 @@ def playGame():
             #         character.moveLeft()
             #     elif (event.key == pygame.K_RIGHT):
             #         character.moveRight()
-            if (event.type == createIronEvent):
+            if (event.type == createIronEvent and not variables.isSplashScreen
+                and not variables.isInstructionsScreen and not variables.isGameOver
+                and not variables.isShopping):
                 if (len(ironSprites) < 4):
                     placeIron(character, blockArray1, cartesianBlockArray1, 
-                        inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight)
+                        inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight, 1)
             elif (event.type == createTreeEvent):
                 # fix to spawn on specific island
                 if (len(treeSprites) < 7):
@@ -307,10 +343,10 @@ def playGame():
                     makeTrees(character, blockArray1, cartesianBlockArray1, 
                         inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight, 1)
                     count += 1
-            # elif (event.type == createEnemyEvent):
-            #     if (len(enemySprites) == 0):
-            #         createEnemies(character, charSprites, cellWidth, cellHeight, 
-            #             blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
+            elif (event.type == createEnemyEvent):
+                if (len(enemySprites) == 0):
+                    enemy = createEnemies(character, charSprites, cellWidth, cellHeight, 
+                        blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
             # elif (event.type == pygame.K_SPACE and isGameOver):
             #     print("HERE")
             #     isGameOver = False
@@ -354,9 +390,48 @@ def playGame():
         resources['hammer'] = count
         count = bridgeCount()
         resources['bridge'] = count
+        resources['score'] = score.pointsDict
+        characterDic = dict()
+        characterDic['x'] = character.rect.centerx
+        characterDic['y'] = character.rect.centery
+        resources['character'] = characterDic
+        enemyDic = dict()
+        enemyDic['x'] = enemy.rect.centerx
+        enemyDic['y'] = enemy.rect.centery
+        resources['enemy'] = enemyDic
+
+        treeList1 = []
+        resources['trees1'] = treeList1
+        treeList2 = []
+        resources['trees2'] = treeList2
+        for tree in treeSprites:
+            treeDic = dict()
+            if (tree.island == 1):
+                treeList1.append(treeDic)
+            else:
+                treeList2.append(treeDic)
+            treeDic['x'] = tree.rect.centerx
+            treeDic['y'] = tree.rect.centery
+            treeDic['row'] = tree.row
+            treeDic['col'] = tree.col
+
+        ironList1 = []
+        resources['iron1'] = ironList1
+        ironList2 = []
+        resources['iron2'] = ironList2
+        for iron in ironSprites:
+            ironDic = dict()
+            if (iron.island == 1):
+                ironList1.append(ironDic)
+            else:
+                ironList2.append(ironDic)
+            ironDic['x'] = iron.rect.centerx
+            ironDic['y'] = iron.rect.centery
+            ironDic['row'] = iron.row
+            ironDic['col'] = iron.col
         with open('resources.bin', 'wb') as resourcefile:
             pickle.dump(resources, resourcefile)
-
+            
     pygame.quit()
     os._exit(0)
 

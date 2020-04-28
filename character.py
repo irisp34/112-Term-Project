@@ -9,7 +9,8 @@ import score
 
 # character class that controls the main person
 class Character(pygame.sprite.Sprite):
-    def __init__(self, image, cellWidth, cellHeight, blockArray, cartesianBlockArray, offsetX, offsetY):
+    def __init__(self, image, cellWidth, cellHeight, blockArray,
+        cartesianBlockArray, offsetX, offsetY, characterPosition =  None):
         super().__init__()
         self.cartBlockArray = cartesianBlockArray
         self.blockArray = blockArray
@@ -17,12 +18,6 @@ class Character(pygame.sprite.Sprite):
         self.boardCellHeight = cellHeight
         self.offsetX = offsetX
         self.offsetY = offsetY
-        # scrolling loosely adapted (adjusted to fit isometric) from CMU Animations
-        # Notes: http://www.cs.cmu.edu/~112/notes/notes-animations-part2.html#sidescrollerExamples
-        self.scrollX = 0
-        self.scrollY = 0
-        self.cartScrollX = 0
-        self.cartScrollY = 0
         self.scrollMargin = 150
         # self.image = pygame.Surface([charWidth, charHeight])
         self.image = pygame.image.load(image).convert_alpha()
@@ -32,7 +27,21 @@ class Character(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.findIsometricBounds(self.blockArray)
         self.findCartesianBounds(self.cartBlockArray)
-        self.rect.centerx, self.rect.centery = self.getRandomBoardCenter(self.blockArray)
+        if (characterPosition is not None):
+            self.rect.centerx = characterPosition["x"]
+            self.rect.centery = characterPosition["y"]
+            self.scrollX = characterPosition["scrollX"]
+            self.scrollY = characterPosition["scrollY"]
+            self.cartScrollX = characterPosition["cartScrollX"]
+            self.cartScrollY = characterPosition["cartScrollY"]
+        else:
+            self.rect.centerx, self.rect.centery = self.getRandomBoardCenter(self.blockArray)
+            # scrolling loosely adapted (adjusted to fit isometric) from CMU Animations
+            # Notes: http://www.cs.cmu.edu/~112/notes/notes-animations-part2.html#sidescrollerExamples
+            self.scrollX = 0
+            self.scrollY = 0
+            self.cartScrollX = 0
+            self.cartScrollY = 0
         print("centerx, centery", self.rect.centerx, self.rect.centery)
         self.justMoved = False
 
@@ -191,10 +200,10 @@ class Character(pygame.sprite.Sprite):
         self.cartY += startY + (self.boardCellHeight / 2)
         newX = self.cartX + dx * self.boardCellWidth
         newY = self.cartY + dy * self.boardCellHeight
-        # print("newx, newy", newX, newY)
-        # print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
-        # print("less x", newX < self.cartMinX, "more x", newX > self.cartMaxX, 
-        #     "less y", newY < self.cartMinY, "more y", newY > self.cartMaxY)
+        print("newx, newy", newX, newY)
+        print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
+        print("less x", newX < self.cartMinX, "more x", newX > self.cartMaxX, 
+            "less y", newY < self.cartMinY, "more y", newY > self.cartMaxY)
         for sprite in treeSprites:
             treeX, treeY = sprite.convertIsometricToCartesian(sprite.rect.centerx
                 - sprite.offsetX, sprite.rect.centery - sprite.offsetY)
@@ -204,9 +213,21 @@ class Character(pygame.sprite.Sprite):
             cellMaxX = treeX + self.boardCellWidth / 2
             cellMinY = treeY - self.boardCellHeight / 2
             cellMaxY = treeY + self.boardCellHeight / 2
-            # print("cell mins and maxs", cellMinX, cellMinY, cellMaxX, cellMaxY)
-            # print("more x", newX >= cellMinX, "less x", newX <= cellMaxX, "more y", 
-            # newY >= cellMinY, "less y", newY <= cellMaxY)
+            if ((newX >= cellMinX and newX <= cellMaxX) and (newY >= cellMinY 
+                    and newY <= cellMaxY)):
+                return False
+        for sprite in buildingSprites:
+            farmX, farmY = sprite.convertIsometricToCartesian(sprite.rect.centerx
+                - sprite.offsetX, sprite.rect.centery - sprite.offsetY)
+            farmX += farmX
+            farmY += farmY + (self.boardCellHeight / 2)
+            cellMinX = farmX - self.boardCellWidth / 2
+            cellMaxX = farmX + self.boardCellWidth / 2
+            cellMinY = farmY - self.boardCellHeight / 2
+            cellMaxY = farmY + self.boardCellHeight / 2
+            print("cell mins and maxs", cellMinX, cellMinY, cellMaxX, cellMaxY)
+            print("more x", newX >= cellMinX, "less x", newX <= cellMaxX, "more y", 
+            newY >= cellMinY, "less y", newY <= cellMaxY)
             if ((newX >= cellMinX and newX <= cellMaxX) and (newY >= cellMinY 
                     and newY <= cellMaxY)):
                 return False
@@ -287,6 +308,8 @@ class Character(pygame.sprite.Sprite):
                     walkToIsland2 = True
                 return True
         return False
+    
+    
  
     # loosely adapted from SideScroller2 example in 112 Notes to fit isometric 
     # coordinates and desired scrolling effect: 
@@ -295,11 +318,11 @@ class Character(pygame.sprite.Sprite):
         isScrollable = False
         if (self.cartX < self.scrollMargin + self.scrollX):
             isScrollable = True
-        elif (self.cartX + self.scrollMargin > self.scrollX + width):
+        elif (self.cartX + self.scrollMargin > width + self.scrollX):
             isScrollable = True
         if (self.cartY < self.scrollMargin + self.scrollY):
             isScrollable = True
-        elif (self.cartY + self.scrollMargin > self.scrollY + height):
+        elif (self.cartY + self.scrollMargin > height + self.scrollY):
             isScrollable = True
         return isScrollable
 
@@ -360,8 +383,10 @@ class Character(pygame.sprite.Sprite):
             # return False
     
 class MainCharacter(Character):
-    def __init__(self, image, cellWidth, cellHeight, blockArray, cartesianBlockArray, offsetX, offsetY):
-        super().__init__(image, cellWidth, cellHeight, blockArray, cartesianBlockArray, offsetX, offsetY)
+    def __init__(self, image, cellWidth, cellHeight, blockArray, 
+        cartesianBlockArray, offsetX, offsetY, characterPosition = None):
+        super().__init__(image, cellWidth, cellHeight, blockArray, 
+            cartesianBlockArray, offsetX, offsetY, characterPosition)
 
     def collectIron(self):
         for sprite in ironSprites:
@@ -371,8 +396,8 @@ class MainCharacter(Character):
                 score.pointsDict["iron collected"] += 1
 
 def createCharacter(image, charSprites, cellWidth, cellHeight, blockArray, 
-    cartesianBlockArray, offsetX, offsetY):
+    cartesianBlockArray, offsetX, offsetY, characterPosition = None):
     character = MainCharacter(image, cellWidth, cellHeight, blockArray, 
-        cartesianBlockArray, offsetX, offsetY)
+        cartesianBlockArray, offsetX, offsetY, characterPosition)
     charSprites.add(character)
     return character

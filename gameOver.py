@@ -10,7 +10,7 @@ def drawGameOver():
     pygame.draw.rect(screen, (0, 52, 114), (width // 4, 100, width // 2, 
         height - 200), 4)
     textCenterX = width / 2
-    textCenterY = 100
+    textCenterY = 200
     createText("Game Over", textCenterX, textCenterY, 40)
     textCenterY += 60
     totalScore = score.calculateScore()

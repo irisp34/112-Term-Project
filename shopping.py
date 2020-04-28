@@ -3,6 +3,7 @@ import numpy as np
 from variables import *
 from bridge import *
 from resources import *
+from buildings import *
 import score
 
 def createShop():
@@ -19,14 +20,14 @@ def scaleImage(image, location):
     rect = image.get_rect()
     return image, rect
 
-# takes in list of costs, list of resources, and the image rect
+# takes in the resources needed to buy the item and the image rect to display
+# the cost in the shop
 def createCostCaption(resourceDict, resourceRect):
     font = pygame.font.Font('freesansbold.ttf', 16)
     caption = "Cost: "
     for key in resourceDict:
         caption += f"{resourceDict[key]} {key}, "
     caption = caption[:-2]
-    # caption = f"Cost: {bridgeCost} {bridgeResource}"
     text = font.render(caption, True, (0, 0, 0))
     textRect = text.get_rect()
     textRect.centerx = resourceRect.centerx
@@ -63,6 +64,7 @@ def addHammerToShop(hammerDict):
     createCostCaption(hammerDict, hammerRect)
     return hammer, hammerRect
 
+# creates the farm that can be bought from the shop and also lists the cost
 def addFarmToShop(farmDict):
     # farm picture from: https://www.deviantart.com/thkaspar/art/Unfinished-Isometric-Farm-297762732
     farm = pygame.image.load("farm.png").convert_alpha()
@@ -78,6 +80,8 @@ def addFarmToShop(farmDict):
     createCostCaption(farmDict, farmRect)
     return farm, farmRect
 
+# loops through all the purchasable items to detect which item the user has
+# clicked on. 
 def selectedItem(event, currentItem):
     global drawOutline
     global drawUnaffordableMessage
@@ -91,17 +95,11 @@ def selectedItem(event, currentItem):
     selectedItem = None
     for key in purchasableItems:
         print("key", key)
-        # if (key.lower() == "bridge"):
         imageDim = purchasableItems[key]
-        # keyword = key
         currKey = key
         print("currKey", currKey)
         minX, minY, maxX, maxY = imageDim
-        # print("min max", minX, minY, maxX, maxY)
-        # print(posX >= minX, posX <= maxX, posY >= minY, posY <= maxY)
         isAffordable = affordable(currKey)
-        # print("isAffordable", isAffordable)
-        # print("drawOutline before", drawOutline)
         if (posX >= minX and posX <= maxX and posY >= minY and posY <= maxY):
             if (currKey == currentItem):
                 return False, None, False
@@ -114,11 +112,8 @@ def selectedItem(event, currentItem):
                 drawUnaffordableMessage = True
             else:
                 drawUnaffordableMessage = False
-        # if (drawOutline and key == keyword):
         if (selectedItem != None):
             return drawOutline, selectedItem, drawUnaffordableMessage
-            # print("drawUnaffordableMessage", drawUnaffordableMessage)
-    print("HERE")
     print("keyword before return", keyword)
     return drawOutline, currentItem, drawUnaffordableMessage
         
@@ -172,17 +167,13 @@ def beginShopping(event):
     global isShopping
     shopImage, shopButtonRect = shopButtonInfo()
     posX, posY = event.pos
-    print("pso", posX, posY)
     shopMinX, shopMinY = shopButtonRect.x, shopButtonRect.y
     shopMaxX, shopMaxY = shopButtonRect.bottomright[0], shopButtonRect.bottomright[1]
-    print("shopmins and maxs", shopMinX, shopMinY, shopMaxX, shopMaxY)
-    print("in begin shopping", posX >= shopMinX and posX <= shopMaxX 
-        and posY >= shopMinY and posY <= shopMaxY)
     if (posX >= shopMinX and posX <= shopMaxX and posY >= shopMinY and posY <= shopMaxY):
         isShopping = True
     return isShopping
 
-# adjust to work between several islands
+# generates the bought item by creating an instance of the class it belongs to
 def createBoughtItem(keyword, inventoryBar):
     if (keyword == "bridge"):
         bridge = Bridge(bridgeDict, cellWidth, cellHeight, blockArray1,
@@ -196,23 +187,21 @@ def createBoughtItem(keyword, inventoryBar):
         hammer.updateAmount(Hammer)
         score.pointsDict["hammers created"] += 1
     elif (keyword == "farm"):
-        farm = Farm(farmDictblockArray1, cartesianBlockArray1)
-        buildingSprites.add(bridge)
+        image = "farm.png"
+        farm = Farm(image, farmDict, blockArray1, cartesianBlockArray1,
+            offsetX1, offsetY1, cellWidth, cellHeight, 1)
+        buildingSprites.add(farm)
         score.pointsDict["farms built"] += 1
 
-# takes out Wood sprites to pay for bridge
+# takes out resource sprites out of inventory to pay for items
 def subtractResources(keyword):
-    # global keyword
     count = 0
-    print("before kill", len(resourceSprites))
-    print("subtract", keyword)
     if (keyword == "bridge"):
         for sprite in resourceSprites:
             if (isinstance(sprite, Wood)):
                 sprite.kill()
                 count += 1
                 if (count == bridgeDict["wood"]):
-                    print("after kill", len(resourceSprites))
                     sprite.updateAmount(Wood)
                     break
     elif (keyword == "hammer"):
@@ -241,7 +230,7 @@ def subtractResources(keyword):
                 woodCount += 1
                 sprite.kill()
             elif (isinstance(sprite, Hammer) and hammerCount != farmDict["hammer"]):
-                ironCount += 1
+                hammerCount += 1
                 sprite.kill()
             
 
@@ -250,17 +239,8 @@ def subtractResources(keyword):
 def affordable(keyword):
     if (keyword == None):
         return True
-
-    print("affordable keyword", keyword)
-    # resourceType = None
-    # itemCost = None
-    # amountInInventory = None
     currDict = None
     if (keyword == "bridge"):
-        # resourceType = bridgeResource
-        # itemCost = bridgeCost
-        # amountInInventory = numResourceSprites(resourceType)
-        # print("amountInInventory", amountInInventory)
         currDict = bridgeDict
     elif (keyword == "hammer"):
         currDict = hammerDict
@@ -269,13 +249,13 @@ def affordable(keyword):
     for key in currDict:
         if (numResourceSprites(key) < currDict[key]):
             return False
-    # return amountInInventory >= itemCost
     return True
 
+# detects whether shopping has ended or not by whether the user clicked the 
+# buy button or the exit button and purchases the item if buy was clicked
 def endShopping(event, keyword, inventoryBar):
     global isShopping
     global drawOutline
-    # global keyword
     buyImage, buyButtonRect = buyButtonInfo()
     exitImage, exitButtonRect = exitButtonInfo()
     posX, posY = event.pos
@@ -285,13 +265,11 @@ def endShopping(event, keyword, inventoryBar):
     exitMaxX, exitMaxY = exitButtonRect.bottomright[0], exitButtonRect.bottomright[1]
     isInBuyBounds = posX >= buyMinX and posX <= buyMaxX and posY >= buyMinY and posY <= buyMaxY
     isInExitBounds = posX >= exitMinX and posX <= exitMaxX and posY >= exitMinY and posY <= exitMaxY
-    # print("endshopping keyword", keyword)
     isAffordable = affordable(keyword)
     if (isInExitBounds):
         isShopping = False
         if (drawOutline):
             drawOutline = not drawOutline
-    print("isinbuybounds", isInBuyBounds, "drawoutline", drawOutline, "afford", isAffordable)
     if (isInBuyBounds and drawOutline and isAffordable):
         isShopping = False
         subtractResources(keyword)

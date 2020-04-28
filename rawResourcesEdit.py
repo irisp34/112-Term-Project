@@ -1,16 +1,22 @@
 import pygame
 import numpy as np
 import random
-from variables import *
+import math
+
+import variables
 from character import *
 from island import *
-from resources import *
+# from resources import *
+import resources
+# from score import *
+import score
 
 class RawResources(pygame.sprite.Sprite):
     def __init__(self, image, character, blockArray, cartesianBlockArray, 
-            inventoryBar, offsetX, offsetY, scaleLocation):
+            inventoryBar, offsetX, offsetY, scaleLocation, island, position = None):
         super().__init__()
         self.character = character
+        self.island = island
         self.boardCellWidth = cellWidth
         self.boardCellHeight = cellHeight
         self.blockArray = blockArray
@@ -22,11 +28,19 @@ class RawResources(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.scaleLocation = scaleLocation
         self.image, self.rect = self.scaleImage(self.image, self.rect, self.scaleLocation)
-        self.rect.centerx, self.rect.centery, self.block = self.getRandomBoardCenter(self.blockArray)
+        self.findCartesianBounds(self.cartBlockArray)
+        if (position is not None):
+            self.rect.centerx = position['x']
+            self.rect.centery = position['y']
+            self.row = position['row']
+            self.col = position['row']
+            self.block = blockArray[self.row, self.col]
+            self.block.isEmpty = False
+        else:
+            self.rect.centerx, self.rect.centery, self.row, self.col, self.block = self.getRandomBoardCenter(self.blockArray)
         self.originalX, self.originalY = self.rect.centerx, self.rect.centery
         # self.adjustBlockCenter()
         print("after placed", self.rect.centerx, self.rect.centery)
-        self.findCartesianBounds(self.cartBlockArray)
     
     def scaleImage(self, image, rect, location):
         image = pygame.transform.scale(image, location)
@@ -89,10 +103,11 @@ class RawResources(pygame.sprite.Sprite):
 
     # fix bug to not place on trees or character
     def getRandomBoardCenter(self, blockArray):
-        # Need a count so that we don't run into infinite loop
+        # global treeSprites
+        # seenCenters = []
         boardRows = blockArray.shape[0]
         boardCols = blockArray.shape[1]
-        max = boardRows * boardCols
+        maxVal = boardRows * boardCols
         count = 0
         while (True):
             randRow, randCol = self.pickRandomRowAndCol(boardRows, boardCols)
@@ -100,17 +115,10 @@ class RawResources(pygame.sprite.Sprite):
             if (block.isEmpty):
                 block.isEmpty = False
                 centerX, centerY = self.findBlockCenter(block)
-                return centerX, centerY, block
+                return centerX, centerY, randRow, randCol, block
             count += 1
-            if (count > max):
-                print("PANIC: max reached, infinite loop")
-
-        # global treeSprites
-        # seenCenters = []
-        # boardRows = blockArray.shape[0]
-        # boardCols = blockArray.shape[1]
-        # randRow, randCol = self.pickRandomRowAndCol(boardRows, boardCols)
-        # block = blockArray[randRow, randCol]
+            if (count > maxVal):
+                print("Try times exceeds max value")
         # for sprite in treeSprites:
         #     # trueCenterX, trueCenterY = self.findOriginalCenter(sprite.block)
         #     # seenCenters.append((trueCenterX, trueCenterY))
@@ -139,11 +147,14 @@ class RawResources(pygame.sprite.Sprite):
 
 
 class Trees(RawResources):
-    def __init__(self, image, character, blockArray, cartesianBlockArray, inventoryBar, offsetX, offsetY, location):
-        super().__init__(image, character, blockArray, cartesianBlockArray, inventoryBar, offsetX, offsetY, location)
+    def __init__(self, image, character, blockArray, cartesianBlockArray,
+        inventoryBar, offsetX, offsetY, location, island, position = None):
+        super().__init__(image, character, blockArray, cartesianBlockArray,
+            inventoryBar, offsetX, offsetY, location, island, position)
         self.wood = 0
         self.carbonDioxide = 10
         self.cutDown = False
+
     def removeTrees(self, event):
         posX, posY = event.pos
         # print("before offset", posX, posY)
@@ -176,15 +187,16 @@ class Trees(RawResources):
             self.kill()
             self.block.isEmpty = True
             self.addWoodToInventory()
+            score.pointsDict["trees collected"] += 1
             return True
         return False
     # log image from: https://www.deviantart.com/chunsmunkey/art/Pixel-Log-750792001
     def addWoodToInventory(self):
         logImage = "log.png"
-        logResource = Wood(logImage, "Wood", 1, self.inventoryBar)
+        logResource = resources.Wood(logImage, "Wood", 1, self.inventoryBar)
         logResource.placeInInventory(0)
-        resourceSprites.add(logResource)
-        logResource.updateAmount(Wood)
+        variables.resourceSprites.add(logResource)
+        logResource.updateAmount(resources.Wood)
     
     def adjustBlockCenter(self):
         self.rect.centerx = (self.block.rect.centerx + self.block.rect.midtop[0]) / 2
@@ -192,8 +204,10 @@ class Trees(RawResources):
         # return centerX, centerY
 
 class RawIron(RawResources):
-    def __init__(self, image, character, blockArray, cartesianBlockArray, inventoryBar, offsetX, offsetY, location):
-        super().__init__(image, character, blockArray, cartesianBlockArray, inventoryBar, offsetX, offsetY, location)
+    def __init__(self, image, character, blockArray, cartesianBlockArray,
+        inventoryBar, offsetX, offsetY, location, island, position = None):
+        super().__init__(image, character, blockArray, cartesianBlockArray,
+            inventoryBar, offsetX, offsetY, location, island, position)
 
     def adjustBlockCenter(self):
         self.rect.centerx = (self.block.rect.centerx)
@@ -204,21 +218,30 @@ class RawIron(RawResources):
         self.block.isEmpty = True
         # picture from: http://iconbug.com/detail/icon/8273/minecraft-iron-ingot/
         ironImage = "metalBar.png"
-        ironResource = Iron(ironImage, "Iron", 2, self.inventoryBar)
+        ironResource = resources.Iron(ironImage, "Iron", 2, self.inventoryBar)
         ironResource.placeInInventory(1)
-        resourceSprites.add(ironResource)
-        ironResource.updateAmount(Iron)
+        variables.resourceSprites.add(ironResource)
+        ironResource.updateAmount(resources.Iron)
 
 # makes Tree objects to place on the board
-def makeTrees(character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY, cellWidth, cellHeight, number):
-    global treeSprites
+def makeTrees(character, blockArray, cartBlockArray, inventoryBar, offsetX,
+    offsetY, cellWidth, cellHeight, number, island, treeList = None):
     # tree image: https://www.reddit.com/r/PixelArt/comments/6ktv32/newbiecc_looking_for_tips_how_to_improve_this_tree/
-    for i in range(number):
-        image = "tree.png"
-        location = (int(cellWidth * 1.5), int(cellHeight * 1.5))
-        tree = Trees(image, character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY, location)
+    count = number
+    if (treeList is not None):
+        count = len(treeList)
+
+    image = "tree.png"
+    location = (int(cellWidth * 1.5), int(cellHeight * 1.5))
+    for i in range(count):
+        tree = None
+        if (treeList is not None):
+            treeDic = treeList[i]
+            tree = Trees(image, character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY, location, island, treeDic)
+        else:
+            tree = Trees(image, character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY, location, island)
         print("in make trees", tree.rect.centerx, tree.rect.centery)
-        treeSprites.add(tree)
+        variables.treeSprites.add(tree)
         # for sprite in treeSprites:
         #     currx, curry = sprite.rect.centerx, sprite.rect.centery
         #     oldx, oldy = sprite.findOriginalCenter(sprite.block)
@@ -226,15 +249,17 @@ def makeTrees(character, blockArray, cartBlockArray, inventoryBar, offsetX, offs
         #     # convertx, converty = sprite.findBlockCenter(sprite.)
         #     print("after converted", currx, curry, "function", oldx, oldy, "true", originX, originY)
 
-def placeIron(character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY, cellWidth, cellHeight):
+def placeIron(character, blockArray, cartBlockArray, inventoryBar, offsetX,
+    offsetY, cellWidth, cellHeight, island, position = None):
     # picture from: http://iconbug.com/detail/icon/8273/minecraft-iron-ingot/
     image = "metalBar.png"
     location = (int(cellWidth * .6), int(cellHeight * .6))
-    iron = RawIron(image, character, blockArray, cartBlockArray, inventoryBar, offsetX, offsetY, location)
-    ironSprites.add(iron)
+    iron = RawIron(image, character, blockArray, cartBlockArray, inventoryBar,
+        offsetX, offsetY, location, island, position)
+    variables.ironSprites.add(iron)
 
 def sumCarbon():
     totCarbon = 0
-    for sprite in treeSprites:
+    for sprite in variables.treeSprites:
         totCarbon += sprite.carbonDioxide
     return totCarbon

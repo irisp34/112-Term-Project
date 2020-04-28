@@ -10,9 +10,9 @@ import variables
 class Enemy(Character):
     # enemy picture: https://www.gamedevmarket.net/asset/evil-tree-pixel-art-monster-enemy-10227/
     def __init__(self, character, cellWidth, cellHeight, blockArray,
-        cartesianBlockArray, offsetX, offsetY, thread, characterPosition):
+        cartesianBlockArray, offsetX, offsetY, thread, centerx = None, centery = None):
         super().__init__("enemy.gif", cellWidth, cellHeight, blockArray,
-            cartesianBlockArray, offsetX, offsetY, characterPosition)
+            cartesianBlockArray, offsetX, offsetY, centerx, centery)
         self.character = character
         self.thread = thread
 
@@ -24,14 +24,6 @@ class Enemy(Character):
         location = (self.boardCellWidth, self.boardCellHeight)
         self.image = pygame.transform.scale(self.image, location)
         self.rect = self.image.get_rect()
-    
-    # enemy eats up iron but character doesn't get the resource
-    def collectIron(self):
-        for sprite in ironSprites:
-            if (self.rect.colliderect(sprite.rect)):
-                sprite.kill()
-                # sprite.addIronToInventory()
-                # score.pointsDict["iron collected"] += 1
 
 
 # learned about threading in python from: https://pymotw.com/3/threading/
@@ -52,7 +44,7 @@ class EnemyThread(threading.Thread):
 
     def run(self):
         while (self.isRunning):
-            time.sleep(2)
+            time.sleep(3)
             if (not self.isRunning):
                 return
             if (variables.isShopping or variables.isInstructionsScreen or 
@@ -78,17 +70,16 @@ class EnemyThread(threading.Thread):
                 self.enemy.moveUp()
             else:
                 self.enemy.moveDown()
-            self.enemy.collectIron()
     
     def stopRunning(self):
         self.isRunning = False
 
 
 def createEnemies(character, charSprites, cellWidth, cellHeight, blockArray, 
-    cartesianBlockArray, offsetX, offsetY, enemyPosition = None):
+    cartesianBlockArray, offsetX, offsetY, centerx = None, centery = None):
     thread = EnemyThread(1, "Thread-1")
-    enemy = Enemy(character, cellWidth, cellHeight, blockArray,
-        cartesianBlockArray, offsetX, offsetY, thread, enemyPosition)
+    enemy = Enemy(character, cellWidth, cellHeight, blockArray, 
+    cartesianBlockArray, offsetX, offsetY, thread, centerx, centery)
     enemy.daemon = True
     enemySprites.add(enemy)
     thread.setEnemy(enemy)

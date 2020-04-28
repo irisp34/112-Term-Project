@@ -67,7 +67,7 @@ hammerDict["iron"] = 1
 farmDict = dict()
 farmDict["wood"] = 4
 farmDict["hammer"] = 1
-
+isFarmProduction = False
 # place board in center of screen
 offsetX1 = (width // 2) - startX
 offsetY1 = (height // 2) - startY
