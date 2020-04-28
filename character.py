@@ -4,8 +4,11 @@ import numpy as np
 import random
 import pygame
 from island import *
-from variables import *
+from buildings import *
+# from variables import *
+import variables
 import score
+
 
 # character class that controls the main person
 class Character(pygame.sprite.Sprite):
@@ -54,8 +57,8 @@ class Character(pygame.sprite.Sprite):
 
     # retrieves a random isometric board center
     def getRandomBoardCenter(self, blockArray):
-        randRow = random.randint(0, blockRows - 1)
-        randCol = random.randint(0, blockCols - 1)
+        randRow = random.randint(0, variables.blockRows - 1)
+        randCol = random.randint(0, variables.blockCols - 1)
         block = blockArray[randRow, randCol]
         centerX = (block.rect.centerx + block.rect.midtop[0]) // 2
         centerY = (block.rect.centery + block.rect.midtop[1]) // 2
@@ -191,7 +194,7 @@ class Character(pygame.sprite.Sprite):
         
 
     def isWalkable(self, dx, dy):
-        global cartesianBlockArray2
+        # global cartesianBlockArray2
         self.findCartesianBounds(self.cartBlockArray)
         self.cartX, self.cartY = self.convertIsometricToCartesian(self.rect.centerx - self.offsetX, 
             self.rect.centery - self.offsetY)
@@ -201,9 +204,9 @@ class Character(pygame.sprite.Sprite):
         newX = self.cartX + dx * self.boardCellWidth
         newY = self.cartY + dy * self.boardCellHeight
         print("newx, newy", newX, newY)
-        print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
-        print("less x", newX < self.cartMinX, "more x", newX > self.cartMaxX, 
-            "less y", newY < self.cartMinY, "more y", newY > self.cartMaxY)
+        # print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
+        # print("less x", newX < self.cartMinX, "more x", newX > self.cartMaxX, 
+        #     "less y", newY < self.cartMinY, "more y", newY > self.cartMaxY)
         for sprite in treeSprites:
             treeX, treeY = sprite.convertIsometricToCartesian(sprite.rect.centerx
                 - sprite.offsetX, sprite.rect.centery - sprite.offsetY)
@@ -217,22 +220,42 @@ class Character(pygame.sprite.Sprite):
                     and newY <= cellMaxY)):
                 return False
         for sprite in buildingSprites:
-            farmX, farmY = sprite.convertIsometricToCartesian(sprite.rect.centerx
+            if (isinstance(sprite, Farm)):
+                farmX, farmY = sprite.convertIsometricToCartesian(sprite.rect.centerx
+                    - sprite.offsetX, sprite.rect.centery - sprite.offsetY)
+                farmX += farmX
+                farmY += farmY + (self.boardCellHeight / 2)
+                cellMinX = farmX - self.boardCellWidth 
+                cellMaxX = farmX + self.boardCellWidth
+                cellMinY = farmY - self.boardCellHeight / 2
+                cellMaxY = farmY + self.boardCellHeight / 2
+                print("cell mins and maxs", cellMinX, cellMinY, cellMaxX, cellMaxY)
+                print("more x", newX >= cellMinX, "less x", newX <= cellMaxX, "more y", 
+                newY >= cellMinY, "less y", newY <= cellMaxY)
+                # if ((newX >= self.cartMinX and newX <= self.cartMaxX) and (newY >= self.cartMinY
+                #         and newY <= self.cartMaxY)):
+                #     return False
+                if ((newX >= cellMinX and newX <= cellMaxX) and (newY >= cellMinY 
+                        and newY <= cellMaxY)):
+                    return False
+            elif (isinstance(sprite, Factory)):
+                factoryX, factoryY = sprite.convertIsometricToCartesian(sprite.rect.centerx
                 - sprite.offsetX, sprite.rect.centery - sprite.offsetY)
-            farmX += farmX
-            farmY += farmY + (self.boardCellHeight / 2)
-            cellMinX = farmX - self.boardCellWidth / 2
-            cellMaxX = farmX + self.boardCellWidth / 2
-            cellMinY = farmY - self.boardCellHeight / 2
-            cellMaxY = farmY + self.boardCellHeight / 2
-            print("cell mins and maxs", cellMinX, cellMinY, cellMaxX, cellMaxY)
-            print("more x", newX >= cellMinX, "less x", newX <= cellMaxX, "more y", 
-            newY >= cellMinY, "less y", newY <= cellMaxY)
+                factoryX += startX
+                factoryY += startY + (self.boardCellHeight / 2)
+                cellMinX = factoryX - self.boardCellWidth / 2
+                cellMaxX = factoryX + self.boardCellWidth / 2
+                cellMinY = factoryY - self.boardCellHeight / 2
+                cellMaxY = factoryY + self.boardCellHeight / 2
+                if ((newX >= cellMinX and newX <= cellMaxX) and (newY >= cellMinY 
+                        and newY <= cellMaxY)):
+                    return False
+            # print("cell mins and maxs", cellMinX, cellMinY, cellMaxX, cellMaxY)
+            # print("more x", newX >= cellMinX, "less x", newX <= cellMaxX, "more y", 
+            # newY >= cellMinY, "less y", newY <= cellMaxY)
             # if ((newX >= cellMinX and newX <= cellMaxX) and (newY >= cellMinY 
             #         and newY <= cellMaxY)):
-            if ((newX >= self.cartMinX and newX <= self.cartMaxX) and (newY >= self.cartMinY
-                    and newY <= self.cartMaxY)):
-                return False
+        
         # check if out of island 1
         if (newX < self.cartMinX or newX > self.cartMaxX or newY < self.cartMinY 
                 or newY > self.cartMaxY):
@@ -241,10 +264,10 @@ class Character(pygame.sprite.Sprite):
                     self.setNewPosition(newX, newY)
                     return True
             if (walkToIsland2):
-                cartMinX2, cartMinY2, cartMaxX2, cartMaxY2 = self.findOtherIslandCartesianBounds(cartesianBlockArray2)
+                cartMinX2, cartMinY2, cartMaxX2, cartMaxY2 = self.findOtherIslandCartesianBounds(variables.cartesianBlockArray2)
                 result = self.checkInIsland(cartMinX2, cartMinY2, cartMaxX2, cartMaxY2, newX, newY)
                 if (result):
-                    self.setNewCartBoundaries(cartesianBlockArray2)
+                    self.setNewCartBoundaries(variables.cartesianBlockArray2)
                     return True
             return False
         
@@ -274,7 +297,7 @@ class Character(pygame.sprite.Sprite):
             return True
     
     def canWalkAcrossBridge(self, newX, newY):
-        global walkToIsland2
+        # global walkToIsland2
         for sprite in bridgeSprites:
             # leftBottomCorner = sprite.rect.bottomleft + (0, -.25 * sprite.rect.height)
             # leftBottomX, leftBottomY = self.convertIsometricToCartesian(leftBottomCorner[0]
@@ -307,7 +330,7 @@ class Character(pygame.sprite.Sprite):
                 and newY < bridgeMaxY):
                 # ADJUST FOR OTHER ISLANDS
                 if (sprite.bridgeName == "1to2"):
-                    walkToIsland2 = True
+                    variables.walkToIsland2 = True
                 return True
         return False
     
@@ -389,6 +412,10 @@ class MainCharacter(Character):
         cartesianBlockArray, offsetX, offsetY, characterPosition = None):
         super().__init__(image, cellWidth, cellHeight, blockArray, 
             cartesianBlockArray, offsetX, offsetY, characterPosition)
+        self.totalIsoScrollX = 0
+        self.totalIsoScrollY = 0
+        self.totalCartScrollX = 0
+        self.totalCartScrollY = 0
 
     def collectIron(self):
         for sprite in ironSprites:
@@ -396,6 +423,18 @@ class MainCharacter(Character):
                 sprite.kill()
                 sprite.addIronToInventory()
                 score.pointsDict["iron collected"] += 1
+    
+    def addScroll(self, scrollX, scrollY):
+        # super().addScroll(scrollX, scrollY)
+        self.scrollX += scrollX
+        self.scrollY += scrollY
+        cartScrollX, cartScrollY = self.convertIsometricToCartesian(scrollX, scrollY)
+        self.cartScrollX += cartScrollX
+        self.cartScrollY += cartScrollY
+        self.totalIsoScrollX += scrollX
+        self.totalIsoScrollY += scrollX
+        self.totalCartScrollX += cartScrollX
+        self.totalCartScrollY += cartScrollY
 
 def createCharacter(image, charSprites, cellWidth, cellHeight, blockArray, 
     cartesianBlockArray, offsetX, offsetY, characterPosition = None):

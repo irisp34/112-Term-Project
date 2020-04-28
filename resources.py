@@ -31,7 +31,6 @@ class Resource(pygame.sprite.Sprite):
         self.rect.x, self.rect.y = inventorySpaces[space]
         self.rect.centerx = self.rect.x + self.barSpaceWidth / 2
         self.rect.centery = self.rect.y + self.barSpaceHeight / 2
-        print("log location", self.rect.x, self.rect.y)
 
     def getInventorySpaces(self):
         spaceTopCorners = []
@@ -71,16 +70,13 @@ class Resource(pygame.sprite.Sprite):
         # for sprite in resourceSprites:
         #     if (isinstance(sprite, classType)):
         #         sprite.amount = currCount
-        print("update", resourceSprites)
         currAmount = self.getAmount(classType)
         # currAmount = numResourceSprites(resource)
-        print("class", classType, "curramount", currAmount)
         for sprite in resourceSprites:
             if (isinstance(sprite, classType)):
                 sprite.amount = currAmount
     
     def getAmount(self, classType):
-        print("inget amount", resourceSprites)
         count = 0
         for sprite in resourceSprites:
             if (isinstance(sprite, classType)):

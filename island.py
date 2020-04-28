@@ -32,11 +32,9 @@ class Block(pygame.sprite.Sprite):
         # position of top left corner
         self.rect.x = posX
         self.rect.y = posY
-        # halfWidth = self.cellWidth // 2
-        # halfHeight = self.cellHeight // 2
-        # self.rect.centerx = self.rect.x + halfWidth
-        # self.rect.centery = self.rect.y + halfHeight
-    
+
+    # rotates the image and stretches the image to double its width to make it
+    # appear isometric
     def makeBlockIsometric(self, row, col):
         self.angle = 45
         self.image = pygame.transform.rotate(self.image, self.angle)
@@ -44,12 +42,18 @@ class Block(pygame.sprite.Sprite):
         self.image = self.scaleImage()
         self.convertCartesianToIsometric(row, col)
     
+    # converts the current cartesian coordinates of the block to their isometric
+    # form
     def convertCartesianToIsometric(self, row, col):
         halfWidth = self.cellWidth / 2
         halfHeight = self.cellHeight / 2
         self.rect.x = ((col - row) * halfWidth) + self.offsetX
         self.rect.y = ((row + col) * halfHeight) + self.offsetY
+        # self.rect.x += totalIsoScrollX
+        # self.rect.y += totalIsoScrollY
     
+    # the alternate function to transform the isometric coordinates to cartesian
+    # ones
     def convertIsometricToCartesian(self, isoX, isoY):
         cartesianX = (isoX + isoY * 2) / 2
         cartesianY = (2*isoY - isoX) / 2

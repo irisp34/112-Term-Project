@@ -25,19 +25,17 @@ def resetScroll(character):
     character.cartScrollX = 0
     character.cartScrollY = 0
 
-def scrollIslands(blockArray, scrollX, scrollY, character):
+def scrollIslands(blockArray, scrollX, scrollY):
     for row in range(blockArray.shape[0]):
         for col in range(blockArray.shape[1]):
             currBlock = blockArray[row, col]
-            if (character.justMoved):
-                currBlock.rect.x -= scrollX
-                currBlock.rect.y -= scrollY
+            currBlock.rect.x -= scrollX
+            currBlock.rect.y -= scrollY
 
-def scrollSprites(character, spriteGroup, scrollX, scrollY):
+def scrollSprites(spriteGroup, scrollX, scrollY):
     for sprite in spriteGroup:
-        if (character.justMoved):
-            sprite.rect.centerx -= scrollX
-            sprite.rect.centery -= scrollY
+        sprite.rect.centerx -= scrollX
+        sprite.rect.centery -= scrollY
 
 def scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrollY, character):
     # for sprite in charSprites:
@@ -50,20 +48,18 @@ def scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrol
     #     if (character.justMoved):
     #         sprite.rect.centerx -= scrollX
     #         sprite.rect.centery -= scrollY
-    scrollSprites(character, charSprites, scrollX, scrollY)
-    scrollSprites(character, treeSprites, scrollX, scrollY)
-    scrollSprites(character, ironSprites, scrollX, scrollY)
-    scrollSprites(character, bridgeSprites, scrollX, scrollY)
-    scrollSprites(character, enemySprites, scrollX, scrollY)
-    scrollSprites(character, buildingSprites, scrollX, scrollY)
+    if (character.justMoved):
+        scrollSprites(charSprites, scrollX, scrollY)
+        scrollSprites(treeSprites, scrollX, scrollY)
+        scrollSprites(ironSprites, scrollX, scrollY)
+        scrollSprites(bridgeSprites, scrollX, scrollY)
+        scrollSprites(enemySprites, scrollX, scrollY)
+        scrollSprites(buildingSprites, scrollX, scrollY)
     
-    scrollIslands(blockArray1, scrollX, scrollY, character)
-    # print("board bounds", getCartesianBoardBounds(cartesianBlockArray1))
-    scrollIslands(cartesianBlockArray1, cartScrollX, cartScrollY, character)
-    # print("board bounds after", getCartesianBoardBounds(cartesianBlockArray1))
-    # print("blockArray2")
-    scrollIslands(blockArray2, scrollX, scrollY, character)
-    scrollIslands(cartesianBlockArray2, cartScrollX, cartScrollY, character)
+        scrollIslands(blockArray1, scrollX, scrollY)
+        scrollIslands(cartesianBlockArray1, cartScrollX, cartScrollY)
+        scrollIslands(blockArray2, scrollX, scrollY)
+        scrollIslands(cartesianBlockArray2, cartScrollX, cartScrollY)
     character.justMoved = False
 
 
@@ -109,8 +105,6 @@ def redrawAll(character):
         drawBlockBorders(blockArray1)
         treeSprites.update()
         treeSprites.draw(screen)
-        charSprites.update()
-        charSprites.draw(screen)
         enemySprites.update()
         enemySprites.draw(screen)
         ironSprites.update()
@@ -118,6 +112,8 @@ def redrawAll(character):
         drawShopButton()
         buildingSprites.update()
         buildingSprites.draw(screen)
+        charSprites.update()
+        charSprites.draw(screen)
         drawInstructionsButton()
         score.displayScore()
 
@@ -139,7 +135,6 @@ def redrawAll(character):
         drawExitButton()
         # draws outline around selected item in shop
         if (drawOutline and keyword != None):
-            print("main keyword", keyword)
             minX, minY, maxX, maxY = purchasableItems[keyword]
             pygame.draw.rect(screen, (0, 52, 114), (minX, 
                 minY, maxX - minX, maxY - minY), 4)
@@ -218,10 +213,11 @@ def bridgeCount():
     return count
 
 def playGame():
-    # global isGameOver
-    # global isShopping
+    # global totalCartScrollX
+    # global totalCartScrollY
+    # global totalIsoScrollX
+    # global totalIsoScrollY
     pygame.init()
-    createIslands()
 
     # water picture from: http://igm-tuto.blogspot.com/2014/06/pixel-art-draw-water-background.html
     waterImage = pygame.image.load("water.png").convert_alpha()
@@ -229,8 +225,6 @@ def playGame():
     createWater(waterSprites, waterImage, rect)
     inventoryBar = Inventory()
     inventoryBarSprite.add(inventoryBar)
-    # characterX = None
-    # characterY = None
     characterPosition = None
     enemyPosition = None
     treeList1 = None
@@ -238,6 +232,8 @@ def playGame():
     ironList1 = None
     ironList2 = None
     farmList = None
+    factoryList = None
+    scrollValues = None
 
     # https://www.techcoil.com/blog/how-to-save-and-load-objects-to-and-from-file-in-python-via-facilities-from-the-pickle-module/
     if os.path.exists('resources.bin'):
@@ -281,14 +277,33 @@ def playGame():
                 ironList1 = resources['iron1']
                 ironList2 = resources['iron2']
                 farmList = resources["farm"]
+                factoryList = resources["factory"]
+                # variables.totalIsoScrollX = resources["totalScrolls"][0]
+                # variables.totalIsoScrollY = resources["totalScrolls"][1]
+                # variables.totalCartScrollX = resources["totalScrolls"][2]
+                # variables.totalCartScrollY = resources["totalScrolls"][3]
+                scrollValues = resources["totalScrolls"]
+
         except EOFError as error:
             print('ooops')
 
-# character picture from: https://ya-webdesign.com/imgdownload.html
+    createIslands()
+    if (scrollValues != None):
+        totalIsoScrollX = scrollValues[0]
+        totalIsoScrollY = scrollValues[1]
+        totalCartScrollX = scrollValues[2]
+        totalCartScrollY = scrollValues[3]
+        if (totalIsoScrollX != 0 or totalIsoScrollY != 0):
+            scrollIslands(blockArray1, totalIsoScrollX, totalIsoScrollY)
+            scrollIslands(cartesianBlockArray1, totalCartScrollX, totalCartScrollY)
+            scrollIslands(blockArray2, totalIsoScrollX, totalIsoScrollY)
+            scrollIslands(cartesianBlockArray2, totalCartScrollX, totalCartScrollY)
+
+    # character picture from: https://ya-webdesign.com/imgdownload.html
     character = createCharacter("character.png", charSprites, cellWidth, 
         cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1, characterPosition)
-    enemy = createEnemies(character, charSprites, cellWidth, 
-        cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1, enemyPosition)
+    # enemy = createEnemies(character, charSprites, cellWidth, 
+    #     cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1, enemyPosition)
     makeTrees(character, blockArray1, cartesianBlockArray1, inventoryBar,
         offsetX1, offsetY1, cellWidth, cellHeight, 6, 1, treeList1)
     makeTrees(character, blockArray2, cartesianBlockArray2, inventoryBar,
@@ -308,15 +323,23 @@ def playGame():
             farm = Farm(image, farmDict, blockArray1, cartesianBlockArray1,
                 offsetX1, offsetY1, cellWidth, cellHeight, 1, farmPos)
             buildingSprites.add(farm)
+    if (factoryList is not None):
+        image = "factory.png"
+        for factoryPos in factoryList:
+            factory = factory(image, factoryDict, blockArray1, cartesianBlockArray1,
+                offsetX1, offsetY1, cellWidth, cellHeight, 1, factoryPos)
+            buildingSprites.add(factory)
 
     createIronEvent = pygame.USEREVENT + 1
     createTreeEvent = pygame.USEREVENT + 2
     createEnemyEvent = pygame.USEREVENT + 3
     farmWoodEvent = pygame.USEREVENT + 4
+    factoryIronEvent = pygame.USEREVENT + 5
     pygame.time.set_timer(createIronEvent, 2000)
     pygame.time.set_timer(createTreeEvent, 1000)
     pygame.time.set_timer(createEnemyEvent, 3000)
     pygame.time.set_timer(farmWoodEvent, 3000)
+    pygame.time.set_timer(factoryIronEvent, 3000)
 
     clock = pygame.time.Clock()
     playing = True
@@ -352,15 +375,27 @@ def playGame():
                     if (isinstance(building, Farm)):
                         image = "tree.png"
                         location = (int(cellWidth * 1.5), int(cellHeight * 1.5))
-                        variables.isFarmProduction = True
+                        variables.isBuildingProduction = True
                         tree = Trees(image, character, blockArray1, cartesianBlockArray1,
                             inventoryBar, offsetX1, offsetY1, location, 1)
                         tree.addWoodToInventory()
-                        variables.isFarmProduction = False
-            elif (event.type == createEnemyEvent and not variables.isGameOver):
-                if (len(enemySprites) == 0):
-                    enemy = createEnemies(character, charSprites, cellWidth, cellHeight, 
-                        blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
+                        variables.isBuildingProduction = False
+
+            elif (event.type == factoryIronEvent and not variables.isGameOver):
+                for building in buildingSprites:
+                    if (isinstance(building, Factory)):
+                        image = "metalBar.png"
+                        location = (int(cellWidth * .6), int(cellHeight * .6))
+                        variables.isBuildingProduction = True
+                        iron = RawIron(image, character, blockArray1, 
+                            cartesianBlockArray1, inventoryBar,
+                            offsetX1, offsetY1, location, 1)
+                        iron.addIronToInventory()
+                        variables.isBuildingProduction = False
+            # elif (event.type == createEnemyEvent and not variables.isGameOver):
+            #     if (len(enemySprites) == 0):
+            #         enemy = createEnemies(character, charSprites, cellWidth, cellHeight, 
+            #             blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
             # elif (event.type == pygame.K_SPACE and isGameOver):
             #     print("HERE")
             #     isGameOver = False
@@ -421,6 +456,9 @@ def playGame():
         enemyDic['cartScrollX'] = enemy.cartScrollX
         enemyDic['cartScrollY'] = enemy.cartScrollY
         resources['enemy'] = enemyDic
+        scrollList = [character.totalIsoScrollX, character.totalIsoScrollY, 
+            character.totalCartScrollX, character.totalCartScrollY]
+        resources["totalScrolls"] = scrollList
 
         treeList1 = []
         resources['trees1'] = treeList1
@@ -438,18 +476,28 @@ def playGame():
             treeDic['col'] = tree.col
 
         farmList = []
+        factoryList = []
         resources['farm'] = farmList
+        resources["factory"] = factoryList
         # treeList2 = []
         # resources['trees2'] = treeList2
-        for farm in buildingSprites:
-            if (isinstance(farm, Farm)):
+        for sprite in buildingSprites:
+            if (isinstance(sprite, Farm)):
                 farmDic = dict()
-                if (farm.island == 1):
+                if (sprite.island == 1):
                     farmList.append(farmDic)
-                farmDic['x'] = farm.rect.centerx
-                farmDic['y'] = farm.rect.centery
-                farmDic['row'] = farm.row
-                farmDic['col'] = farm.col
+                farmDic['x'] = sprite.rect.centerx
+                farmDic['y'] = sprite.rect.centery
+                farmDic['row'] = sprite.row
+                farmDic['col'] = sprite.col
+            elif (isinstance(sprite, Factory)):
+                factoryDic = dict()
+                if (sprite.island == 1):
+                    factoryList.append(factoryDic)
+                factoryDic['x'] = sprite.rect.centerx
+                factoryDic['y'] = sprite.rect.centery
+                factoryDic['row'] = sprite.row
+                factoryDic['col'] = sprite.col
 
         ironList1 = []
         resources['iron1'] = ironList1

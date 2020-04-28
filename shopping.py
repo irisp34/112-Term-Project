@@ -14,6 +14,7 @@ def createShop():
     addBridgeToShop(bridgeDict)
     addHammerToShop(hammerDict)
     addFarmToShop(farmDict)
+    addFactoryToShop(factoryDict)
 
 def scaleImage(image, location):
     image = pygame.transform.scale(image, location)
@@ -72,13 +73,28 @@ def addFarmToShop(farmDict):
     location = (int(farmRect.width * .5), int(farmRect.height * .5))
     farm, farmRect = scaleImage(farm, location)
     farmRect.x = baseX + betweenItemsOffset + 350
-    farmRect.y = baseY + betweenItemsOffset
+    farmRect.y = baseY + betweenItemsOffset - 20
     minX, minY = farmRect.x, farmRect.y
     maxX, maxY = farmRect.bottomright[0], farmRect.bottomright[1]
     purchasableItems["farm"] = (minX, minY, maxX, maxY)
     screen.blit(farm, (farmRect.x, farmRect.y))
     createCostCaption(farmDict, farmRect)
     return farm, farmRect
+
+def addFactoryToShop(factoryDict):
+    # factory picture from: https://design.tutsplus.com/tutorials/how-to-create-an-isometric-pixel-art-factory-in-adobe-photoshop--cms-25351
+    factory = pygame.image.load("factory1.png").convert_alpha()
+    factoryRect = factory.get_rect()
+    location = (int(factoryRect.width * .2), int(factoryRect.height * .2))
+    factory, factoryRect = scaleImage(factory, location)
+    factoryRect.x = baseX + betweenItemsOffset + 610
+    factoryRect.y = baseY + betweenItemsOffset - 65
+    minX, minY = factoryRect.x, factoryRect.y
+    maxX, maxY = factoryRect.bottomright[0], factoryRect.bottomright[1]
+    purchasableItems["factory"] = (minX, minY, maxX, maxY)
+    screen.blit(factory, (factoryRect.x, factoryRect.y))
+    createCostCaption(factoryDict, factoryRect)
+    return factory, factoryRect
 
 # loops through all the purchasable items to detect which item the user has
 # clicked on. 
@@ -188,10 +204,18 @@ def createBoughtItem(keyword, inventoryBar):
         score.pointsDict["hammers created"] += 1
     elif (keyword == "farm"):
         image = "farm.png"
+        location = (int(cellWidth * 1.5), int(cellHeight * 1.25))
         farm = Farm(image, farmDict, blockArray1, cartesianBlockArray1,
-            offsetX1, offsetY1, cellWidth, cellHeight, 1)
+            offsetX1, offsetY1, cellWidth, cellHeight, location, 1)
         buildingSprites.add(farm)
         score.pointsDict["farms built"] += 1
+    elif (keyword == "factory"):
+        image = "factory1.png"
+        location = (int(cellWidth * 1.25), int(cellHeight * 1.75))
+        factory = Factory(image, farmDict, blockArray1, cartesianBlockArray1,
+            offsetX1, offsetY1, cellWidth, cellHeight, location, 1)
+        buildingSprites.add(factory)
+        score.pointsDict["factories built"] += 1
 
 # takes out resource sprites out of inventory to pay for items
 def subtractResources(keyword):
@@ -224,7 +248,7 @@ def subtractResources(keyword):
         for sprite in resourceSprites:
             if (woodCount == farmDict["wood"] and hammerCount == farmDict["hammer"]):
                 sprite.updateAmount(Wood)
-                sprite.updateAmount(Iron)
+                sprite.updateAmount(Hammer)
                 return
             elif (isinstance(sprite, Wood) and woodCount != farmDict["wood"]):
                 woodCount += 1
@@ -232,7 +256,26 @@ def subtractResources(keyword):
             elif (isinstance(sprite, Hammer) and hammerCount != farmDict["hammer"]):
                 hammerCount += 1
                 sprite.kill()
-            
+    elif (keyword == "factory"):
+        woodCount = 0
+        hammerCount = 0
+        ironCount = 0 
+        for sprite in resourceSprites:
+            if (woodCount == factoryDict["wood"] and hammerCount == factoryDict["hammer"]
+                and ironCount == factoryDict["iron"]):
+                sprite.updateAmount(Wood)
+                sprite.updateAmount(Iron)
+                sprite.updateAmount(Hammer)
+                return
+            elif (isinstance(sprite, Wood) and woodCount != factoryDict["wood"]):
+                woodCount += 1
+                sprite.kill()
+            elif (isinstance(sprite, Hammer) and hammerCount != factoryDict["hammer"]):
+                hammerCount += 1
+                sprite.kill()
+            elif (isinstance(sprite, Iron) and ironCount != factoryDict["iron"]):
+                ironCount += 1
+                sprite.kill()
 
 # checks if you can afford the thing you are trying to buy by checking how many
 # types of a resource sprite you have
@@ -246,6 +289,8 @@ def affordable(keyword):
         currDict = hammerDict
     elif (keyword == "farm"):
         currDict = farmDict
+    elif (keyword == "factory"):
+        currDict = factoryDict
     for key in currDict:
         if (numResourceSprites(key) < currDict[key]):
             return False

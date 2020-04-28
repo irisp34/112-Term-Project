@@ -11,11 +11,7 @@ pointsDict["enemies killed"] = 0
 pointsDict["bridges built"] = 0
 pointsDict["hammers created"] = 0
 pointsDict["farms built"] = 0
-# ironCollected = 0
-# enemiesKilled = 0
-# bridgesBuilt = 0
-# hammersCreated = 0
-# farmsBuilt = 0
+pointsDict["factories built"] = 0
 
 def calculateScore():
     treePoints = pointsDict["trees collected"] * 2
@@ -24,8 +20,9 @@ def calculateScore():
     bridgePoints = pointsDict["bridges built"] * 15
     hammerPoints = pointsDict["hammers created"] * 3
     farmPoints = pointsDict["farms built"] * 20
+    factoryPoints = pointsDict["factories built"] * 25
     allPoints = (treePoints + ironPoints + enemyPoints + bridgePoints + hammerPoints
-        + farmPoints)
+        + farmPoints + factoryPoints)
     return allPoints
 
 def displayScore():

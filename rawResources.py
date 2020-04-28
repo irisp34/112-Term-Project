@@ -35,7 +35,7 @@ class RawResources(pygame.sprite.Sprite):
             self.col = position['col']
             self.block = blockArray[self.row, self.col]
             self.block.isEmpty = False
-        elif (not variables.isFarmProduction):
+        elif (not variables.isBuildingProduction):
             self.rect.centerx, self.rect.centery, self.row, self.col, self.block = self.getRandomBoardCenter(self.blockArray)
         self.originalX, self.originalY = self.rect.centerx, self.rect.centery
         # self.adjustBlockCenter()
@@ -190,7 +190,8 @@ class RawIron(RawResources):
         return centerX, centerY
 
     def addIronToInventory(self):
-        self.block.isEmpty = True
+        if (not variables.isBuildingProduction):
+            self.block.isEmpty = True
         # picture from: http://iconbug.com/detail/icon/8273/minecraft-iron-ingot/
         ironImage = "metalBar.png"
         ironResource = resources.Iron(ironImage, "Iron", 2, self.inventoryBar)

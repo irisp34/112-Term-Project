@@ -6,7 +6,7 @@ import random
 
 class Building(pygame.sprite.Sprite):
     def __init__(self, image, blockArray, cartesianBlockArray, offsetX, offsetY,
-        cellWidth, cellHeight, island, position = None):
+        cellWidth, cellHeight, location, island, position = None):
         super().__init__()
         self.blockArray = blockArray
         self.cartBlockArray = cartesianBlockArray
@@ -17,8 +17,8 @@ class Building(pygame.sprite.Sprite):
         self.island = island
         self.image = pygame.image.load(image).convert_alpha()
         self.rect = self.image.get_rect()
-        scaleLocation = (int(self.boardCellWidth * 1.75), int(self.boardCellHeight * 1.25))
-        self.image, self.rect = self.scaleImage(self.image, self.rect, scaleLocation)
+        self.scaleLocation = location
+        self.image, self.rect = self.scaleImage(self.image, self.rect, self.scaleLocation)
         self.findCartesianBounds(self.cartBlockArray)
         if (position is not None):
             self.rect.centerx = position['x']
@@ -48,10 +48,10 @@ class Building(pygame.sprite.Sprite):
         return randRow, randCol
     
     def findBlockCenter(self, block):
-        # centerX = (block.rect.centerx + block.rect.midtop[0]) / 2
-        # centerY = (block.rect.centery + block.rect.midtop[1]) / 2
-        centerX = (block.rect.centerx)
-        centerY = (block.rect.centery)
+        centerX = (block.rect.centerx + block.rect.midtop[0]) / 2
+        centerY = (block.rect.centery + block.rect.midtop[1]) / 2
+        # centerX = (block.rect.centerx)
+        # centerY = (block.rect.centery)
         return centerX, centerY
 
     def convertIsometricToCartesian(self, isoX, isoY):
@@ -86,4 +86,18 @@ class Farm(Building):
         super().__init__(image, blockArray, cartesianBlockArray, offsetX, offsetY, 
             cellWidth, cellHeight, island, position)
         self.resoureDict = resourceDict
+
+class Factory(Building):
+    def __init__(self, image, resourceDict, blockArray, cartesianBlockArray, 
+        offsetX, offsetY, cellWidth, cellHeight, island, position = None):
+        super().__init__(image, blockArray, cartesianBlockArray, offsetX, offsetY, 
+            cellWidth, cellHeight, island, position)
+        self.resoureDict = resourceDict
+
+    def findBlockCenter(self, block):
+        centerX = (block.rect.centerx + block.rect.midtop[0]) / 2
+        centerY = (block.rect.centery + block.rect.midtop[1]) / 2
+        # centerX = (block.rect.centerx)
+        # centerY = (block.rect.centery)
+        return centerX, centerY
         

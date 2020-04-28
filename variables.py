@@ -40,7 +40,7 @@ buyImage = None
 buyButtonRect = 0
 isShopping = False
 purchasableItems = dict()
-betweenItemsOffset = 30
+betweenItemsOffset = 75
 drawOutline = False
 drawUnaffordableMessage = False
 isGameOver = False
@@ -67,12 +67,18 @@ hammerDict["iron"] = 1
 farmDict = dict()
 farmDict["wood"] = 4
 farmDict["hammer"] = 1
-isFarmProduction = False
+factoryDict = dict()
+factoryDict["wood"] = 3
+factoryDict["iron"] = 5
+factoryDict["hammer"] = 1
+
+isBuildingProduction = False
 # place board in center of screen
 offsetX1 = (width // 2) - startX
 offsetY1 = (height // 2) - startY
 offsetX2 = 0
 offsetY2 = 0
+
 
 walkToIsland2 = False
 
