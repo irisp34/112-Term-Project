@@ -302,8 +302,8 @@ def playGame():
     # character picture from: https://ya-webdesign.com/imgdownload.html
     character = createCharacter("character.png", charSprites, cellWidth, 
         cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1, characterPosition)
-    # enemy = createEnemies(character, charSprites, cellWidth, 
-    #     cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1, enemyPosition)
+    enemy = createEnemies(character, charSprites, cellWidth, 
+        cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1, enemyPosition)
     makeTrees(character, blockArray1, cartesianBlockArray1, inventoryBar,
         offsetX1, offsetY1, cellWidth, cellHeight, 6, 1, treeList1)
     makeTrees(character, blockArray2, cartesianBlockArray2, inventoryBar,
@@ -318,16 +318,20 @@ def playGame():
             placeIron(character, blockArray2, cartesianBlockArray2, 
                 inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight, 2, iron)
     if (farmList is not None):
+        # picture cited in shopping.py
         image = "farm.png"
+        location = (int(cellWidth * 1.5), int(cellHeight * 1.25))
         for farmPos in farmList:
             farm = Farm(image, farmDict, blockArray1, cartesianBlockArray1,
-                offsetX1, offsetY1, cellWidth, cellHeight, 1, farmPos)
+                offsetX1, offsetY1, cellWidth, cellHeight, location, 1, farmPos)
             buildingSprites.add(farm)
     if (factoryList is not None):
-        image = "factory.png"
+        # picture cited in shopping.py
+        image = "factory1.png"
+        location = (int(cellWidth * 1.25), int(cellHeight * 1.75))
         for factoryPos in factoryList:
-            factory = factory(image, factoryDict, blockArray1, cartesianBlockArray1,
-                offsetX1, offsetY1, cellWidth, cellHeight, 1, factoryPos)
+            factory = Factory(image, factoryDict, blockArray1, cartesianBlockArray1,
+                offsetX1, offsetY1, cellWidth, cellHeight, location, 1, factoryPos)
             buildingSprites.add(factory)
 
     createIronEvent = pygame.USEREVENT + 1
@@ -392,10 +396,10 @@ def playGame():
                             offsetX1, offsetY1, location, 1)
                         iron.addIronToInventory()
                         variables.isBuildingProduction = False
-            # elif (event.type == createEnemyEvent and not variables.isGameOver):
-            #     if (len(enemySprites) == 0):
-            #         enemy = createEnemies(character, charSprites, cellWidth, cellHeight, 
-            #             blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
+            elif (event.type == createEnemyEvent and not variables.isGameOver):
+                if (len(enemySprites) == 0):
+                    enemy = createEnemies(character, charSprites, cellWidth, cellHeight, 
+                        blockArray1, cartesianBlockArray1, offsetX1, offsetY1)
             # elif (event.type == pygame.K_SPACE and isGameOver):
             #     print("HERE")
             #     isGameOver = False

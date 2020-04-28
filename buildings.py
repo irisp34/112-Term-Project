@@ -82,16 +82,16 @@ class Building(pygame.sprite.Sprite):
 
 class Farm(Building):
     def __init__(self, image, resourceDict, blockArray, cartesianBlockArray, 
-        offsetX, offsetY, cellWidth, cellHeight, island, position = None):
+        offsetX, offsetY, cellWidth, cellHeight, location, island, position = None):
         super().__init__(image, blockArray, cartesianBlockArray, offsetX, offsetY, 
-            cellWidth, cellHeight, island, position)
+            cellWidth, cellHeight, location, island, position)
         self.resoureDict = resourceDict
 
 class Factory(Building):
     def __init__(self, image, resourceDict, blockArray, cartesianBlockArray, 
-        offsetX, offsetY, cellWidth, cellHeight, island, position = None):
+        offsetX, offsetY, cellWidth, cellHeight, location, island, position = None):
         super().__init__(image, blockArray, cartesianBlockArray, offsetX, offsetY, 
-            cellWidth, cellHeight, island, position)
+            cellWidth, cellHeight, location, island, position)
         self.resoureDict = resourceDict
 
     def findBlockCenter(self, block):
