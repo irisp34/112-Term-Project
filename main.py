@@ -113,17 +113,17 @@ def redrawAll(character):
         drawInstructionsButton()
         score.displayScore()
 
-        for sprite in bridgeSprites:
-            pygame.draw.polygon(screen, (255, 0, 255), (sprite.rect.topright, 
-                sprite.rect.topleft, sprite.rect.bottomleft, sprite.rect.bottomright), 4)
+        # for sprite in bridgeSprites:
+        #     pygame.draw.polygon(screen, (255, 0, 255), (sprite.rect.topright, 
+        #         sprite.rect.topleft, sprite.rect.bottomleft, sprite.rect.bottomright), 4)
         drawOutline = False
         drawUnaffordableMessage = False
-        for sprite in charSprites:
-            pygame.draw.polygon(screen, (155, 0, 255), (sprite.rect.topright, 
-                sprite.rect.topleft, sprite.rect.bottomleft, sprite.rect.bottomright), 4)
-        for sprite in enemySprites:
-            pygame.draw.polygon(screen, (155, 0, 255), (sprite.rect.topright, 
-                sprite.rect.topleft, sprite.rect.bottomleft, sprite.rect.bottomright), 4)
+        # for sprite in charSprites:
+        #     pygame.draw.polygon(screen, (155, 0, 255), (sprite.rect.topright, 
+        #         sprite.rect.topleft, sprite.rect.bottomleft, sprite.rect.bottomright), 4)
+        # for sprite in enemySprites:
+        #     pygame.draw.polygon(screen, (155, 0, 255), (sprite.rect.topright, 
+        #         sprite.rect.topleft, sprite.rect.bottomleft, sprite.rect.bottomright), 4)
     # shop mode
     else:
         createShop()
@@ -294,9 +294,9 @@ def playGame():
     enemy = createEnemies(character, charSprites, cellWidth, 
         cellHeight, blockArray1, cartesianBlockArray1, offsetX1, offsetY1, enemyPosition)
     makeTrees(character, blockArray1, cartesianBlockArray1, inventoryBar,
-        offsetX1, offsetY1, cellWidth, cellHeight, 6, 1, treeList1)
+        offsetX1, offsetY1, cellWidth, cellHeight, 8, 1, treeList1)
     makeTrees(character, blockArray2, cartesianBlockArray2, inventoryBar,
-      offsetX1, offsetY1, cellWidth, cellHeight, 5, 2, treeList2)
+      offsetX1, offsetY1, cellWidth, cellHeight, 8, 2, treeList2)
     
     # places any buildings or resources from the saved version of the game
     if (ironList1 is not None):
@@ -363,7 +363,7 @@ def playGame():
                 if (treeCount1 < 3):
                     makeTrees(character, blockArray1, cartesianBlockArray1, 
                         inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight, 1, 1)
-                elif (treeCount2 < 3):
+                elif (treeCount2 < 5):
                     makeTrees(character, blockArray1, cartesianBlockArray1, 
                         inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight, 1, 2)
             # for each Farm that is built, wood will automatically be produced

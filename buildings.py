@@ -43,8 +43,8 @@ class Building(pygame.sprite.Sprite):
         self.cartMaxY = cartBoard[3][1]
     
     def pickRandomRowAndCol(self, boardRows, boardCols):
-        randRow = random.randint(0, boardRows - 1)
-        randCol = random.randint(0, boardCols - 1)
+        randRow = random.randint(0, boardRows - 2)
+        randCol = random.randint(0, boardCols - 2)
         return randRow, randCol
     
     def findBlockCenter(self, block):

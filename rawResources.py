@@ -28,6 +28,7 @@ class RawResources(pygame.sprite.Sprite):
         self.scaleLocation = scaleLocation
         self.image, self.rect = self.scaleImage(self.image, self.rect, self.scaleLocation)
         self.findCartesianBounds(self.cartBlockArray)
+        # self.findCartesianBounds(variables.cartesianBlockArray1)
         if (position is not None):
             self.rect.centerx = position['x']
             self.rect.centery = position['y']
@@ -130,13 +131,13 @@ class Trees(RawResources):
         posX, posY = self.convertIsometricToCartesian(posX - self.offsetX, posY - self.offsetY)
         posX += startX - (self.boardCellWidth / 2)
         posY += startY + (self.boardCellHeight / 2)
-        # print("clicked raw resources", posX, posY)
-        # print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
+        print("clicked raw resources", posX, posY)
+        print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
         a1 = posX < self.cartMinX
         a2 = posX > self.cartMaxX
         a3 = posY < self.cartMinY
         a4 = posY > self.cartMaxY
-        # print("FIRST If less x", a1, "more x", a2, "less y", a3, "more y", a4)
+        print("FIRST If less x", a1, "more x", a2, "less y", a3, "more y", a4)
         a = a1 or a2 or a3 or a4
         if (posX < self.cartMinX or posX > self.cartMaxX or posY < self.cartMinY or posY > self.cartMaxY):
             return
@@ -148,13 +149,13 @@ class Trees(RawResources):
         cellMaxX = treeX + self.boardCellWidth / 2
         cellMinY = treeY - self.boardCellHeight / 2
         cellMaxY = treeY + self.boardCellHeight / 2
-        # print("cell mins and maxs", cellMinX, cellMinY, cellMaxX, cellMaxY)
-        # print("more x", posX >= cellMinX, "less x", posX <= cellMaxX, "more y", 
-        #     posY >= cellMinY, "less y", posY <= cellMaxY)
+        print("cell mins and maxs", cellMinX, cellMinY, cellMaxX, cellMaxY)
+        print("more x", posX >= cellMinX, "less x", posX <= cellMaxX, "more y", 
+            posY >= cellMinY, "less y", posY <= cellMaxY)
         if (posX >= cellMinX and posX <= cellMaxX and posY >= cellMinY and
             posY <= cellMaxY):
-            self.kill()
             self.block.isEmpty = True
+            self.kill()
             self.addWoodToInventory()
             score.pointsDict["trees collected"] += 1
             return True

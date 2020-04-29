@@ -1,4 +1,4 @@
-# stores all the global variables which influences the look of the grid
+# stores all the variables which influences the world generation
 import pygame
 import numpy as np
 
@@ -11,12 +11,10 @@ cellWidth = 50
 cellHeight = 50
 startX = 100
 startY = 100
-# startX = 0
-# startY = 0
-# blockRows = 10
-# blockCols = 10
-blockRows = 4
-blockCols = 4
+blockRows = 10
+blockCols = 10
+# blockRows = 4
+# blockCols = 4
 
 blockArray1 = np.empty(shape=(blockRows, blockCols), dtype = object)
 cartesianBlockArray1 = np.empty(shape=(blockRows, blockCols), dtype = object)
@@ -55,12 +53,8 @@ keyword = None
 baseX = 100
 baseY = 100
 # various resource costs
-# bridgeCost = 3
-# bridgeResource = "wood"
 bridgeDict = dict()
 bridgeDict["wood"] = 3
-# hammerCosts = [1, 1]
-# hammerResources = ["wood", "iron"]
 hammerDict = dict()
 hammerDict["wood"] = 1
 hammerDict["iron"] = 1
