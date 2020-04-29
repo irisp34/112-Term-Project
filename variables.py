@@ -78,7 +78,7 @@ offsetX1 = (width // 2) - startX
 offsetY1 = (height // 2) - startY
 offsetX2 = 0
 offsetY2 = 0
-
+isNewGame = True
 
 walkToIsland2 = False
 

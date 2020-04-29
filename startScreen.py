@@ -11,7 +11,10 @@ def drawStartScreen():
     textCenterX = width // 2
     textCenterY = height // 2
     createText("Game Title", textCenterX, textCenterY, 40)
-    drawStartButton()
+    if (variables.isNewGame):
+        drawStartButton()
+    else:
+        drawContinueButton()
     drawInstructionsButton()
 
 def startButtonInfo():
@@ -28,6 +31,21 @@ def startButtonInfo():
 def drawStartButton():
     startImage, startButtonRect = startButtonInfo()
     screen.blit(startImage, (startButtonRect.x, startButtonRect.y))
+
+def continueButtonInfo():
+    # pic from: http://pixelartmaker.com/art/6f07b2c253f4fd6
+    continueImage = pygame.image.load("continueButton.png").convert_alpha()
+    continueButtonRect = continueImage.get_rect()
+    location = (int(continueButtonRect.width * .4), int(continueButtonRect.height * .4))
+    continueImage = pygame.transform.scale(continueImage, location)
+    continueButtonRect = continueImage.get_rect()
+    continueButtonRect.x = width // 2 - continueButtonRect.width // 2
+    continueButtonRect.y = height - 260
+    return continueImage, continueButtonRect
+
+def drawContinueButton():
+    continueImage, continueButtonRect = continueButtonInfo()
+    screen.blit(continueImage, (continueButtonRect.x, continueButtonRect.y))
 
 def instructionsButtonInfo():
     # pic from: http://pixelartmaker.com/art/5ec3a229d482e70
@@ -127,21 +145,29 @@ def endInstructionsScreen(event):
 def endStartScreen(event):
     startImage, startButtonRect = startButtonInfo()
     instructionsImage, instructionsButtonRect = instructionsButtonInfo()
+    continueImage, continueButtonRect = continueButtonInfo()
     posX, posY = event.pos
     startMinX, startMinY = startButtonRect.x, startButtonRect.y
     startMaxX, startMaxY = startButtonRect.bottomright[0], startButtonRect.bottomright[1]
     instructionsMinX, instructionsMinY = instructionsButtonRect.x, instructionsButtonRect.y
     instructionsMaxX, instructionsMaxY = (instructionsButtonRect.bottomright[0],
         instructionsButtonRect.bottomright[1])
+    continueMinX, continueMinY = continueButtonRect.x, continueButtonRect.y
+    continueMaxX, continueMaxY = continueButtonRect.bottomright[0], continueButtonRect.bottomright[1]
     isInStartBounds = (posX >= startMinX and posX <= startMaxX 
         and posY >= startMinY and posY <= startMaxY)
     isInInstructionsBounds = (posX >= instructionsMinX and posX <= instructionsMaxX 
         and posY >= instructionsMinY and posY <= instructionsMaxY)
-    print("in instructiosn bound", isInInstructionsBounds)
-    if (isInStartBounds):
-        variables.isSplashScreen = False
-    elif (isInInstructionsBounds):
-        # print("set instructions to true")
+    isInContinueBounds = (posX >= continueMinX and posX <= continueMaxX 
+        and posY >= continueMinY and posY <= continueMaxY)
+    if (isInInstructionsBounds):
         variables.isSplashScreen = False
         variables.isInstructionsScreen = True
         variables.startInstructionsButton = True
+    elif (variables.isNewGame):
+        if (isInStartBounds):
+            variables.isSplashScreen = False
+    else:
+        if (isInContinueBounds):
+            variables.isSplashScreen = False
+    

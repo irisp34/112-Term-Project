@@ -227,6 +227,7 @@ def playGame():
     # last iteration of the game, this is skipped
     # https://www.techcoil.com/blog/how-to-save-and-load-objects-to-and-from-file-in-python-via-facilities-from-the-pickle-module/
     if os.path.exists('resources.bin'):
+        variables.isNewGame = False
         try:
             with open('resources.bin', 'rb') as resourcefile:
                 resources = pickle.load(resourcefile)
