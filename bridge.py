@@ -1,3 +1,6 @@
+# Bridge class creates the bridges and places them appropriately between the
+# two islands
+
 import pygame
 import numpy as np
 from variables import *
@@ -9,12 +12,8 @@ class Bridge(pygame.sprite.Sprite):
         self.bridgeDict = bridgeDict
         #bridge picture: http://pixelartmaker.com/art/4bc6db1c50b02fc
         self.image = pygame.image.load("bridge.png").convert_alpha()
-        # self.image.set_colorkey((255,255,255))
         self.rect = self.image.get_rect()
-        #change to fit all islands
-        #angle for 4 blocks
-        self.angle = 35
-        #angle for 10
+        #angle for 10 x 10
         self.angle = 30
         self.boardCellWidth = cellWidth
         self.boardCellHeight = cellHeight
@@ -29,10 +28,15 @@ class Bridge(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, location)
         self.rect = self.image.get_rect()
     
+    # rotates the given image by a certain angle
     def rotateImage(self):
         self.image = pygame.transform.rotate(self.image, self.angle)
         self.rect = self.image.get_rect()
 
+    # Finds the correct location of where the bridge is supposed to be based
+    # on the offsets provided
+    # Note: optimized for more islands, but did not get a chance to add more due
+    # to time constraint
     def findIslandRowAndCol(self):
         originRow = 0
         originCol = 0
@@ -55,25 +59,19 @@ class Bridge(pygame.sprite.Sprite):
         isDownLeft = ((offsetX1 > offsetX2 and offsetY1 < offsetY2) or
             (offsetX1 == offsetX2 and offsetY1 < offsetY2))
         isDownRight = (offsetX1 < offsetX2 and offsetY1 < offsetY2)
-        print("which offset", isUpLeft, isUpRight, isDownLeft, isDownRight)
         if (isUpLeft):
             originRow = blockRows1 // 2
             originCol = 0
             destinationRow = blockRows2 // 2
             destinationCol = blockCols2
-            print(self.blockArray1[blockRows1, 0].rect.topright[0])
-            print(self.blockArray2[blockRows2, blockCols2].rect.topright[0])
             locationX = abs(self.blockArray1[blockRows1, 0].rect.topright[0] - 
                 self.blockArray2[blockRows2, blockCols2].rect.topright[0])
             self.bridgeName = "1to5"
         elif (isUpRight):
-            print("here")
             originRow = 0
             originCol = blockCols1 // 2
             destinationRow = blockRows2
             destinationCol = blockCols2 // 2
-            print(self.blockArray1[0, blockCols1].rect.topright[0])
-            print(self.blockArray2[blockRows2, blockCols2].rect.topright[0])
             locationX = abs(self.blockArray1[0, blockCols1].rect.topright[0] - 
                 self.blockArray2[blockRows2, blockCols2].rect.topright[0])
             self.bridgeName = "1to2"
@@ -96,6 +94,8 @@ class Bridge(pygame.sprite.Sprite):
         self.scaleImage(locationX)
         return originRow, originCol, destinationRow, destinationCol
 
+    # adjusts the coordinates of the bridge to where it should be relative to 
+    # islands
     def setBridgeCoordinates(self):
         originRow, originCol, destinationRow, destinationCol = self.findIslandRowAndCol()
         originBlock = self.blockArray1[originRow, originCol]
@@ -104,6 +104,3 @@ class Bridge(pygame.sprite.Sprite):
         assignX = (originBlock.rect.bottomright[0] + originBlock.rect.bottomleft[0]) / 2
         assignY = originBlock.rect.bottomright[1]
         self.rect.bottomleft = assignX, assignY
-        # self.rect.midbottom = originBlock.rect.centerx, originBlock.rect.centery
-        print("rect left", self.rect.bottomleft, "origin center", originBlock.rect.center)
-

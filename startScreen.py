@@ -1,8 +1,13 @@
+# draws all instruction screens and start screens and controls which buttons
+# are drawn when (such as start vs continue buttons)
+# also detects when the user clicks one of these buttons to end the splash screens
+
 import pygame
 import numpy as np
 import variables
 from shopping import*
 
+# draws the start screen environment (background and buttons)
 def drawStartScreen():
     pygame.draw.rect(screen, (163, 196, 220), (baseX, baseY, width - baseX * 2, 
         height - baseY * 2))
@@ -10,13 +15,14 @@ def drawStartScreen():
         height - baseY * 2), 4)
     textCenterX = width // 2
     textCenterY = height // 2
-    createText("Game Title", textCenterX, textCenterY, 40)
+    createText("Townlet Enigma", textCenterX, textCenterY, 40)
     if (variables.isNewGame):
         drawStartButton()
     else:
         drawContinueButton()
     drawInstructionsButton()
 
+# image and rect information for the start button
 def startButtonInfo():
     # pic from: http://pixelartmaker.com/art/6f07b2c253f4fd6
     startImage = pygame.image.load("startButton.png").convert_alpha()
@@ -28,12 +34,13 @@ def startButtonInfo():
     startButtonRect.y = height - 260
     return startImage, startButtonRect
 
+# draws the start button on the screen
 def drawStartButton():
     startImage, startButtonRect = startButtonInfo()
     screen.blit(startImage, (startButtonRect.x, startButtonRect.y))
 
 def continueButtonInfo():
-    # pic from: http://pixelartmaker.com/art/6f07b2c253f4fd6
+    # pic from: http://pixelartmaker.com/gallery?after=909575
     continueImage = pygame.image.load("continueButton.png").convert_alpha()
     continueButtonRect = continueImage.get_rect()
     location = (int(continueButtonRect.width * .4), int(continueButtonRect.height * .4))
@@ -47,6 +54,8 @@ def drawContinueButton():
     continueImage, continueButtonRect = continueButtonInfo()
     screen.blit(continueImage, (continueButtonRect.x, continueButtonRect.y))
 
+# draws the instructions button in different places depending on which screen
+# the user is on
 def instructionsButtonInfo():
     # pic from: http://pixelartmaker.com/art/5ec3a229d482e70
     instructionsImage = pygame.image.load("instructionsButton.png").convert_alpha()
@@ -84,6 +93,8 @@ def drawBackButton():
     backImage, backButtonRect = backButtonInfo()
     screen.blit(backImage, (backButtonRect.x, backButtonRect.y))
 
+# generates appropriate text based on the caption, the center of the text, and
+# the text size
 def createText(caption, textCenterX, textCenterY, fontSize):
     font = pygame.font.Font('freesansbold.ttf', fontSize)
     text = font.render(caption, True, (0, 0, 0))
@@ -92,6 +103,9 @@ def createText(caption, textCenterX, textCenterY, fontSize):
     textRect.centery = textCenterY
     screen.blit(text, textRect)
 
+# creates text for the instructions screen. It draws the back button if the user
+# came from the start screen and the exit button if they are coming from the 
+# main game screen
 def drawInstructionsScreen():
     pygame.draw.rect(screen, (163, 196, 220), (baseX, baseY, width - baseX * 2, 
         height - baseY * 2))
@@ -105,11 +119,14 @@ def drawInstructionsScreen():
     createText("Click on trees to collect them", textCenterX, textCenterY + 50, 24)
     createText("Click on enemies to kill them", textCenterX, textCenterY + 100, 24)
     createText("Game over if you bump into them!", textCenterX, textCenterY + 150, 24)
+    createText("Tip: factories and farms will produce resources for you", 
+        textCenterX, textCenterY + 200, 24)
     if (variables.mainInstructionsButton):
         drawExitButton()
     elif (variables.startInstructionsButton):
         drawBackButton()
 
+# checks to see if a mouse click falls in the instructions rect
 def beginInstructionsScreen(event):
     instructionsImage, instructionsButtonRect = instructionsButtonInfo()
     posX, posY = event.pos
@@ -122,6 +139,8 @@ def beginInstructionsScreen(event):
         variables.isInstructionsScreen = True
         variables.mainInstructionsButton = True
 
+# checks to see if the user's mouse click should take them away from the
+# instructions screen
 def endInstructionsScreen(event):
     exitImage, exitButtonRect = exitButtonInfo()
     backImage, backButtonRect = backButtonInfo()
@@ -142,6 +161,8 @@ def endInstructionsScreen(event):
         variables.isSplashScreen = True
         variables.isInstructionsScreen = False
 
+# checks to see if the user's mouse click should take them away from the
+# start screen
 def endStartScreen(event):
     startImage, startButtonRect = startButtonInfo()
     instructionsImage, instructionsButtonRect = instructionsButtonInfo()

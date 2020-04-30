@@ -1,3 +1,5 @@
+# creates the inventory for the game to store items into
+
 import pygame
 import numpy as np
 from variables import *

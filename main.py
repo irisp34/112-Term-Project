@@ -2,7 +2,7 @@
 # 15112 Term Project Spring 2020
 # By: Iris Pan
 # This file runs the game and contains the main Pygame while loop to set
-# up all graphics
+# up all graphics. It controls all game events and redraws the board
 #########################################################################
 import pygame
 import os
@@ -74,13 +74,9 @@ def redrawAll(character):
 
     scrollAll(blockArray1, blockArray2, scrollX, scrollY, cartScrollX, cartScrollY, character)
 
-    # constructs the background and the inventory bar
+    # constructs the background
     waterSprites.update()
     waterSprites.draw(screen)
-    inventoryBarSprite.update(screen)
-    inventoryBarSprite.draw(screen)
-    variables.resourceSprites.update(screen)
-    variables.resourceSprites.draw(screen)
     if (variables.isSplashScreen):
         drawStartScreen()
     elif (variables.isInstructionsScreen):
@@ -144,6 +140,10 @@ def redrawAll(character):
             textRect.centerx = (minX + maxX) / 2
             textRect.centery = maxY + 30
             screen.blit(text, textRect)
+    inventoryBarSprite.update(screen)
+    inventoryBarSprite.draw(screen)
+    variables.resourceSprites.update(screen)
+    variables.resourceSprites.draw(screen)
 
     # adds resource caption only if there are resource sprites in the sprite group
     createInventoryCaptions(Wood)
@@ -170,11 +170,9 @@ def createInventoryCaptions(classType):
 # calls the appropriate function that executes the correct action when the mouse
 # is pressed
 def mousePressed(event, character, inventoryBar):
-    # global isShopping
     global keyword
     global drawOutline
     global drawUnaffordableMessage
-    print("clicked mouse pressed", event.pos)
     if (variables.isShopping):
         drawOutline, keyword, drawUnaffordableMessage = selectedItem(event, keyword)
         variables.isShopping = endShopping(event, keyword, inventoryBar)
@@ -196,12 +194,6 @@ def mousePressed(event, character, inventoryBar):
         variables.isShopping = beginShopping(event)
         beginInstructionsScreen(event)
 
-def bridgeCount():
-    count = 0
-    for sprite in variables.bridgeSprites:
-        count += 1
-    return count
-
 # main function which starts the game
 def playGame():
     pygame.init()
@@ -221,6 +213,7 @@ def playGame():
     farmList = None
     factoryList = None
     scrollValues = None
+    bridgeCount = 0
 
     # this section reads in a file that is saved from the last time the game is
     # played and reassigns variables appropriately. If no file was saved at the
@@ -255,11 +248,7 @@ def playGame():
                     hammer.placeInInventory(2)
                     hammer.updateAmount(Hammer)
 
-                count = resources['bridge']
-                for i in range(count):
-                    bridge = Bridge(bridgeDict, cellWidth, cellHeight, blockArray1,
-                        cartesianBlockArray1, blockArray2, cartesianBlockArray2)
-                    bridgeSprites.add(bridge)
+                bridgeCount = resources['bridge']
                 score.pointsDict = resources['score']
                 characterPosition = resources['character']
                 enemyPosition = resources['enemy']
@@ -297,6 +286,10 @@ def playGame():
         offsetX1, offsetY1, cellWidth, cellHeight, 8, 1, treeList1)
     makeTrees(character, blockArray2, cartesianBlockArray2, inventoryBar,
       offsetX1, offsetY1, cellWidth, cellHeight, 8, 2, treeList2)
+    for i in range(bridgeCount):
+        bridge = Bridge(bridgeDict, cellWidth, cellHeight, blockArray1,
+            cartesianBlockArray1, blockArray2, cartesianBlockArray2)
+        bridgeSprites.add(bridge)
     
     # places any buildings or resources from the saved version of the game
     if (ironList1 is not None):
@@ -364,11 +357,12 @@ def playGame():
                     makeTrees(character, blockArray1, cartesianBlockArray1, 
                         inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight, 1, 1)
                 elif (treeCount2 < 5):
-                    makeTrees(character, blockArray1, cartesianBlockArray1, 
+                    makeTrees(character, blockArray2, cartesianBlockArray2, 
                         inventoryBar, offsetX1, offsetY1, cellWidth, cellHeight, 1, 2)
             # for each Farm that is built, wood will automatically be produced
             # from that farm. This section adds the newly produced wood to inventory
-            elif (event.type == farmWoodEvent and not variables.isGameOver):
+            elif (event.type == farmWoodEvent and not variables.isGameOver
+                and not variables.isSplashScreen and not variables.isInstructionsScreen):
                 for building in buildingSprites:
                     if (isinstance(building, Farm)):
                         image = "tree.png"
@@ -380,7 +374,8 @@ def playGame():
                         variables.isBuildingProduction = False
             # factories generate iron like farms with wood. These iron resources
             # are automatically added to inventory
-            elif (event.type == factoryIronEvent and not variables.isGameOver):
+            elif (event.type == factoryIronEvent and not variables.isGameOver
+                and not variables.isSplashScreen and not variables.isInstructionsScreen):
                 for building in buildingSprites:
                     if (isinstance(building, Factory)):
                         image = "metalBar.png"
@@ -428,7 +423,7 @@ def playGame():
         resources['iron'] = count
         count = numResourceSprites('hammer')
         resources['hammer'] = count
-        count = bridgeCount()
+        count = len(variables.bridgeSprites)
         resources['bridge'] = count
         resources['score'] = score.pointsDict
         characterDic = dict()

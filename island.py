@@ -1,4 +1,5 @@
-# generates Block objects to encompass a map and makes that map 2.5D
+# generates Block objects to encompass a map and makes that map 2.5D based on
+# the established blockRows and blockCols
 
 import pygame
 import numpy as np
@@ -18,7 +19,6 @@ class Block(pygame.sprite.Sprite):
         self.offsetX = offsetX
         self.offsetY = offsetY
         self.isEmpty = True
-        # self.image = pygame.Surface([self.cellWidth, self.cellHeight])
 
         # grass image from https://clipart.info/natural-grass-png-top-view-12874
         self.originalImage = pygame.image.load("grass.png").convert_alpha()
@@ -49,8 +49,6 @@ class Block(pygame.sprite.Sprite):
         halfHeight = self.cellHeight / 2
         self.rect.x = ((col - row) * halfWidth) + self.offsetX
         self.rect.y = ((row + col) * halfHeight) + self.offsetY
-        # self.rect.x += totalIsoScrollX
-        # self.rect.y += totalIsoScrollY
     
     # the alternate function to transform the isometric coordinates to cartesian
     # ones
@@ -79,6 +77,8 @@ def findGrassPoints(block):
         (rightMidX, rightMidY))
     return points
 
+# finds all the points on the isometric version of the island in order to draw
+# the tan base portion that makes the islands appear isometric
 def findIslandBasePoints(blockArray):
     boardCorners = getBoardCorners(blockArray)
     topLeft, topRight, bottomLeft, bottomRight = boardCorners
@@ -128,13 +128,13 @@ def make2DBoard(blockSprites, blockArray, cartesianBlockArray, blockRows,
                         newStartX, newStartY, startX, startY, row, col, offsetX, offsetY)
         newStartY = startY - cellHeight
 
+# loops through each Block object in the array to make it isometric
 def makeBoardIsometric(blockArray):
     for row in range(blockArray.shape[0]):
         for col in range(blockArray.shape[1]):
-            # print("before x",blockArray[row, col].rect.x, "y", blockArray[row, col].rect.y)
             blockArray[row, col].makeBlockIsometric(row, col)
-            # print("after x", blockArray[row, col].rect.x, "y", blockArray[row, col].rect.y)
 
+# finds the corner elements of a block array and returns them
 def getBoardCorners(blockArray):
     topLeftCorner = blockArray[0, 0]
     topRightCorner = blockArray[0, blockCols - 1]
@@ -142,15 +142,7 @@ def getBoardCorners(blockArray):
     bottomRightCorner = blockArray[blockRows - 1, blockCols - 1]
     return (topLeftCorner, topRightCorner, bottomLeftCorner, bottomRightCorner)
 
-# def getIsometricBoardBounds(blockArray):
-#     # boardCoordinates = getCartesianBoardBounds()
-#     topLeftCorner, topRightCorner, bottomLeftCorner, bottomRightCorner = getBoardCorners(blockArray)
-#     topLeft = (topLeftCorner.rect.x, topLeftCorner.rect.y)
-#     topRight = (topRightCorner.rect.x, topRightCorner.rect.y)
-#     bottomLeft = (bottomLeftCorner.rect.x, bottomLeftCorner.rect.y)
-#     bottomRight = (bottomRightCorner.rect.x, bottomRightCorner.rect.y)
-#     return [topLeft, topRight, bottomLeft, bottomRight]
-
+# returns the centers of the corners of the block array
 def getIsometricBoardCenters(blockArray):
     topLeftCorner, topRightCorner, bottomLeftCorner, bottomRightCorner = getBoardCorners(blockArray)
     topLeft = (topLeftCorner.rect.centerx, topLeftCorner.rect.centery)
@@ -170,42 +162,31 @@ def getBoardBounds(blockArray):
     bottomRight = (bottomRightCorner.rect.bottomright[0], bottomRightCorner.rect.bottomright[1])
     return [topLeft, topRight, bottomLeft, bottomRight]
 
+# moves through the array to adjust the cartesian coordinates of islands other
+# than the main island
 def updateCartesianCoordinates(blockArray, cartesianBlockArray, diffOffsetX, diffOffsetY):
     diffOffsetX, diffOffsetY = cartesianBlockArray[0,0].convertIsometricToCartesian(diffOffsetX, diffOffsetY)
-    # print("DIFFOFFSET converted", diffOffsetX, diffOffsetY)
     for row in range(cartesianBlockArray.shape[0]):
         for col in range(cartesianBlockArray.shape[1]):
-            # isoBlock = blockArray[row, col]
             cartBlock = cartesianBlockArray[row, col]
-            # cartX, cartY = isoBlock.convertIsometricToCartesian(isoBlock.rect.x
-            #     - isoBlock.offsetX, isoBlock.rect.y - isoBlock.offsetY)
-            # cartX += startX
-            # cartY += startY - cellHeight / 2
-            # cartBlock.rect.x, cartBlock.rect.y = cartX, cartY
-            # newX = cartBlock.rect.x + diffOffsetX
-            # newY = cartBlock.rect.y + diffOffsetY
             cartBlock.rect.x += diffOffsetX
             cartBlock.rect.y += diffOffsetY
 
+# generates the different islands and calls functions to correctly make them
+# isometric
 def createIslands():
-    # global startX
-    # global startY
     global offsetX1
     global offsetY1
     global offsetX2
     global offsetY2
-    # making 1st island
-    print("drawing island 1")
-    make2DBoard(blockSprites1, blockArray1, cartesianBlockArray1, blockRows, blockCols, cellWidth, 
-                cellHeight, startX, startY, offsetX1, offsetY1)
+    make2DBoard(blockSprites1, blockArray1, cartesianBlockArray1, blockRows, 
+        blockCols, cellWidth, cellHeight, startX, startY, offsetX1, offsetY1)
     makeBoardIsometric(blockArray1)
-    print("drawing island 2")
-    # offsetX2 = offsetX1 + width // 4
-    # offsetY2 = offsetY1 - height // 5
     offsetX2 = offsetX1 + width // 1.59
     offsetY2 = offsetY1 - height // 2.9
     diffOffsetX = offsetX2 - offsetX1
     diffOffsetY = offsetY2 - offsetY1
+
     make2DBoard(blockSprites2, blockArray2, cartesianBlockArray2, blockRows, blockCols, cellWidth, 
                 cellHeight, startX, startY, offsetX2, offsetY2)
     makeBoardIsometric(blockArray2)

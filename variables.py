@@ -1,4 +1,5 @@
-# stores all the variables which influences the world generation
+# stores all the variables which influences the world generation such as creating
+# sprite groups and setting island sizes
 import pygame
 import numpy as np
 
@@ -13,9 +14,8 @@ startX = 100
 startY = 100
 blockRows = 10
 blockCols = 10
-# blockRows = 4
-# blockCols = 4
 
+# all sprite groups
 blockArray1 = np.empty(shape=(blockRows, blockCols), dtype = object)
 cartesianBlockArray1 = np.empty(shape=(blockRows, blockCols), dtype = object)
 blockArray2 = np.empty(shape=(blockRows, blockCols), dtype = object)
@@ -32,10 +32,10 @@ resourceSprites = pygame.sprite.Group()
 inventoryBarSprite = pygame.sprite.Group()
 bridgeSprites = pygame.sprite.Group()
 
-shopImage = None
-shopButtonRect = 0
-buyImage = None
-buyButtonRect = 0
+# shopImage = None
+# shopButtonRect = 0
+# buyImage = None
+# buyButtonRect = 0
 isShopping = False
 purchasableItems = dict()
 betweenItemsOffset = 75
@@ -44,8 +44,6 @@ drawUnaffordableMessage = False
 isGameOver = False
 isSplashScreen = True
 isInstructionsScreen = False
-fromMainScreen = False
-fromStartScreen = False
 mainInstructionsButton = None
 startInstructionsButton = None
 # keyword is the currently selected item
@@ -76,7 +74,7 @@ isNewGame = True
 
 walkToIsland2 = False
 
-score = 0
+# score = 0
 
 
 

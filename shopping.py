@@ -1,3 +1,7 @@
+# This file has all the functions contained that are needed to draw the shop
+# and places all the items in the shop. It also detects when items are selected,
+# unaffordable, and purchased. 
+
 import pygame
 import numpy as np
 from variables import *
@@ -6,6 +10,7 @@ from resources import *
 from buildings import *
 import score
 
+# draws the basic shop environment
 def createShop():
     pygame.draw.rect(screen, (163, 196, 220), (baseX, baseY, width - baseX * 2, 
         height - baseY * 2))
@@ -16,6 +21,7 @@ def createShop():
     addFarmToShop(farmDict)
     addFactoryToShop(factoryDict)
 
+# scales image to a certain size
 def scaleImage(image, location):
     image = pygame.transform.scale(image, location)
     rect = image.get_rect()
@@ -35,6 +41,7 @@ def createCostCaption(resourceDict, resourceRect):
     textRect.centery = resourceRect.bottomright[1] + 15
     screen.blit(text, textRect)
 
+# creates the bridge icon
 def addBridgeToShop(bridgeDict):
     bridge = pygame.image.load("woodBridge.png").convert_alpha()
     bridgeRect = bridge.get_rect()
@@ -50,6 +57,7 @@ def addBridgeToShop(bridgeDict):
     createCostCaption(bridgeDict, bridgeRect)
     return bridge, bridgeRect
 
+# creates the hammer icon
 def addHammerToShop(hammerDict):
     # hammer picture from: https://minecraft.novaskin.me/search?q=axe%20iron
     hammer = pygame.image.load("hammer.png").convert_alpha()
@@ -101,8 +109,6 @@ def addFactoryToShop(factoryDict):
 def selectedItem(event, currentItem):
     global drawOutline
     global drawUnaffordableMessage
-    # keyword = None
-    # # global keyword
     pygame.draw.rect(screen, (255, 0, 0), (0, 0, 60, 60))
     posX, posY = event.pos
     image = None
@@ -110,29 +116,24 @@ def selectedItem(event, currentItem):
     currKey = None
     selectedItem = None
     for key in purchasableItems:
-        print("key", key)
         imageDim = purchasableItems[key]
         currKey = key
-        print("currKey", currKey)
         minX, minY, maxX, maxY = imageDim
         isAffordable = affordable(currKey)
         if (posX >= minX and posX <= maxX and posY >= minY and posY <= maxY):
             if (currKey == currentItem):
                 return False, None, False
-
             drawOutline = True
             selectedItem = currKey
-            # drawOutline = not drawOutline
-            # print("drawOutline", drawOutline)
             if (not isAffordable and drawOutline):
                 drawUnaffordableMessage = True
             else:
                 drawUnaffordableMessage = False
         if (selectedItem != None):
             return drawOutline, selectedItem, drawUnaffordableMessage
-    print("keyword before return", keyword)
     return drawOutline, currentItem, drawUnaffordableMessage
-        
+
+# contains image and rect information for the shopping button on the main screen
 def shopButtonInfo():
     # shop button image from: http://pixelartmaker.com/art/48b2d0645893d05
     shopImage = pygame.image.load("shopButton.png").convert_alpha()
@@ -146,7 +147,6 @@ def shopButtonInfo():
 
 def drawShopButton():
     shopImage, shopButtonRect = shopButtonInfo()
-    # print("shop button", shopButtonRect)
     screen.blit(shopImage, (shopButtonRect.x, shopButtonRect.y))
 
 def buyButtonInfo():
@@ -179,6 +179,7 @@ def drawExitButton():
     exitImage, exitButtonRect = exitButtonInfo()
     screen.blit(exitImage, (exitButtonRect.x, exitButtonRect.y))
 
+# checks to see if the shopping button has been clicked
 def beginShopping(event):
     global isShopping
     shopImage, shopButtonRect = shopButtonInfo()
@@ -217,7 +218,8 @@ def createBoughtItem(keyword, inventoryBar):
         buildingSprites.add(factory)
         score.pointsDict["factories built"] += 1
 
-# takes out resource sprites out of inventory to pay for items
+# takes out resource sprites out of inventory to pay for items according to the
+# dictionary containing resource costs
 def subtractResources(keyword):
     count = 0
     if (keyword == "bridge"):

@@ -1,3 +1,6 @@
+# draws the game over page and calculates the final score. It also shows a 
+# summary of all the things the user built and collected
+
 import pygame
 import numpy as np
 from variables import *
@@ -21,13 +24,5 @@ def drawGameOver():
         textCenterY += 40
         caption = f"{key[0].upper() + key[1:]}: {score.pointsDict[key]}"
         createText(caption, textCenterX, textCenterY, 20)
-
-    # font = pygame.font.Font('freesansbold.ttf', 40)
-    # caption = "Game Over"
-    # text = font.render(caption, True, (0, 0, 0))
-    # textRect = text.get_rect()
-    # textRect.centerx = width / 2
-    # textRect.centery = 300
-    # screen.blit(text, textRect)
 
 

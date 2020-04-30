@@ -1,4 +1,6 @@
-# creates the Character object and allows him to move
+# creates the Character object and allows him to move based on where he can
+# Constrains motion based on other elements on the board and controls both the
+# main character and the enemy
 
 import numpy as np
 import random
@@ -105,7 +107,7 @@ class Character(pygame.sprite.Sprite):
     # takes in two isometric coordinates and converts them to cartesian
     def convertIsometricToCartesian(self, isoX, isoY):
         cartesianX = (isoX + isoY * 2) / 2
-        cartesianY = (2*isoY - isoX) / 2
+        cartesianY = (2 * isoY - isoX) / 2
         return (cartesianX, cartesianY)
 
     # takes in two cartesian coordinates and converts them to isometric
@@ -138,7 +140,6 @@ class Character(pygame.sprite.Sprite):
 
     # checks if the character can move right and adds to the scroll if necessary
     def moveRight(self):
-        # print("right")
         if (not self.isWalkable(1, 0)):
             return
         self.rect.centerx += self.boardCellWidth
@@ -150,7 +151,6 @@ class Character(pygame.sprite.Sprite):
             self.justMoved = True
         
     def moveLeft(self):
-        # print("left")
         if (not self.isWalkable(-1, 0)):
             return
         self.rect.centerx -= self.boardCellWidth
@@ -162,7 +162,6 @@ class Character(pygame.sprite.Sprite):
             self.justMoved = True
 
     def moveUp(self):
-        # print("up")
         if (not self.isWalkable(0, -1)):
             return
         self.rect.centerx += self.boardCellWidth
@@ -174,7 +173,6 @@ class Character(pygame.sprite.Sprite):
             self.justMoved = True
  
     def moveDown(self):
-        # print("down")
         if (not self.isWalkable(0, 1)):
             return
         self.rect.centerx -= self.boardCellWidth
@@ -196,11 +194,6 @@ class Character(pygame.sprite.Sprite):
         self.cartY += startY + (self.boardCellHeight / 2)
         newX = self.cartX + dx * self.boardCellWidth
         newY = self.cartY + dy * self.boardCellHeight
-        # print("newx, newy", newX, newY)
-        # print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
-        # print("less x", newX < self.cartMinX, "more x", newX > self.cartMaxX, 
-        #     "less y", newY < self.cartMinY, "more y", newY > self.cartMaxY)
-        # checks if the character is trying to walk into a tree
         for sprite in treeSprites:
             treeX, treeY = sprite.convertIsometricToCartesian(sprite.rect.centerx
                 - sprite.offsetX, sprite.rect.centery - sprite.offsetY)
@@ -224,12 +217,6 @@ class Character(pygame.sprite.Sprite):
                 cellMaxX = farmX + self.boardCellWidth
                 cellMinY = farmY - self.boardCellHeight / 2
                 cellMaxY = farmY + self.boardCellHeight / 2
-                # print("cell mins and maxs", cellMinX, cellMinY, cellMaxX, cellMaxY)
-                # print("more x", newX >= cellMinX, "less x", newX <= cellMaxX, "more y", 
-                # newY >= cellMinY, "less y", newY <= cellMaxY)
-                # if ((newX >= self.cartMinX and newX <= self.cartMaxX) and (newY >= self.cartMinY
-                #         and newY <= self.cartMaxY)):
-                #     return False
                 if ((newX >= cellMinX and newX <= cellMaxX) and (newY >= cellMinY 
                         and newY <= cellMaxY)):
                     return False
@@ -245,12 +232,6 @@ class Character(pygame.sprite.Sprite):
                 if ((newX >= cellMinX and newX <= cellMaxX) and (newY >= cellMinY 
                         and newY <= cellMaxY)):
                     return False
-            # print("cell mins and maxs", cellMinX, cellMinY, cellMaxX, cellMaxY)
-            # print("more x", newX >= cellMinX, "less x", newX <= cellMaxX, "more y", 
-            # newY >= cellMinY, "less y", newY <= cellMaxY)
-            # if ((newX >= cellMinX and newX <= cellMaxX) and (newY >= cellMinY 
-            #         and newY <= cellMaxY)):
-        
         # check if out of island 1
         if (newX < self.cartMinX or newX > self.cartMaxX or newY < self.cartMinY 
                 or newY > self.cartMaxY):
@@ -258,6 +239,8 @@ class Character(pygame.sprite.Sprite):
                 if (self.canWalkAcrossBridge(newX, newY)):
                     self.setNewPosition(newX, newY)
                     return True
+            # sets new boundaries if the character can walk to island 2 and is
+            # doing so
             if (variables.walkToIsland2):
                 cartMinX2, cartMinY2, cartMaxX2, cartMaxY2 = self.findOtherIslandCartesianBounds(variables.cartesianBlockArray2)
                 result = self.checkInIsland(cartMinX2, cartMinY2, cartMaxX2, cartMaxY2, newX, newY)
@@ -296,11 +279,11 @@ class Character(pygame.sprite.Sprite):
     def canWalkAcrossBridge(self, newX, newY):
         for sprite in bridgeSprites:
             #.04 for 10, .1 for 4 blocks
-            rightBottomCorner = (sprite.rect.bottomleft[0] +.04 * sprite.rect.width, 
+            rightBottomCorner = (sprite.rect.bottomleft[0] + .04 * sprite.rect.width, 
                 sprite.rect.bottomleft[1])
             rightBottomX, rightBottomY = self.convertIsometricToCartesian(rightBottomCorner[0]
                 - self.offsetX, rightBottomCorner[1] - self.offsetY)
-            leftTopCorner = (sprite.rect.topright[0] -.04 * sprite.rect.width, 
+            leftTopCorner = (sprite.rect.topright[0] - .04 * sprite.rect.width, 
                 sprite.rect.topright[1])
             leftTopX, leftTopY = self.convertIsometricToCartesian(leftTopCorner[0]
                 - self.offsetX, leftTopCorner[1] - self.offsetY)

@@ -1,13 +1,14 @@
+# This file creates a class that manages all the raw resources on the screen
+# before they are collected by the user (ie trees and iron) and then updates
+# the user's inventory once they are collected
+
 import pygame
 import numpy as np
 import random
-# from variables import *
 import variables
 from character import *
 from island import *
-# from resources import *
 import resources
-# from score import *
 import score
 
 class RawResources(pygame.sprite.Sprite):
@@ -28,7 +29,6 @@ class RawResources(pygame.sprite.Sprite):
         self.scaleLocation = scaleLocation
         self.image, self.rect = self.scaleImage(self.image, self.rect, self.scaleLocation)
         self.findCartesianBounds(self.cartBlockArray)
-        # self.findCartesianBounds(variables.cartesianBlockArray1)
         if (position is not None):
             self.rect.centerx = position['x']
             self.rect.centery = position['y']
@@ -39,26 +39,27 @@ class RawResources(pygame.sprite.Sprite):
         elif (not variables.isBuildingProduction):
             self.rect.centerx, self.rect.centery, self.row, self.col, self.block = self.getRandomBoardCenter(self.blockArray)
         self.originalX, self.originalY = self.rect.centerx, self.rect.centery
-        # self.adjustBlockCenter()
-        # self.findCartesianBounds(self.cartBlockArray)
     
+    # scales an image to the appropriate size 
     def scaleImage(self, image, rect, location):
         image = pygame.transform.scale(image, location)
         rect = image.get_rect()
         return image, rect
 
+    # finds the center of where the block is (with an adjustment for taller
+    # images)
     def findBlockCenter(self, block):
-        # centerX = (block.rect.centerx)
-        # centerY = (block.rect.centery)
         centerX = (block.rect.centerx + block.rect.midtop[0]) / 2
         centerY = (block.rect.centery + block.rect.midtop[1]) / 2
         return centerX, centerY
 
+    # randomly generates a row and col based on the board size
     def pickRandomRowAndCol(self, boardRows, boardCols):
         randRow = random.randint(0, boardRows - 1)
         randCol = random.randint(0, boardCols - 1)
         return randRow, randCol
     
+    # finds the bounds for a cartesian block array
     def findCartesianBounds(self, cartBlockArray):
         cartBoard = getBoardBounds(cartBlockArray)
         self.cartMinX = cartBoard[0][0]
@@ -66,6 +67,8 @@ class RawResources(pygame.sprite.Sprite):
         self.cartMaxX = cartBoard[3][0]
         self.cartMaxY = cartBoard[3][1]
     
+    # functionality is similar to above function but can find for arrays other
+    # than self.
     def findOtherIslandCartesianBounds(self, cartBlockArray):
         # top left, top right, bottom left, bottom right
         cartBoard = getBoardBounds(cartBlockArray)
@@ -74,7 +77,8 @@ class RawResources(pygame.sprite.Sprite):
         cartMaxX = cartBoard[3][0]
         cartMaxY = cartBoard[3][1]
         return cartMinX, cartMinY, cartMaxX, cartMaxY
-        
+    
+    # finds bounds of an isometric array
     def findIsometricBounds(self, blockArray):
         # organized top left, top right, bottom left, bottom right
         boardCoordinates = getBoardBounds(blockArray)
@@ -92,11 +96,6 @@ class RawResources(pygame.sprite.Sprite):
         isoX = (cartX - cartY)
         isoY = ((cartX + cartY) / 2)
         return (isoX, isoY)
-
-    def findOriginalCenter(self, block):
-        trueCenterX = (2 * block.rect.centerx) - block.rect.midtop[0]
-        trueCenterY = (2 * block.rect.centery) - block.rect.midtop[1]
-        return trueCenterX, trueCenterY
 
     # retrieves a random isometric board center that doesn't already have
     # something on it to place a tree on
@@ -116,6 +115,7 @@ class RawResources(pygame.sprite.Sprite):
             if (count > maxVal):
                 print("Try times exceeds max value")
 
+# tree class which manages all trees on the board
 class Trees(RawResources):
     def __init__(self, image, character, blockArray, cartesianBlockArray,
         inventoryBar, offsetX, offsetY, location, island, position = None):
@@ -125,20 +125,13 @@ class Trees(RawResources):
         self.carbonDioxide = 10
         self.cutDown = False
 
+    # checks if the user has clicked to remove them and kills the sprite if they
+    # did and adds it to the inventory
     def removeTrees(self, event):
         posX, posY = event.pos
-        # print("before offset", posX, posY)
         posX, posY = self.convertIsometricToCartesian(posX - self.offsetX, posY - self.offsetY)
         posX += startX - (self.boardCellWidth / 2)
         posY += startY + (self.boardCellHeight / 2)
-        print("clicked raw resources", posX, posY)
-        print("cartmins and maxs", self.cartMinX, self.cartMinY, self.cartMaxX, self.cartMaxY)
-        a1 = posX < self.cartMinX
-        a2 = posX > self.cartMaxX
-        a3 = posY < self.cartMinY
-        a4 = posY > self.cartMaxY
-        print("FIRST If less x", a1, "more x", a2, "less y", a3, "more y", a4)
-        a = a1 or a2 or a3 or a4
         if (posX < self.cartMinX or posX > self.cartMaxX or posY < self.cartMinY or posY > self.cartMaxY):
             return
         treeX, treeY = self.convertIsometricToCartesian(self.rect.centerx - self.offsetX,
@@ -149,9 +142,6 @@ class Trees(RawResources):
         cellMaxX = treeX + self.boardCellWidth / 2
         cellMinY = treeY - self.boardCellHeight / 2
         cellMaxY = treeY + self.boardCellHeight / 2
-        print("cell mins and maxs", cellMinX, cellMinY, cellMaxX, cellMaxY)
-        print("more x", posX >= cellMinX, "less x", posX <= cellMaxX, "more y", 
-            posY >= cellMinY, "less y", posY <= cellMaxY)
         if (posX >= cellMinX and posX <= cellMaxX and posY >= cellMinY and
             posY <= cellMaxY):
             self.block.isEmpty = True
@@ -161,6 +151,7 @@ class Trees(RawResources):
             return True
         return False
 
+    # adds the tree to inventory
     # log image from: https://www.deviantart.com/chunsmunkey/art/Pixel-Log-750792001
     def addWoodToInventory(self):
         logImage = "log.png"
@@ -168,27 +159,12 @@ class Trees(RawResources):
         logResource.placeInInventory(0)
         variables.resourceSprites.add(logResource)
         logResource.updateAmount(resources.Wood)
-    
-    def adjustBlockCenter(self):
-        self.rect.centerx = (self.block.rect.centerx + self.block.rect.midtop[0]) / 2
-        self.rect.centery = (self.block.rect.centery + self.block.rect.midtop[1]) / 2
-        # return centerX, centerY
 
 class RawIron(RawResources):
     def __init__(self, image, character, blockArray, cartesianBlockArray,
         inventoryBar, offsetX, offsetY, location, island, position = None):
         super().__init__(image, character, blockArray, cartesianBlockArray,
             inventoryBar, offsetX, offsetY, location, island, position)
-
-    def adjustBlockCenter(self):
-        self.rect.centerx = (self.block.rect.centerx)
-        self.rect.centery = (self.block.rect.centery)
-        # return centerX, centerY
-
-    def findBlockCenter(self, block):
-        centerX = (block.rect.centerx)
-        centerY = (block.rect.centery)
-        return centerX, centerY
 
     def addIronToInventory(self):
         if (not variables.isBuildingProduction):
@@ -219,9 +195,9 @@ def makeTrees(character, blockArray, cartBlockArray, inventoryBar, offsetX,
         else:
             tree = Trees(image, character, blockArray, cartBlockArray,
                 inventoryBar, offsetX, offsetY, location, island)
-        print("in make trees", tree.rect.centerx, tree.rect.centery)
         variables.treeSprites.add(tree)
 
+# creates RawIron instances to place on the board
 def placeIron(character, blockArray, cartBlockArray, inventoryBar, offsetX,
     offsetY, cellWidth, cellHeight, island, position = None):
     # picture from: http://iconbug.com/detail/icon/8273/minecraft-iron-ingot/
@@ -231,15 +207,10 @@ def placeIron(character, blockArray, cartBlockArray, inventoryBar, offsetX,
         offsetX, offsetY, location, island, position)
     variables.ironSprites.add(iron)
 
+# counts how many trees are on an island
 def sumTreesOnIsland(island):
     count = 0
     for tree in treeSprites:
         if (tree.island == island):
             count += 1
     return count
-
-def sumCarbon():
-    totCarbon = 0
-    for sprite in variables.treeSprites:
-        totCarbon += sprite.carbonDioxide
-    return totCarbon

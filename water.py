@@ -1,9 +1,9 @@
+# creates Water objects from the water image to act as the background of the
+# game
+
 import pygame
 import numpy as np
 from variables import *
-
-# creates Water objects from the water image to act as the background of the
-# game
 
 class Water(pygame.sprite.Sprite):
     def __init__(self, image, location):
